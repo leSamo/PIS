@@ -1,4 +1,4 @@
-package cz.vut.fit.pis.start.servlet;
+package cz.xoleks00.pis.servlet;
 
 import java.io.IOException;
 

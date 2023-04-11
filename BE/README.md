@@ -1,5 +1,4 @@
-# Jakarta EE Starter Project
+# PIS Calendar backend
 
-(c) Radek Burget, 2022
-
-A minimalistic Jakarta EE project with a REST API.
+Run with: `mvn liberty:dev`
+OpenAPI spec: http://localhost:8080/openapi/ui

@@ -1,4 +1,4 @@
-package cz.vut.fit.pis.start.rest;
+package cz.xoleks00.pis.rest;
 
 import jakarta.ws.rs.ApplicationPath;
 import jakarta.ws.rs.core.Application;

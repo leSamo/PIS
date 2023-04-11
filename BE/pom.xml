@@ -2,13 +2,13 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
     
-    <groupId>cz.vut.fit.pis</groupId>
-    <artifactId>jakartaee-starter</artifactId>
-    <version>1.0-SNAPSHOT</version>
+    <groupId>cz.xoleks00.pis</groupId>
+    <artifactId>pis-calendar</artifactId>
+    <version>0.1</version>
     <packaging>war</packaging>
     
-    <name>Jakarta EE Starter</name>
-    <url>https://github.com/DIFS-Teaching/jakartaee-starter</url>
+    <name>PIS Calendar</name>
+    <url>https://github.com/leSamo/PIS</url>
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -55,7 +55,7 @@
                 </configuration>
             </plugin>
         </plugins>        
-        <finalName>jakartaee-starter</finalName>
+        <finalName>pis-calendar</finalName>
     </build>
     
 </project>

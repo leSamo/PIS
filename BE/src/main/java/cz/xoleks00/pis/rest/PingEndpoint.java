@@ -1,4 +1,4 @@
-package cz.vut.fit.pis.start.rest;
+package cz.xoleks00.pis.rest;
 
 import jakarta.ejb.Stateless;
 import jakarta.ws.rs.GET;
@@ -13,7 +13,7 @@ import jakarta.ws.rs.core.Response.Status;
 
 /*
  * TEST URL:
- * http://localhost:8080/jakartaee-starter/rest/ping
+ * http://localhost:8080/pis-calendar/rest/ping
  */
 @Stateless
 @Path("/ping")

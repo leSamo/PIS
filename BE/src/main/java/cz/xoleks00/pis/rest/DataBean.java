@@ -1,7 +1,7 @@
 /**
  * 
  */
-package cz.vut.fit.pis.start.rest;
+package cz.xoleks00.pis.rest;
 
 /**
  * A simple data bean for JSON responses.
