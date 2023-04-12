@@ -7,34 +7,36 @@ const port = process?.env?.PORT || 5000;
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 
-//app.use(cors());
-
 let USERS = [{
-  username: "ahoj",
-  fullname: "David čoko",
-  email: "abc@def.com",
+  username: "dacoko",
+  fullname: "David čokoláda",
+  email: "david@cokolada.com",
   role: "Assistant",
   registered: Date.now(),
   isUserAdmin: true
 },
 {
-  username: "cau",
-  fullname: "Ahoj nazdar",
-  email: "wwwwww@def.com",
-  role: "Boss",
+  username: "soleksak",
+  fullname: "Samuel Olekšák",
+  email: "soleksak@redhat.com",
+  role: "Manager",
   registered: Date.now(),
   isUserAdmin: false
 },
 {
-  username: "cawko",
-  fullname: "Ako sa mas nazdar",
-  email: "gdsdffsd@def.com",
-  role: "Manager",
+  username: "mfindra",
+  fullname: "Michal Findra",
+  email: "mfindra@redhat.com",
+  role: "Boss",
   registered: Date.now(),
   isUserAdmin: false
 }];
 
-let EVENTS = [];
+let EVENTS = [{
+  author: "dacoko",
+  title: "opekacka",
+  from: ""
+}];
 
 app.get('/allUsers', async (req, res) => {
   res.status(200).send(USERS);
@@ -49,8 +51,6 @@ app.get('/allEvents', async (req, res) => {
 });
 
 app.post('/login', async (req, res) => {
-  console.log(req.body);
-
   const { username, password } = req.body;
 
   const user = USERS.find(u => u.username === username);
@@ -86,14 +86,13 @@ app.post('/removeUser', async (req, res) => {
     USERS.splice(indexToDelete, 1);
   }
 
-  console.log("Deleted", userToDelete);
   res.sendStatus(200);
 })
 
 app.post('/createEvent', async (req, res) => {
-  const { title, description, from, to } = req.body;
+  const { author, attendees, title, description, from, to } = req.body;
 
-  EVENTS.push({ title, description, from, to })
+  EVENTS.push({ author, attendees, title, description, from, to })
 
   res.sendStatus(200);
 })

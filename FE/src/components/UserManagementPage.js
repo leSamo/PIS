@@ -14,6 +14,7 @@ const UserManagementPage = ({ addToastAlert }) => {
         { label: 'Full name' },
         { label: 'Email address' },
         { label: 'Role' },
+        { label: 'Can manage users', type: 'boolean' },
         { label: 'Registered', type: 'date' }
     ];
 
@@ -25,7 +26,7 @@ const UserManagementPage = ({ addToastAlert }) => {
     useEffect(() => {
         console.log("refresh");
         axios.get("/allUsers").then(response => {
-            setData(response.data.map(row => [row.username, row.fullname, row.email, row.role, row.registered]));
+            setData(response.data.map(row => [row.username, row.fullname, row.email, row.role, row.isUserAdmin, row.registered]));
             setLoading(false);
         })
     }, [refreshCounter]);

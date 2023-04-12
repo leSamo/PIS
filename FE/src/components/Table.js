@@ -2,6 +2,8 @@ import React, { Fragment } from 'react';
 import { TableComposable, Thead, Tbody, Tr, Th, Td } from '@patternfly/react-table';
 import { Button, ButtonVariant, Bullseye, Spinner, Pagination, Split, SplitItem } from '@patternfly/react-core';
 import TableEmptyState from './TableEmptyState';
+import CheckIcon from '@patternfly/react-icons/dist/esm/icons/check-icon';
+import TimesIcon from '@patternfly/react-icons/dist/esm/icons/times-icon';
 
 const Table = ({ title, columns, isLoading, rows, actions, sortBy, onSort, page, perPage, itemCount, onSetPage, onPerPageSelect, emptyText }) => {
   const sortEnabled = sortBy != undefined && onSort != undefined;
@@ -66,7 +68,14 @@ const Table = ({ title, columns, isLoading, rows, actions, sortBy, onSort, page,
               <Tr key={rowIndex}>
                 {row.filter((cell, index) => columns[index].type !== 'hidden').map((cell, cellIndex) => (
                   <Td key={`${rowIndex}_${cellIndex}`}>
-                    {columns[cellIndex].link ? <a href={columns[cellIndex].link(cell, row)}>{cell}</a> : columns[cellIndex].type === 'date' ? new Date(cell).toLocaleString("cs-CZ") : cell ?? columns[cellIndex].fallback}
+                    {columns[cellIndex].link
+                      ? <a href={columns[cellIndex].link(cell, row)}>{cell}</a>
+                      : columns[cellIndex].type === 'date'
+                        ? new Date(cell).toLocaleString("en-US")
+                        : columns[cellIndex].type === 'boolean'
+                          ? (cell ? <CheckIcon /> : <TimesIcon />)
+                          : cell ?? columns[cellIndex].fallback
+                    }
                   </Td>
                 ))}
                 <Td key={rowIndex + "_actions"}>

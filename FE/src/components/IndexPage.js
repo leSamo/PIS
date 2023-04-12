@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { Card, CardBody, Dropdown, DropdownToggle, DropdownItem, Flex, FlexItem, Button, ButtonVariant, Select, SelectVariant, SelectOption } from '@patternfly/react-core';
 import NewEventModal from './NewEventModal';
 import axios from 'axios';
+import Week from './Week';
 
 const IndexPage = () => {
     const [isNewEventModalOpen, setNewEventModalOpen] = useState(false);
@@ -52,9 +53,36 @@ const IndexPage = () => {
         setTypeaheadOpen(false);
     };
 
+    const isSubstring = (substring, string) => {
+        const strippedSubstring = substring.normalize("NFD").replace(/[\u0300-\u036f]/g, "");
+        const strippedString = string.normalize("NFD").replace(/[\u0300-\u036f]/g, "");
+
+        return strippedString.toLowerCase().indexOf(strippedSubstring.toLowerCase()) !== -1;
+    }
+
+    const typeaheadFilter = (_, value) => {
+        const filteredUsers = allUsers.filter(user => isSubstring(value, user.email) || isSubstring(value, user.username) || isSubstring(value, user.fullname));
+
+        return filteredUsers.map((option, index) => (
+            <SelectOption
+                key={index}
+                value={option.email}
+                description={option.fullname}
+            />
+        ));
+    }
+
+    const createCallback = event => {
+        console.log("Create event", event)
+    };
+
     return (
-        <Card>
-            <NewEventModal isOpen={isNewEventModalOpen} setOpen={setNewEventModalOpen} />
+        <Card style={{ height: "100%", overflow: "hidden" }}>
+            <NewEventModal
+                isOpen={isNewEventModalOpen}
+                setOpen={setNewEventModalOpen}
+                createCallback={createCallback}
+            />
             <CardBody>
                 <Flex>
                     <FlexItem>
@@ -66,6 +94,7 @@ const IndexPage = () => {
                             onClear={clearTypeaheadSelection}
                             selections={selectedUsers}
                             isOpen={isTypeaheadOpen}
+                            onFilter={typeaheadFilter}
                             placeholderText="Show calendar of"
                         >
                             {allUsers.map((option, index) => (
@@ -93,6 +122,7 @@ const IndexPage = () => {
                         <Button variant={ButtonVariant.primary} onClick={() => setNewEventModalOpen(true)}>Add event</Button>
                     </FlexItem>
                 </Flex>
+                <Week />
             </CardBody>
         </Card>
     );

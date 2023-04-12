@@ -1,17 +1,62 @@
-import React, { useState } from 'react';
-import { Form, FormGroup, TextInput, TextArea, Modal, ModalVariant, Button, TimePicker, DatePicker, Split, SplitItem } from '@patternfly/react-core';
+import React, { useEffect, useState } from 'react';
+import { Form, FormGroup, TextInput, TextArea, Modal, ModalVariant, Button, TimePicker, DatePicker, Split, SplitItem, Select, SelectVariant, SelectOption } from '@patternfly/react-core';
+import axios from 'axios';
 
+// TODO: Automatically select event organizer in typeahead
+// TODO: Disable "Create" button until all fields are valid
 const NewEventModal = ({ isOpen, setOpen, createCallback }) => {
     const [eventTitle, setEventTitle] = useState('');
     const [eventDescription, setEventDescription] = useState('');
+    const [allUsers, setAllUsers] = React.useState([]);
+    const [isTypeaheadOpen, setTypeaheadOpen] = useState(false);
+    const [selectedUsers, setSelectedUsers] = useState([]);
 
-    const onTimeChange = (_event, time, hour, minute, seconds, isValid) => {
-        console.log('time', time);
-        console.log('hour', hour);
-        console.log('minute', minute);
-        console.log('seconds', seconds);
-        console.log('isValid', isValid);
+    const [dateFrom, setDateFrom] = useState('');
+    const [timeFrom, setTimeFrom] = useState('');
+    const [dateTo, setDateTo] = useState('');
+    const [timeTo, setTimeTo] = useState('');
+
+    useEffect(() => {
+        axios.get("/allUsers").then(response => {
+            setAllUsers(response.data);
+        })
+    }, []);
+
+    const onTypeaheadSelect = (event, selection) => {
+        const index = selectedUsers.indexOf(selection);
+
+        if (index === -1) {
+            const user = allUsers.find(user => user.email === selection);
+            setSelectedUsers([...selectedUsers, user.email]);
+        }
+        else {
+            setSelectedUsers([...selectedUsers.slice(0, index), ...selectedUsers.slice(index + 1)])
+        }
     };
+
+    const clearTypeaheadSelection = () => {
+        setSelectedUsers([]);
+        setTypeaheadOpen(false);
+    };
+
+    const isSubstring = (substring, string) => {
+        const strippedSubstring = substring.normalize("NFD").replace(/[\u0300-\u036f]/g, "");
+        const strippedString = string.normalize("NFD").replace(/[\u0300-\u036f]/g, "");
+
+        return strippedString.toLowerCase().indexOf(strippedSubstring.toLowerCase()) !== -1;
+    }
+
+    const typeaheadFilter = (_, value) => {
+        const filteredUsers = allUsers.filter(user => isSubstring(value, user.email) || isSubstring(value, user.username) || isSubstring(value, user.fullname));
+
+        return filteredUsers.map((option, index) => (
+            <SelectOption
+                key={index}
+                value={option.email}
+                description={option.fullname}
+            />
+        ));
+    }
 
     return (
         <Modal
@@ -20,7 +65,16 @@ const NewEventModal = ({ isOpen, setOpen, createCallback }) => {
             isOpen={isOpen}
             onClose={() => setOpen(false)}
             actions={[
-                <Button key="confirm" variant="primary" onClick={() => { createCallback({ eventTitle, eventDescription }); setOpen(false); }}>Create</Button>,
+                <Button
+                    key="confirm"
+                    variant="primary"
+                    onClick={() => {
+                        createCallback({ eventTitle, eventDescription, selectedUsers, dateFrom, timeFrom, dateTo, timeTo });
+                        setOpen(false);
+                    }}
+                >
+                    Create
+                </Button>,
                 <Button key="cancel" variant="link" onClick={() => setOpen(false)}>Cancel</Button>
             ]}>
             <Form>
@@ -47,13 +101,12 @@ const NewEventModal = ({ isOpen, setOpen, createCallback }) => {
                     <Split hasGutter>
                         <SplitItem>
                             <DatePicker
-                                onBlur={(_event, str, date) => console.log('onBlur', str, date)}
-                                onChange={(_event, str, date) => console.log('onChange', str, date)}
+                                onChange={(_event, str) => setDateFrom(str)}
                                 appendTo={document.querySelector("body")}
                             />
                         </SplitItem>
                         <SplitItem>
-                            <TimePicker time="3:35 AM" onChange={onTimeChange} />
+                            <TimePicker onChange={(e, time) => setTimeFrom(time)} />
                         </SplitItem>
                     </Split>
                 </FormGroup>
@@ -61,18 +114,39 @@ const NewEventModal = ({ isOpen, setOpen, createCallback }) => {
                     <Split hasGutter>
                         <SplitItem>
                             <DatePicker
-                                onBlur={(_event, str, date) => console.log('onBlur', str, date)}
-                                onChange={(_event, str, date) => console.log('onChange', str, date)}
+                                onChange={(_event, str) => setDateTo(str)}
                                 appendTo={document.querySelector("body")}
                             />
                         </SplitItem>
                         <SplitItem>
-                            <TimePicker time="3:35 AM" onChange={onTimeChange} />
+                            <TimePicker onChange={(e, time) => setTimeTo(time)} />
                         </SplitItem>
                     </Split>
                 </FormGroup>
+                <FormGroup label="Attendees">
+                    <Select
+                        chipGroupProps={{ numChips: 1, expandedText: 'Hide', collapsedText: 'Show ${remaining}' }}
+                        variant={SelectVariant.typeaheadMulti}
+                        onToggle={newState => setTypeaheadOpen(newState)}
+                        onSelect={onTypeaheadSelect}
+                        onClear={clearTypeaheadSelection}
+                        selections={selectedUsers}
+                        isOpen={isTypeaheadOpen}
+                        onFilter={typeaheadFilter}
+                        placeholderText="Attendees"
+                        menuAppendTo="parent"
+                    >
+                        {allUsers.map((option, index) => (
+                            <SelectOption
+                                key={index}
+                                value={option.email}
+                                description={option.fullname}
+                            />
+                        ))}
+                    </Select>
+                </FormGroup>
             </Form>
-        </Modal>
+        </Modal >
     );
 };
 
