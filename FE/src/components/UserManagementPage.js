@@ -14,8 +14,7 @@ const UserManagementPage = ({ addToastAlert }) => {
         { label: 'Full name' },
         { label: 'Email address' },
         { label: 'Role' },
-        { label: 'Registered', type: 'date' },
-        { label: 'Last activity', type: 'date' }
+        { label: 'Registered', type: 'date' }
     ];
 
     const [isLoading, setLoading] = useState(true);
@@ -26,7 +25,7 @@ const UserManagementPage = ({ addToastAlert }) => {
     useEffect(() => {
         console.log("refresh");
         axios.get("/allUsers").then(response => {
-            setData(response.data.map(row => [row.username, row.fullname, row.email, row.role, row.registered, row.lastActivity]));
+            setData(response.data.map(row => [row.username, row.fullname, row.email, row.role, row.registered]));
             setLoading(false);
         })
     }, [refreshCounter]);

@@ -46,9 +46,9 @@ const Wrapper = ({ children, userInfo, setUserInfo }) => {
 	const loginUser = async (login, password, closeModal) => {
 		const successCallback = receivedUserInfo => {
 			addToastAlert(AlertVariant.success, 'Login successful');
-			setUserInfo(receivedUserInfo.data);
+			setUserInfo(receivedUserInfo);
 
-			localStorage.setItem('login', JSON.stringify(receivedUserInfo.data));
+			localStorage.setItem('login', JSON.stringify(receivedUserInfo));
 			closeModal();
 		}
 
@@ -57,7 +57,7 @@ const Wrapper = ({ children, userInfo, setUserInfo }) => {
 		}
 
 		sendLoginRequest({
-			user: login,
+			username: login,
 			password
 		}, successCallback, errorCallback);
 	}
@@ -72,7 +72,7 @@ const Wrapper = ({ children, userInfo, setUserInfo }) => {
 					addToastAlert(AlertVariant.success, "Logout successful")
 					location.href = "/";
 				}}>
-				Odhlásiť sa
+				Log out
 			</DropdownItem>
 		</DropdownGroup>
 	];

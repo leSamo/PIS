@@ -73,7 +73,7 @@ export const useAction = (endpoint, userInfo = {}) => {
 	const action = (data, successCallback, errorCallback) =>
 		axios.post(
 			endpoint,
-			{ ...data, username: userInfo.username },
+			{ ...data },
 			userInfo.token && { headers: { 'Authorization': `Bearer ${userInfo.token}` } })
 			.then(response => successCallback?.(response))
 			.catch(error => errorCallback?.(error));
