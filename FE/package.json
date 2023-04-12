@@ -2,6 +2,7 @@
   "name": "pis",
   "version": "0.1.0",
   "private": true,
+  "proxy": "http://localhost:5000",
   "dependencies": {
     "@patternfly/react-core": "^4.276.6",
     "@patternfly/react-icons": "^4.93.6",
@@ -24,6 +25,7 @@
   "scripts": {
     "start": "node src/server.js",
     "build": "react-scripts build",
+    "start:app": "react-scripts start",
     "lint": "npx eslint src/components/**/*.js",
     "lint:fix": "npx eslint src/components/**/*.js --fix"
   },

@@ -7,7 +7,7 @@ import {
 } from "react-router-dom";
 import Wrapper from './Wrapper';
 import IndexPage from './IndexPage';
-import LaddersPage from './LaddersPage';
+import UserManagementPage from './UserManagementPage';
 
 const App = () => {
   const [userInfo, setUserInfo] = useState({});
@@ -20,9 +20,9 @@ const App = () => {
             <IndexPage />
           </Wrapper>
         </Route>
-        <Route exact path="/ladders">
+        <Route exact path="/userManagement">
           <Wrapper navIndex={1} userInfo={userInfo} setUserInfo={setUserInfo}>
-            <LaddersPage />
+            <UserManagementPage />
           </Wrapper>
         </Route>
       </Switch>

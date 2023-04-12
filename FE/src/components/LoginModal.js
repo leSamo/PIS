@@ -14,15 +14,15 @@ const LoginModal = ({ isOpen, setOpen, loginCallback }) => {
   return (
     <Modal
       variant={ModalVariant.small}
-      title="Prihlásenie"
+      title="Log in"
       isOpen={isOpen}
       onClose={closeModal}
       actions={[
-        <Button key="confirm" variant="primary" onClick={() => { loginCallback(usernameValue, passwordValue, closeModal); }} isDisabled={!usernameValue || !passwordValue}>Prihlásiť sa</Button>,
-        <Button key="cancel" variant="link" onClick={closeModal}>Zrušiť</Button>
+        <Button key="confirm" variant="primary" onClick={() => { loginCallback(usernameValue, passwordValue, closeModal); }} isDisabled={!usernameValue || !passwordValue}>Log in</Button>,
+        <Button key="cancel" variant="link" onClick={closeModal}>Cancel</Button>
       ]}>
       <Form>
-        <FormGroup label="Používateľské meno" isRequired>
+        <FormGroup label="User name" isRequired>
           <TextInput
             isRequired
             id="login-username"
@@ -31,7 +31,7 @@ const LoginModal = ({ isOpen, setOpen, loginCallback }) => {
 						onChange={value => setUsernameValue(value)}
           />
         </FormGroup>
-        <FormGroup label="Heslo" isRequired>
+        <FormGroup label="Password" isRequired>
           <TextInput
             isRequired
             id="login-password"

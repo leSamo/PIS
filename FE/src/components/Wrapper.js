@@ -8,6 +8,7 @@ import LoginModal from './LoginModal'
 import logo from './logo.png';
 import { useAction } from '../helpers/Hooks';
 import { KeyIcon } from '@patternfly/react-icons';
+import { Link } from 'react-router-dom/cjs/react-router-dom';
 
 const Wrapper = ({ children, userInfo, setUserInfo }) => {
 	const [isDropdownOpen, setDropdownOpen] = useState(false);
@@ -44,7 +45,7 @@ const Wrapper = ({ children, userInfo, setUserInfo }) => {
 
 	const loginUser = async (login, password, closeModal) => {
 		const successCallback = receivedUserInfo => {
-			addToastAlert(AlertVariant.success, 'Prihlásenie bolo úspešné');
+			addToastAlert(AlertVariant.success, 'Login successful');
 			setUserInfo(receivedUserInfo.data);
 
 			localStorage.setItem('login', JSON.stringify(receivedUserInfo.data));
@@ -52,7 +53,7 @@ const Wrapper = ({ children, userInfo, setUserInfo }) => {
 		}
 
 		const errorCallback = error => {
-			addToastAlert(AlertVariant.danger, 'Prihlásenie nebolo úspešné', error.response.data);
+			addToastAlert(AlertVariant.danger, 'Login failed', error.response.data);
 		}
 
 		sendLoginRequest({
@@ -68,7 +69,7 @@ const Wrapper = ({ children, userInfo, setUserInfo }) => {
 				onClick={() => {
 					setUserInfo({});
 					localStorage.removeItem('login');
-					addToastAlert(AlertVariant.success, "Odhlásenie bolo úspešné")
+					addToastAlert(AlertVariant.success, "Logout successful")
 					location.href = "/";
 				}}>
 				Odhlásiť sa
@@ -76,7 +77,7 @@ const Wrapper = ({ children, userInfo, setUserInfo }) => {
 		</DropdownGroup>
 	];
 
-	const userDropdown = (
+	const headerRightPanel = (
 		<PageHeaderTools>
 			{userInfo.username
 				? <Dropdown
@@ -91,10 +92,12 @@ const Wrapper = ({ children, userInfo, setUserInfo }) => {
 				/>
 				: <Split hasGutter>
 					<SplitItem>
-						<Button variant="tertiary" onClick={() => setLoginModalOpen(true)}>Prihlásiť sa</Button>
+						<Button variant="tertiary" onClick={() => setLoginModalOpen(true)}>Log in</Button>
 					</SplitItem>
 					<SplitItem>
-						<Button variant="tertiary" onClick={() => {}}>Spravovať používateľov <KeyIcon/></Button>
+					<Link to="/userManagement">
+						<Button variant="tertiary" onClick={() => {}}>User management <KeyIcon style={{ marginLeft: 4, verticalAlign: -2 }}/></Button>
+					</Link>
 					</SplitItem>
 				</Split>
 			}
@@ -103,8 +106,8 @@ const Wrapper = ({ children, userInfo, setUserInfo }) => {
 
 	const header = (
 		<PageHeader
-			logo={<Brand src={logo} alt="Fituška v2" />}
-			headerTools={userDropdown}
+			logo={<Brand src={logo} alt="FIT CAL" />}
+			headerTools={headerRightPanel}
 		/>
 	);
 

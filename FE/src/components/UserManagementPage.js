@@ -1,32 +1,43 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import {
-    Card, CardBody, TextContent, Text, TextVariants, AlertVariant, ButtonVariant
+    Card, CardBody, TextContent, Text, TextVariants, AlertVariant, ButtonVariant, Button, SplitItem, Split
 } from '@patternfly/react-core';
-import { useAction, useFetch } from '../helpers/Hooks';
+import { useAction } from '../helpers/Hooks';
 import Table from './Table';
-import Username from './Username';
+import axios from 'axios';
+import { Link } from 'react-router-dom/cjs/react-router-dom';
+import NewUserModal from './NewUserModal';
 
-const UserManagementPage = ({ addToastAlert, userInfo }) => {
+const UserManagementPage = ({ addToastAlert }) => {
     const COLUMNS = [
-        { label: 'Používateľské meno', link: user => `/users/${user}` },
-        { label: 'Email' },
-        { label: 'Počet otázok' },
-        { label: 'Počet odpovedí' },
-        { label: 'Body' },
-        { label: 'Registrácia', type: 'date' },
-        { label: 'Rola' },
-        { label: 'Posledná aktivita', type: 'date' }
+        { label: 'User name' },
+        { label: 'Full name' },
+        { label: 'Email address' },
+        { label: 'Role' },
+        { label: 'Registered', type: 'date' },
+        { label: 'Last activity', type: 'date' }
     ];
 
-    const [{ data, meta }, isLoading, refresh, { sortBy, onSort }, { page, perPage, onSetPage, onPerPageSelect }] = useFetch('/allUsers', userInfo, sortIndex => sortIndex + 1);
+    const [isLoading, setLoading] = useState(true);
+    const [isNewUserModalOpen, setNewUserModalOpen] = useState(false);
+    const [data, setData] = useState([]);
+    const [refreshCounter, setRefreshCounter] = useState(0);
 
-    const deleteUser = useAction('/removeUser', userInfo);
+    useEffect(() => {
+        console.log("refresh");
+        axios.get("/allUsers").then(response => {
+            setData(response.data.map(row => [row.username, row.fullname, row.email, row.role, row.registered, row.lastActivity]));
+            setLoading(false);
+        })
+    }, [refreshCounter]);
+
+    const deleteUser = useAction('/removeUser', {});
 
     const deleteUserAction = name => {
-        if (confirm(`Naozaj chcete odstrániť používateľa ${name}? Otázky, odpovede a kurzy vytvorené používateľom vymazané nebudú.`)) {
+        if (confirm(`Are you sure you want to remove ${name}?`)) {
             const callback = () => {
-                addToastAlert(AlertVariant.success, `Používateľ "${name}" bol odstránený`);
-                refresh();
+                addToastAlert(AlertVariant.success, `User "${name}" was successfully deleted`);
+                setRefreshCounter(refreshCounter + 1);
             }
 
             deleteUser({ user: name }, callback);
@@ -35,32 +46,46 @@ const UserManagementPage = ({ addToastAlert, userInfo }) => {
 
     return (
         <Card>
+            <NewUserModal isOpen={isNewUserModalOpen} setOpen={setNewUserModalOpen} />
             <CardBody>
+                <Split>
+                    <SplitItem>
+                        <Link to="/">
+                            <Button variant={ButtonVariant.secondary}>Go back</Button>
+                        </Link>
+                    </SplitItem>
+                    <SplitItem isFilled />
+                    <SplitItem>
+                        <Button variant={ButtonVariant.primary} onClick={() => setNewUserModalOpen(true)}>Add new user</Button>
+                    </SplitItem>
+                </Split>
+                <br />
+                <br />
                 <Table
                     title={
                         <TextContent>
                             <Text component={TextVariants.h1}>
-                                Registrovaní používatelia
+                                Registered users
                             </Text>
                         </TextContent>
                     }
-                    rows={data?.map(([preferredBadge, username, ...rest]) => [<Username achievementId={preferredBadge} key={username}>{username}</Username>, ...rest])}
+                    rows={data}
                     columns={COLUMNS}
                     isLoading={isLoading}
                     actions={[{
-                        label: 'Odstrániť',
-                        onClick: user => deleteUserAction(user.key),
+                        label: 'Remove',
+                        onClick: user => deleteUserAction(user),
                         buttonProps: {
                             variant: ButtonVariant.danger
                         }
                     }]}
-                    sortBy={sortBy}
-                    onSort={onSort}
-                    page={page}
-                    perPage={perPage}
-                    itemCount={meta?.itemCount}
-                    onSetPage={onSetPage}
-                    onPerPageSelect={onPerPageSelect}
+                    sortBy={null}
+                    onSort={() => { }}
+                    page={1}
+                    perPage={20}
+                    itemCount={data?.length}
+                    onSetPage={() => { }}
+                    onPerPageSelect={() => { }}
                 />
             </CardBody>
         </Card>
