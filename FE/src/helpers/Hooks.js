@@ -89,11 +89,11 @@ export const useActionWithFile = (endpoint, userInfo = {}) => {
 		if (file) {
 			const read = new FileReader();
 			read.readAsBinaryString(file);
-	
+
 			read.onloadend = () => {
 				axios.post(
 					endpoint,
-					{...data, file: btoa(read.result)},
+					{ ...data, file: btoa(read.result) },
 					userInfo.token && { headers: { 'Authorization': `Bearer ${userInfo.token}` } })
 					.then(response => successCallback?.(response))
 					.catch(error => errorCallback?.(error));

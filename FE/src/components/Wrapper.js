@@ -95,9 +95,9 @@ const Wrapper = ({ children, userInfo, setUserInfo }) => {
 						<Button variant="tertiary" onClick={() => setLoginModalOpen(true)}>Log in</Button>
 					</SplitItem>
 					<SplitItem>
-					<Link to="/userManagement">
-						<Button variant="tertiary" onClick={() => {}}>User management <KeyIcon style={{ marginLeft: 4, verticalAlign: -2 }}/></Button>
-					</Link>
+						<Link to="/userManagement">
+							<Button variant="tertiary" onClick={() => { }}>User management <KeyIcon style={{ marginLeft: 4, verticalAlign: -2 }} /></Button>
+						</Link>
 					</SplitItem>
 				</Split>
 			}

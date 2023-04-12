@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Form, FormGroup, TextInput, Alert, TextArea, Modal, ModalVariant, Button, TimePicker, DatePicker, Split, SplitItem } from '@patternfly/react-core';
+import { Form, FormGroup, TextInput, TextArea, Modal, ModalVariant, Button, TimePicker, DatePicker, Split, SplitItem } from '@patternfly/react-core';
 
 const NewEventModal = ({ isOpen, setOpen, createCallback }) => {
     const [eventTitle, setEventTitle] = useState('');

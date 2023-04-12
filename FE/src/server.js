@@ -41,7 +41,7 @@ app.get('/allUsers', async (req, res) => {
 });
 
 app.get('/allUserNames', async (req, res) => {
-  res.status(200).send(USERS.map(user => ({username: user.username, fullname: user.fullname })));
+  res.status(200).send(USERS.map(user => ({ username: user.username, fullname: user.fullname })));
 });
 
 app.get('/allEvents', async (req, res) => {
@@ -85,7 +85,7 @@ app.post('/removeUser', async (req, res) => {
   if (indexToDelete !== -1) {
     USERS.splice(indexToDelete, 1);
   }
-  
+
   console.log("Deleted", userToDelete);
   res.sendStatus(200);
 })

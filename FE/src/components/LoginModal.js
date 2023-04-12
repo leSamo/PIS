@@ -3,13 +3,13 @@ import { Form, FormGroup, TextInput, Button, Modal, ModalVariant, TextInputTypes
 
 const LoginModal = ({ isOpen, setOpen, loginCallback }) => {
   const [usernameValue, setUsernameValue] = useState('');
-	const [passwordValue, setPasswordValue] = useState('');
+  const [passwordValue, setPasswordValue] = useState('');
 
   const closeModal = () => {
-		setUsernameValue('')
-		setPasswordValue('')
-		setOpen(false)
-	}
+    setUsernameValue('')
+    setPasswordValue('')
+    setOpen(false)
+  }
 
   return (
     <Modal
@@ -28,7 +28,7 @@ const LoginModal = ({ isOpen, setOpen, loginCallback }) => {
             id="login-username"
             name="login-username"
             value={usernameValue}
-						onChange={value => setUsernameValue(value)}
+            onChange={value => setUsernameValue(value)}
           />
         </FormGroup>
         <FormGroup label="Password" isRequired>
@@ -37,7 +37,7 @@ const LoginModal = ({ isOpen, setOpen, loginCallback }) => {
             id="login-password"
             name="login-password"
             value={passwordValue}
-						onChange={value => setPasswordValue(value)}
+            onChange={value => setPasswordValue(value)}
             type={TextInputTypes.password}
           />
         </FormGroup>
