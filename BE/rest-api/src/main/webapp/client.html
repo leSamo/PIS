@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>AJAX client</title>
+  <meta charset="utf-8">
+  <script src="http://ajax.googleapis.com/ajax/libs/jquery/1/jquery.min.js" type="text/javascript"></script>
+  <style>
+  body {
+    font-family: sans-serif;
+  }
+  th {
+    text-align: left;
+    background-color: #aaf;
+  }
+  td {
+    background-color: #ffa;
+  }
+  </style>
+</head>
+<body>
+<h1>List of people</h1>
+<form id="reloadform">
+    <input id="reload" type="button" value="Reload">
+</form>
+
+<table>
+  <thead>
+    <tr><th>Name</th><th>Surname</th><th>Born</th></tr>
+  </thead>
+  <tbody id="result">
+  </tbody>
+</table>
+
+<h2>Add or edit</h2>
+<form id="editform">
+<label for="fid">ID</label> <input type="text" id="fid"><br>
+<label for="fname">Name</label> <input type="text" id="fname"><br>
+<label for="fsurname">Surname</label> <input type="text" id="fsurname"><br>
+<label for="fborn">Born</label> <input type="text" id="fborn"><br>
+<input type="submit" value="Save">
+</form>
+
+
+<script type="text/javascript">
+var baseUrl = location.protocol + '//' + location.host + '/rest-api/rest/people';
+
+function loadPeople(tab)
+{
+    var url = baseUrl + '/list';
+    //console.log(url);
+    jQuery.getJSON(url,
+	      function (data) {
+		  tab.empty();
+		  for (var i = 0; i < data.length; i++) {
+		      tab.append('<tr><td>'+data[i].name+'</td><td>'+data[i].surname+'</td><td>'+data[i].born+'</td></tr>');
+                  }
+	    }
+    );
+}
+
+$(function() {
+    $('#reload').click(function() {
+    	var tab = $('#result');
+        loadPeople(tab);
+    });
+    $('#editform').submit(function() {
+    	var data = {
+    		id: Number($('#fid').val()),
+    		name: $('#fname').val(),
+    		surname: $('#fsurname').val(),
+    		born: $('#fborn').val()
+    	};
+    	console.log(data);
+    	
+    	$.ajax({
+    	    type: "POST",
+    	    url: baseUrl,
+    	    contentType: "application/json",
+    	    data: JSON.stringify(data)
+    	}).success(function() {
+    		alert('OK!')
+    	}).error(function(msg) {
+    		alert('Error: ' + msg);
+    	});
+    	
+    	return false;
+    });
+});
+
+</script>
+
+</body>
+</html>
