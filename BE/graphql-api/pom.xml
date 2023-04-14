@@ -3,14 +3,14 @@
     <modelVersion>4.0.0</modelVersion>
     
     <parent>
-        <artifactId>jakartaee-basic</artifactId>
+        <artifactId>pis-calendar</artifactId>
         <groupId>cz.xoleks00.pis</groupId>
-        <version>1.0-SNAPSHOT</version>
+        <version>1.0</version>
     </parent>
     <artifactId>graphql-api</artifactId>
     <packaging>war</packaging>
     
-    <name>Jakarta EE GraphQL API Demo</name>
+    <name>Jakarta EE GraphQL API for PIS calendar</name>
 
     <properties>
         <maven.compiler.source>11</maven.compiler.source>
