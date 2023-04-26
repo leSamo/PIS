@@ -7,6 +7,7 @@ import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
 import jakarta.transaction.Transactional;
 import cz.xoleks00.pis.data.Event;
+import jakarta.persistence.TypedQuery;
 
 /**
  * Event manager EJB
@@ -53,5 +54,11 @@ public class EventManager {
      */
     public List<Event> findAll() {
         return em.createNamedQuery("Event.findAll", Event.class).getResultList();
+    }
+
+    public List<Event> findEventsByUserId(long userId) {
+        TypedQuery<Event> query = em.createQuery("SELECT e FROM Event e WHERE e.creator.id = :userId", Event.class);
+        query.setParameter("userId", userId);
+        return query.getResultList();
     }
 }
