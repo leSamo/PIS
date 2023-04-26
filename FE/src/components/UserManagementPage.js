@@ -24,7 +24,6 @@ const UserManagementPage = ({ addToastAlert }) => {
     const [refreshCounter, setRefreshCounter] = useState(0);
 
     useEffect(() => {
-        console.log("refresh");
         axios.get("/allUsers").then(response => {
             setData(response.data.map(row => [row.username, row.fullname, row.email, row.role, row.isUserAdmin, row.registered]));
             setLoading(false);

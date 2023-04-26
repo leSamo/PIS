@@ -8,6 +8,7 @@ import {
 import Wrapper from './Wrapper';
 import IndexPage from './IndexPage';
 import UserManagementPage from './UserManagementPage';
+import './index.css';
 
 const App = () => {
   const [userInfo, setUserInfo] = useState({});

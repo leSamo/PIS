@@ -3,12 +3,15 @@ import { Card, CardBody, Dropdown, DropdownToggle, DropdownItem, Flex, FlexItem,
 import NewEventModal from './NewEventModal';
 import axios from 'axios';
 import Week from './Week';
+import { AngleLeftIcon, AngleRightIcon } from '@patternfly/react-icons';
 
 const IndexPage = () => {
     const [isNewEventModalOpen, setNewEventModalOpen] = useState(false);
     const [allUsers, setAllUsers] = React.useState([]);
     const [isDropdownOpen, setIsDropdownOpen] = React.useState(false);
     const [isTypeaheadOpen, setTypeaheadOpen] = useState(false);
+    const [leftButtonClickCount, setLeftButtonClickCount] = useState(0);
+    const [rightButtonClickCount, setRightButtonClickCount] = useState(0);
     const [selectedUsers, setSelectedUsers] = useState([]);
 
     useEffect(() => {
@@ -36,7 +39,7 @@ const IndexPage = () => {
         </DropdownItem>
     ];
 
-    const onTypeaheadSelect = (event, selection) => {
+    const onTypeaheadSelect = (_, selection) => {
         const index = selectedUsers.indexOf(selection);
 
         if (index === -1) {
@@ -83,8 +86,8 @@ const IndexPage = () => {
                 setOpen={setNewEventModalOpen}
                 createCallback={createCallback}
             />
-            <CardBody>
-                <Toolbar isSticky>
+            <CardBody style={{ paddingTop: 0 }}>
+                <Toolbar isSticky style={{ paddingLeft: 16, paddingRight: 16 }}>
                     <Flex>
                         <FlexItem>
                             <Select
@@ -120,11 +123,21 @@ const IndexPage = () => {
                             />
                         </FlexItem>
                         <FlexItem>
-                            <Button variant={ButtonVariant.primary} onClick={() => setNewEventModalOpen(true)}>Add event</Button>
+                            <Button variant={ButtonVariant.primary} onClick={() => setNewEventModalOpen(true)}>Create event</Button>
+                        </FlexItem>
+                        <FlexItem>
+                            <Button variant="secondary" onClick={() => setLeftButtonClickCount(leftButtonClickCount + 1)}>
+                                <AngleLeftIcon />
+                            </Button>
+                        </FlexItem>
+                        <FlexItem>
+                            <Button variant="secondary" onClick={() => setRightButtonClickCount(rightButtonClickCount + 1)}>
+                                <AngleRightIcon />
+                            </Button>
                         </FlexItem>
                     </Flex>
-                    </Toolbar>
-                <Week />
+                </Toolbar>
+                <Week leftButtonClickCount={leftButtonClickCount} rightButtonClickCount={rightButtonClickCount}/>
             </CardBody>
         </Card>
     );
