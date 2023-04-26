@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Card, CardBody, Dropdown, DropdownToggle, DropdownItem, Flex, FlexItem, Button, ButtonVariant, Select, SelectVariant, SelectOption } from '@patternfly/react-core';
+import { Card, CardBody, Dropdown, DropdownToggle, DropdownItem, Flex, FlexItem, Button, ButtonVariant, Select, SelectVariant, SelectOption, Toolbar } from '@patternfly/react-core';
 import NewEventModal from './NewEventModal';
 import axios from 'axios';
 import Week from './Week';
@@ -77,51 +77,53 @@ const IndexPage = () => {
     };
 
     return (
-        <Card style={{ height: "100%", overflow: "hidden" }}>
+        <Card>
             <NewEventModal
                 isOpen={isNewEventModalOpen}
                 setOpen={setNewEventModalOpen}
                 createCallback={createCallback}
             />
             <CardBody>
-                <Flex>
-                    <FlexItem>
-                        <Select
-                            chipGroupProps={{ numChips: 1, expandedText: 'Hide', collapsedText: 'Show ${remaining}' }}
-                            variant={SelectVariant.typeaheadMulti}
-                            onToggle={newState => setTypeaheadOpen(newState)}
-                            onSelect={onTypeaheadSelect}
-                            onClear={clearTypeaheadSelection}
-                            selections={selectedUsers}
-                            isOpen={isTypeaheadOpen}
-                            onFilter={typeaheadFilter}
-                            placeholderText="Show calendar of"
-                        >
-                            {allUsers.map((option, index) => (
-                                <SelectOption
-                                    key={index}
-                                    value={option.email}
-                                    description={option.fullname}
-                                />
-                            ))}
-                        </Select>
-                    </FlexItem>
-                    <FlexItem>
-                        <Dropdown
-                            onSelect={onDropdownSelect}
-                            toggle={
-                                <DropdownToggle id="view-dropdown-toggle" onToggle={onDropdownToggle}>
-                                    Toggle view
-                                </DropdownToggle>
-                            }
-                            isOpen={isDropdownOpen}
-                            dropdownItems={dropdownItems}
-                        />
-                    </FlexItem>
-                    <FlexItem>
-                        <Button variant={ButtonVariant.primary} onClick={() => setNewEventModalOpen(true)}>Add event</Button>
-                    </FlexItem>
-                </Flex>
+                <Toolbar isSticky>
+                    <Flex>
+                        <FlexItem>
+                            <Select
+                                chipGroupProps={{ numChips: 1, expandedText: 'Hide', collapsedText: 'Show ${remaining}' }}
+                                variant={SelectVariant.typeaheadMulti}
+                                onToggle={newState => setTypeaheadOpen(newState)}
+                                onSelect={onTypeaheadSelect}
+                                onClear={clearTypeaheadSelection}
+                                selections={selectedUsers}
+                                isOpen={isTypeaheadOpen}
+                                onFilter={typeaheadFilter}
+                                placeholderText="Show calendar of"
+                            >
+                                {allUsers.map((option, index) => (
+                                    <SelectOption
+                                        key={index}
+                                        value={option.email}
+                                        description={option.fullname}
+                                    />
+                                ))}
+                            </Select>
+                        </FlexItem>
+                        <FlexItem>
+                            <Dropdown
+                                onSelect={onDropdownSelect}
+                                toggle={
+                                    <DropdownToggle id="view-dropdown-toggle" onToggle={onDropdownToggle}>
+                                        Toggle view
+                                    </DropdownToggle>
+                                }
+                                isOpen={isDropdownOpen}
+                                dropdownItems={dropdownItems}
+                            />
+                        </FlexItem>
+                        <FlexItem>
+                            <Button variant={ButtonVariant.primary} onClick={() => setNewEventModalOpen(true)}>Add event</Button>
+                        </FlexItem>
+                    </Flex>
+                    </Toolbar>
                 <Week />
             </CardBody>
         </Card>

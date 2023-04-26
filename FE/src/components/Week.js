@@ -1,10 +1,12 @@
-import React from 'react';
+import React, { Fragment, useEffect, useState } from 'react';
 import '@patternfly/react-core/dist/styles/base.css';
 import { Split, SplitItem } from '@patternfly/react-core';
 
 const WEEKDAYS = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"]
 
 const Week = () => {
+    const [splitWidth, setSplitWidth] = useState(0);
+
     const today = new Date();
 
     // Get the first day of the week (Sunday)
@@ -20,20 +22,46 @@ const Week = () => {
         weekDays.push(day);
     }
 
+    useEffect(() => {
+        setSplitWidth(document.querySelector("#week-split").clientWidth);
+
+        function handleResize() {
+            setSplitWidth(document.querySelector("#week-split").clientWidth);
+        }
+    
+        window.addEventListener("resize", handleResize);
+    
+        return () => window.removeEventListener("resize", handleResize);
+      }, []);
 
     return (
-        <Split hasGutter style={{ width: "100%", display: "flex", height: "100%", marginTop: "16px" }}>
-            <SplitItem style={{ flex: 1, height: "100%", overflow: "auto" }}>
-                Left panel
+        <Split id="week-split" hasGutter style={{ width: "100%", display: "flex", marginTop: "64px" }}>
+            <SplitItem style={{ flex: 1, height: 1200 }}>
+                <div style={{ textAlign: "center", height: 48 }}>Week 19</div>
+                {
+                    [...Array(24).keys()].map(hour =>
+                        <Fragment key={hour}>
+                            <div style={{ position: "relative", height: 0 }}>
+                                <div style={{ width: splitWidth, position: "absolute", height: 0, border: "2px solid gray" }} />
+                            </div>
+                            <div style={{ height: 48, color: "gray" }}>
+                                {String(hour).padStart(2, '0')}:00
+                            </div>
+                            {/*<div style={{ height: 48, position: "absolute", width: "100%", padding: 0, margin: 0, border: "2px solid gray" }} />*/}
+                        </Fragment>
+                    )
+                }
+
             </SplitItem>
             {WEEKDAYS.map((weekday, index) => (
-                <SplitItem key={weekday} style={{ flex: 1, height: "100%", overflow: "auto", border: "1px solid black" }}>
-                    <div style={{ textAlign: "center" }}>{weekday}</div>
-                    <div style={{ textAlign: "center" }}>{weekDays[index].getDate()}</div>
+                <SplitItem key={weekday} style={{ flex: 1, height: 1200, border: "1px solid black" }}>
+                    <div style={{ textAlign: "center", height: 24 }}>{weekday}</div>
+                    <div style={{ textAlign: "center", height: 24 }}>{weekDays[index].getDate()}</div>
+                    <div style={{ backgroundColor: "red", height: 48 * 2, width: "100%", padding: 2 }}>
+                        Event name
+                    </div>
                 </SplitItem>
-            ))
-
-            }
+            ))}
         </Split>
     );
 };
