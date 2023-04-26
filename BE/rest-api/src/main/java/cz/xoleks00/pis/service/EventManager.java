@@ -1,6 +1,3 @@
-/**
- * 
- */
 package cz.xoleks00.pis.service;
 
 import java.util.List;
@@ -11,42 +8,50 @@ import jakarta.persistence.PersistenceContext;
 import jakarta.transaction.Transactional;
 import cz.xoleks00.pis.data.Event;
 
-
 /**
- * Person manager EJB
- * @author burgetr
+ * Event manager EJB
  */
 @RequestScoped
-public class EventManager 
-{
+public class EventManager {
     @PersistenceContext
     private EntityManager em;
 
-    public EventManager() 
-    {
+    public EventManager() {
     }
     
+    /**
+     * Save or update an event.
+     * @param e The event to save or update.
+     * @return The saved or updated event.
+     */
     @Transactional
-    public Event save(Event p)
-    {
-    	return em.merge(p);
+    public Event save(Event e) {
+        return em.merge(e);
     }
-	
+    
+    /**
+     * Remove an event.
+     * @param e The event to remove.
+     */
     @Transactional
-    public void remove(Event p)
-    {
-    	em.remove(em.merge(p));
+    public void remove(Event e) {
+        em.remove(em.merge(e));
     }
     
-
-    public Event find(long id)
-    {
-    	return em.find(Event.class, id);
+    /**
+     * Find an event by its id.
+     * @param id The id of the event to find.
+     * @return The event with the given id or null if not found.
+     */
+    public Event find(long id) {
+        return em.find(Event.class, id);
     }
     
-    public List<Event> findAll()
-    {
-    	return em.createNamedQuery("Event.findAll", Event.class).getResultList();
+    /**
+     * Find all events.
+     * @return A list of all events.
+     */
+    public List<Event> findAll() {
+        return em.createNamedQuery("Event.findAll", Event.class).getResultList();
     }
-
 }
