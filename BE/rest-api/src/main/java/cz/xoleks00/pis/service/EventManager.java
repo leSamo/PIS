@@ -61,4 +61,18 @@ public class EventManager {
         query.setParameter("userId", userId);
         return query.getResultList();
     }
+
+    @Transactional
+    public void removeById(long id) {
+        Event event = em.find(Event.class, id);
+        if (event != null) {
+            em.remove(event);
+        }
+    }
+    
+
+    @Transactional
+    public Event findById(long id) {
+        return em.find(Event.class, id);
+    }
 }

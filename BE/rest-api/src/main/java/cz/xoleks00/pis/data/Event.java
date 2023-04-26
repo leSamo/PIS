@@ -33,8 +33,6 @@ public class Event {
     private Date start;
     @Temporal(TemporalType.TIMESTAMP)
     private Date eventEnd;
-    @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
-    @JoinColumn(name = "creator_id")
     private Person creator;
     private String name;
     private String place;

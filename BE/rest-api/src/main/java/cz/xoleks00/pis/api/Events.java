@@ -19,6 +19,7 @@ import jakarta.ws.rs.core.UriInfo;
 import cz.xoleks00.pis.data.Event;
 import cz.xoleks00.pis.service.EventManager;
 import cz.xoleks00.pis.service.PersonManager;
+import jakarta.ws.rs.DELETE;
 
 @Path("/events")
 public class Events {
@@ -62,4 +63,19 @@ public class Events {
     public List<Event> getEventsForUser(@PathParam("userId") long userId) {
         return evntMgr.findEventsByUserId(userId);
     }
+
+
+    @DELETE
+    @Path("/{id}")
+    public Response deleteEvent(@PathParam("id") long id) {
+        Event event = evntMgr.findById(id);
+        if (event == null) {
+            return Response.status(Response.Status.NOT_FOUND).entity("Event not found for ID: " + id).build();
+        }
+        evntMgr.removeById(id);
+        return Response.noContent().build();
+    }
+
+    
+
 }
