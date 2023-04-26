@@ -1,17 +1,17 @@
 package cz.xoleks00.pis.data;
 
-import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Date;
 
-import jakarta.json.bind.annotation.JsonbTransient;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
 import jakarta.persistence.NamedQueries;
 import jakarta.persistence.NamedQuery;
-import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 import jakarta.persistence.Temporal;
 import jakarta.persistence.TemporalType;
@@ -20,106 +20,91 @@ import jakarta.persistence.TemporalType;
 @Entity
 @Table(name = "Event")
 @NamedQueries({
-    @NamedQuery(name="Event.findAll", query="SELECT p FROM Event p"),
+    @NamedQuery(name="Event.findAll", query="SELECT e FROM Event e"),
     @NamedQuery(name="Event.findByName",
-                query="SELECT p FROM Event p WHERE p.name = :name")
+                query="SELECT e FROM Event e WHERE e.name = :name")
 })
-public class Event
-{
+public class Event {
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
-	private String name;
-    private String surname;
-    @Temporal(TemporalType.DATE)
-    //@JsonbDateFormat("yyyy-MM-dd z")
-    private Date born;
+    private String title;
+    @Temporal(TemporalType.TIMESTAMP)
+    private Date start;
+    @Temporal(TemporalType.TIMESTAMP)
+    private Date eventEnd;
+    private Person creator;
+    private String name;
+    private String place;
+    private String description;
 
-    @JsonbTransient
-	private Collection<Car> cars;
-
-    public Event()
-    {
-        cars = new ArrayList<>();
-    }
-    
-    public Collection<Car> getCars()
-    {
-        return cars;
-    }
-
-    public void setCars(Collection<Car> cars)
-    {
-        this.cars = cars;
-    }
-
-    /**
-     * @return the name
-     */
-    public String getName()
-    {
-        return name;
-    }
-    
-    /**
-     * @param name the name to set
-     */
-    public void setName(String name)
-    {
-        this.name = name;
-    }
-    
-    /**
-     * @return the surname
-     */
-    public String getSurname()
-    {
-        return surname;
-    }
-    
-    /**
-     * @param surname the surname to set
-     */
-    public void setSurname(String surname)
-    {
-        this.surname = surname;
-    }
-    
-    /**
-     * @return the rc
-     */
-    public long getId()
-    {
+    public long getId() {
         return id;
     }
-    
-    /**
-     * @param rc the rc to set
-     */
-    public void setId(long id)
-    {
+
+    public void setId(long id) {
         this.id = id;
     }
-    
-    /**
-     * @return the born
-     */
-    public Date getBorn()
-    {
-        return born;
+
+    public String getTitle() {
+        return title;
     }
-    
-    /**
-     * @param born the born to set
-     */
-    public void setBorn(Date born)
-    {
-        this.born = born;
+
+    public void setTitle(String title) {
+        this.title = title;
     }
-    
+
+    public Date getStart() {
+        return start;
+    }
+
+    public void setStart(Date start) {
+        this.start = start;
+    }
+
+    public Date getEnd() {
+        return eventEnd;
+    }
+
+    public void setEnd(Date eventEnd) {
+        this.eventEnd = eventEnd;
+    }
+
+    public Person getCreator() {
+        return creator;
+    }
+
+    public void setCreator(Person creator) {
+        this.creator = creator;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public String getPlace() {
+        return place;
+    }
+
+    public void setPlace(String place) {
+        this.place = place;
+    }
+
+    public String getDescription() {
+        return description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
+    }
+
     @Override
-    public String toString()
-    {
-        return "Person: " + name + " " + surname + "(" + cars.size() + " cars)";
+    public String toString() {
+        return "Event [id=" + id + ", title=" + title + ", start=" + start + ", end=" + eventEnd + ", creator=" + creator
+                + ", name=" + name + ", place=" + place + ", description=" + description + "]";
     }
-    
 }
