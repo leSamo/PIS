@@ -1,11 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<server description="jakarta starter server">
+<server description="rest api server">
 
-    <!-- Enable features -->
-    <featureManager>
-        <feature>jakartaee-9.1</feature>
-        <feature>microProfile-5.0</feature>
-    </featureManager>
+	<!-- Enable features -->
+	<featureManager>
+		<feature>microProfile-5.0</feature>
+		<feature>persistence-3.0</feature>
+		<feature>localConnector-1.0</feature>
+	</featureManager>
 
     <!-- This template enables security. To get the full use of all the capabilities, a keystore and user registry are required. -->
 
@@ -28,15 +29,27 @@
 
     <!-- To access this server from a remote client add a host attribute to the following element, e.g. host="*" -->
     <httpEndpoint id="defaultHttpEndpoint"
-                  httpPort="8080"
+                  httpPort="9080"
                   httpsPort="9443" />
 
     <!-- Automatically expand WAR files and EAR files -->
     <applicationManager autoExpand="true"/>
 
     <!-- Configures the application on a specified context root -->
-    <webApplication contextRoot="/pis-calendar" location="pis-calendar.war" />
+    <webApplication contextRoot="/rest-api" location="rest-api.war" />
 
     <!-- Default SSL configuration enables trust for default certificates from the Java runtime -->
     <ssl id="defaultSSLConfig" trustDefaultCerts="true" />
+    
+    <!-- Derby Library Configuration -->
+    <library id="derbyJDBCLib">
+	    <fileset dir="${shared.resource.dir}/" includes="derby*.jar" />
+    </library>
+
+    <!-- Datasource Configuration -->
+    <dataSource id="derbyjpadatasource" jndiName="jdbc/demo">
+        <jdbcDriver libraryRef="derbyJDBCLib" />
+        <properties.derby.embedded databaseName="DemoDB" createDatabase="create" />
+    </dataSource>
+    
 </server>
