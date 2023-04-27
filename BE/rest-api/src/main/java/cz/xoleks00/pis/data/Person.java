@@ -15,6 +15,8 @@ import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 import jakarta.persistence.Temporal;
 import jakarta.persistence.TemporalType;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
 
 
 @Entity
@@ -27,6 +29,7 @@ import jakarta.persistence.TemporalType;
 public class Person
 {
     @Id
+    @GeneratedValue(strategy = GenerationType.AUTO)
     private long id;
 	private String name;
     private String surname;
@@ -36,12 +39,21 @@ public class Person
     @OneToMany(cascade = { CascadeType.ALL }, fetch = FetchType.EAGER, mappedBy = "owner", orphanRemoval = true)
     @JsonbTransient
 	private Collection<Car> cars;
-
+    @OneToMany(cascade = { CascadeType.ALL }, fetch = FetchType.EAGER, mappedBy = "creator", orphanRemoval = false)
+    @JsonbTransient
+	private Collection<Event> events;
+    
     public Person()
     {
         cars = new ArrayList<>();
+        events = new ArrayList<>();
     }
     
+    public Collection<Event> getEvents()
+    {
+        return events;
+    }
+
     public Collection<Car> getCars()
     {
         return cars;

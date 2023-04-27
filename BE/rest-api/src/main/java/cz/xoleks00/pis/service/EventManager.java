@@ -1,6 +1,7 @@
 package cz.xoleks00.pis.service;
 
 import java.util.List;
+import java.util.Date;
 
 import jakarta.enterprise.context.RequestScoped;
 import jakarta.persistence.EntityManager;
@@ -75,4 +76,12 @@ public class EventManager {
     public Event findById(long id) {
         return em.find(Event.class, id);
     }
+
+    public List<Event> findEventsByDateRange(Date startDate, Date endDate) {
+        TypedQuery<Event> query = em.createQuery("SELECT e FROM Event e WHERE e.date >= :startDate AND e.date <= :endDate", Event.class);
+        query.setParameter("startDate", startDate);
+        query.setParameter("endDate", endDate);
+        return query.getResultList();
+    }
+
 }

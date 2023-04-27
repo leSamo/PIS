@@ -51,6 +51,10 @@ public class PersonManager
     {
     	return em.find(Person.class, id);
     }
+
+    public Person findById(long id) {
+    return em.find(Person.class, id);
+    }
     
     public List<Person> findAll()
     {
