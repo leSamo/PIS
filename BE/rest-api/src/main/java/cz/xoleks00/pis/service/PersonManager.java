@@ -7,7 +7,9 @@ import java.util.List;
 
 import jakarta.enterprise.context.RequestScoped;
 import jakarta.persistence.EntityManager;
+import jakarta.persistence.NoResultException;
 import jakarta.persistence.PersistenceContext;
+import jakarta.persistence.TypedQuery;
 import jakarta.transaction.Transactional;
 import cz.xoleks00.pis.data.Car;
 import cz.xoleks00.pis.data.Person;
@@ -45,6 +47,16 @@ public class PersonManager
     	p.getCars().add(c);
     	c.setOwner(p);
     	save(p);
+    }
+    
+    public Person findByUsername(String username) {
+        try {
+            TypedQuery<Person> query = em.createQuery("SELECT p FROM Person p WHERE p.username = :username", Person.class);
+            query.setParameter("username", username);
+            return query.getSingleResult();
+        } catch (NoResultException e) {
+            return null;
+        }
     }
     
     public Person find(long id)

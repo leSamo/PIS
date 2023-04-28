@@ -13,6 +13,8 @@ import jakarta.annotation.Resource;
 import java.util.Date;
 import java.util.List;
 
+import org.mindrot.jbcrypt.BCrypt;
+
 @WebListener
 public class SeedDataLoader implements ServletContextListener {
 
@@ -44,18 +46,24 @@ public class SeedDataLoader implements ServletContextListener {
                 Person person1 = new Person();
                 person1.setName("John");
                 person1.setSurname("Doe");
+                person1.setUsername("johnko");
+                person1.setPassword(BCrypt.hashpw("pswd", BCrypt.gensalt()));
                 person1.setBorn(new Date());
                 em.persist(person1);
 
                 Person person2 = new Person();
                 person2.setName("Samo");
                 person2.setSurname("Samovic");
+                person2.setUsername("samoo");
+                person2.setPassword(BCrypt.hashpw("pswd", BCrypt.gensalt()));
                 person2.setBorn(java.sql.Date.valueOf("1993-08-03"));
                 em.persist(person2);
 
                 Person person3 = new Person();
                 person3.setName("Michal");
                 person3.setSurname("Samovic");
+                person3.setUsername("michall");
+                person3.setPassword(BCrypt.hashpw("pswd", BCrypt.gensalt()));
                 person3.setBorn(java.sql.Date.valueOf("1993-08-03"));
                 em.persist(person3);
 

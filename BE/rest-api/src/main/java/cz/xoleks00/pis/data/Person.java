@@ -6,6 +6,7 @@ import java.util.Date;
 
 import jakarta.json.bind.annotation.JsonbTransient;
 import jakarta.persistence.CascadeType;
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.Id;
@@ -33,6 +34,9 @@ public class Person
     private long id;
 	private String name;
     private String surname;
+    @Column(nullable = false)
+    private String password;
+    private String username;
     @Temporal(TemporalType.DATE)
     //@JsonbDateFormat("yyyy-MM-dd z")
     private Date born;
@@ -126,6 +130,22 @@ public class Person
     public void setBorn(Date born)
     {
         this.born = born;
+    }
+
+    public String getPassword() {
+        return password;
+    }
+
+    public void setPassword(String password) {
+        this.password = password;
+    }
+
+    public String getUsername() {
+        return username;
+    }
+
+    public void setUsername(String username) {
+        this.username = username;
     }
     
     @Override
