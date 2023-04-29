@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Card, CardBody, Dropdown, DropdownToggle, DropdownItem, Flex, FlexItem, Button, ButtonVariant, Select, SelectVariant, SelectOption, Toolbar } from '@patternfly/react-core';
+import { Card, CardBody, Dropdown, DropdownToggle, DropdownItem, Flex, FlexItem, Button, ButtonVariant, Select, SelectVariant, SelectOption, Toolbar, Switch } from '@patternfly/react-core';
 import NewEventModal from './NewEventModal';
 import axios from 'axios';
 import Week from './Week';
@@ -19,6 +19,7 @@ const IndexPage = () => {
     const [doubleRightButtonClickCount, setDoubleRightButtonClickCount] = useState(0);
     const [selectedUsers, setSelectedUsers] = useState([]);
     const [selectedView, setSelectedView] = useState(WEEK_VIEW);
+    const [showMyOwnCalendar, setShowMyOwnCalendar] = useState(true);
 
     useEffect(() => {
         // TODO: Remove own self
@@ -143,6 +144,16 @@ const IndexPage = () => {
                             <Button variant="secondary" onClick={() => setDoubleRightButtonClickCount(doubleRightButtonClickCount + 1)}>
                                 <AngleDoubleRightIcon />
                             </Button>
+                        </FlexItem>
+                        <FlexItem style={{ marginLeft: "auto" }}>
+                            <Switch
+                                id="my-calendar-switch"
+                                label="Show my own calendar"
+                                labelOff="Don't show my own calendar"
+                                isChecked={showMyOwnCalendar}
+                                onChange={newValue => setShowMyOwnCalendar(newValue)}
+                                isReversed
+                            />
                         </FlexItem>
                     </Flex>
                 </Toolbar>

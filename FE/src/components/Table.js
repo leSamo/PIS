@@ -73,7 +73,7 @@ const Table = ({ title, columns, isLoading, rows, actions, sortBy, onSort, page,
                       : columns[cellIndex].type === 'date'
                         ? new Date(cell).toLocaleString("en-US")
                         : columns[cellIndex].type === 'boolean'
-                          ? (cell ? <CheckIcon /> : <TimesIcon />)
+                          ? (cell ? <CheckIcon color="green" /> : <TimesIcon color="red" />)
                           : cell ?? columns[cellIndex].fallback
                     }
                   </Td>

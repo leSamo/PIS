@@ -8,6 +8,7 @@ import axios from 'axios';
 import { Link } from 'react-router-dom/cjs/react-router-dom';
 import NewUserModal from './NewUserModal';
 import UserEditModal from './UserEditModal';
+import { AngleLeftIcon } from '@patternfly/react-icons';
 
 const UserManagementPage = ({ addToastAlert }) => {
     const COLUMNS = [
@@ -66,7 +67,7 @@ const UserManagementPage = ({ addToastAlert }) => {
                 <Split>
                     <SplitItem>
                         <Link to="/">
-                            <Button variant={ButtonVariant.secondary}>Go back</Button>
+                            <Button variant={ButtonVariant.secondary}><AngleLeftIcon style={{ marginRight: 8, verticalAlign: -2 }}/>Go back</Button>
                         </Link>
                     </SplitItem>
                     <SplitItem isFilled />
