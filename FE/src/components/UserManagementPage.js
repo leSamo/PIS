@@ -7,7 +7,7 @@ import Table from './Table';
 import axios from 'axios';
 import { Link } from 'react-router-dom/cjs/react-router-dom';
 import NewUserModal from './NewUserModal';
-import UserEditModal from './UserEditModal';
+import EditUserModal from './EditUserModal';
 import { AngleLeftIcon } from '@patternfly/react-icons';
 
 const UserManagementPage = ({ addToastAlert }) => {
@@ -47,7 +47,7 @@ const UserManagementPage = ({ addToastAlert }) => {
         }
     }
 
-    const openUserEditModal = user => {
+    const openEditUserModal = user => {
         setUserSelectedForEdit(user);
         setEditUserModalOpen(true);
     }
@@ -55,13 +55,11 @@ const UserManagementPage = ({ addToastAlert }) => {
     return (
         <Card>
             <NewUserModal isOpen={isNewUserModalOpen} setOpen={setNewUserModalOpen} />
-            <UserEditModal
+            <EditUserModal
                 isOpen={isEditUserModalOpen}
                 setOpen={setEditUserModalOpen}
                 callback={() => {}}
-                selectedUser={userSelectedForEdit.username}
-                initialFullname={userSelectedForEdit.fullname}
-                initialEmail={userSelectedForEdit.email}
+                selectedUser={userSelectedForEdit}
             />
             <CardBody>
                 <Split>
@@ -91,7 +89,7 @@ const UserManagementPage = ({ addToastAlert }) => {
                     actions={[
                         {
                             label: 'Edit',
-                            onClick: (username, fullname, email) => openUserEditModal({ username, fullname, email }),
+                            onClick: ([username, fullname, email, role, isAdmin]) => openEditUserModal({ username, fullname, email, role, isAdmin }),
                             buttonProps: {
                                 variant: ButtonVariant.primary
                             }

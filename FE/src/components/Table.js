@@ -80,7 +80,7 @@ const Table = ({ title, columns, isLoading, rows, actions, sortBy, onSort, page,
                 ))}
                 <Td key={rowIndex + "_actions"}>
                   {actions && [].concat(actions).map(({ label, onClick, buttonProps, resolver }) => resolver?.(row) !== false &&
-                    <Button key="label" style={{ marginRight: 16 }} variant={ButtonVariant.secondary} onClick={() => onClick(row[0], row[1], row[2])} {...buttonProps}>{label}</Button>
+                    <Button key={label} style={{ marginRight: 16 }} variant={ButtonVariant.secondary} onClick={() => onClick(row)} {...buttonProps}>{label}</Button>
                   )}
                 </Td>
               </Tr>
