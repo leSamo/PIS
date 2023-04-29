@@ -21,8 +21,10 @@ import jakarta.ws.rs.core.UriBuilder;
 import jakarta.ws.rs.core.UriInfo;
 import cz.xoleks00.pis.data.Car;
 import cz.xoleks00.pis.data.ErrorDTO;
+import cz.xoleks00.pis.data.Event;
 import cz.xoleks00.pis.data.PersonEventsDTO;
 import cz.xoleks00.pis.data.Person;
+import cz.xoleks00.pis.service.EventManager;
 import cz.xoleks00.pis.service.PersonManager;
 
 /*
@@ -34,6 +36,11 @@ public class People
 {
 	@Inject
 	private PersonManager personMgr; 
+
+    @Inject
+    private EventManager eventMgr;
+
+
     @Context
     private UriInfo context;
 
@@ -178,7 +185,9 @@ public class People
         Person p = personMgr.find(id);
     
         if (p != null) {
-            PersonEventsDTO personEventsDTO = new PersonEventsDTO(p.getEvents());
+            // Get the events where the user is a creator or an attendee
+            List<Event> userEvents = eventMgr.findEventsByUserId(id);
+            PersonEventsDTO personEventsDTO = new PersonEventsDTO(userEvents);
             return Response.ok(personEventsDTO).build();
         } else {
             return Response.status(Status.NOT_FOUND).entity(new ErrorDTO("not found")).build();

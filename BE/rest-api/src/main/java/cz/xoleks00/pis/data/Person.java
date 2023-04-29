@@ -37,6 +37,7 @@ public class Person
     @Column(nullable = false)
     private String password;
     private String username;
+    private String email;
     @Temporal(TemporalType.DATE)
     //@JsonbDateFormat("yyyy-MM-dd z")
     private Date born;
@@ -152,6 +153,14 @@ public class Person
     public String toString()
     {
         return "Person: " + name + " " + surname + "(" + cars.size() + " cars)";
+    }
+
+    public String getEmail() {
+        return email;
+    }
+
+    public void setEmail(String email) {
+        this.email = email;
     }
     
 }
