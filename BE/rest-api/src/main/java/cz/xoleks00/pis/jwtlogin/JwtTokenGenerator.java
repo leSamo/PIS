@@ -17,6 +17,8 @@ import com.nimbusds.jose.crypto.RSASSASigner;
 import com.nimbusds.jwt.JWTClaimsSet;
 import com.nimbusds.jwt.SignedJWT;
 
+import cz.xoleks00.pis.data.Person;
+
 
 /**
  * Partially based on the original implementation at
@@ -24,21 +26,23 @@ import com.nimbusds.jwt.SignedJWT;
  */
 public class JwtTokenGenerator {
 
-    public static String generateJWTString(String jsonResource, String username) throws Exception {
+    public static String generateJWTString(String jsonResource, Person person) throws Exception {
 
         long currentTimeMillis = System.currentTimeMillis();
         long expirationTimeMillis = currentTimeMillis + (1000 * 1000); // + 1000 seconds
         
-        // create the claim set
-        JWTClaimsSet claimsSet = new JWTClaimsSet.Builder()
-        		 .issuer("fitdemo")
-        		 .issueTime(new Date(currentTimeMillis))
-        	     .expirationTime(new Date(expirationTimeMillis))
-        	     .subject(username)
-        	     .claim(Claims.upn.name(), username)
-        	     .claim(Claims.groups.name(), List.of("admin"))
-        	     .build();
-        
+    // Set the user role based on the isAdmin field
+    String role = person.isAdmin() ? "admin" : "employee";
+
+    // create the claim set
+    JWTClaimsSet claimsSet = new JWTClaimsSet.Builder()
+             .issuer("fitdemo")
+             .issueTime(new Date(currentTimeMillis))
+             .expirationTime(new Date(expirationTimeMillis))
+             .subject(person.getUsername())
+             .claim(Claims.upn.name(), person.getUsername())
+             .claim(Claims.groups.name(), List.of(role))
+             .build();
         // create the signed token
         SignedJWT signedJWT = new SignedJWT(new JWSHeader
                                             .Builder(RS256)

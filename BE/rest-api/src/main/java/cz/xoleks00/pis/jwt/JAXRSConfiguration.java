@@ -13,7 +13,7 @@ import jakarta.ws.rs.core.Application;
  */
 @ApplicationPath("resources")
 @LoginConfig(authMethod = "MP-JWT")
-@DeclareRoles({ "admin", "staff", "customer" })
+@DeclareRoles({ "admin", "employee"})
 public class JAXRSConfiguration extends Application {
 
 }

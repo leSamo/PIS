@@ -4,6 +4,7 @@ import java.net.URI;
 import java.util.List;
 
 import jakarta.annotation.PostConstruct;
+import jakarta.annotation.security.RolesAllowed;
 import jakarta.inject.Inject;
 import jakarta.ws.rs.Consumes;
 import jakarta.ws.rs.DELETE;
@@ -115,6 +116,7 @@ public class People
     @POST
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
+    @RolesAllowed("admin")
     public Response addPerson(Person person)
     {
     	Person existing = personMgr.find(person.getId());
@@ -138,6 +140,7 @@ public class People
     @Path("/{id}")
     @DELETE
     @Produces(MediaType.APPLICATION_JSON)
+    @RolesAllowed("admin")
     public Response deletePerson(@PathParam("id") Long id) 
     {
     	Person p = personMgr.find(id);

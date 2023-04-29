@@ -6,13 +6,13 @@ import cz.xoleks00.pis.data.Person;
 import cz.xoleks00.pis.service.PersonManager;
 import jakarta.inject.Inject;
 import jakarta.ws.rs.Consumes;
-import jakarta.ws.rs.GET;
 import jakarta.ws.rs.POST;
 import jakarta.ws.rs.Path;
 import jakarta.ws.rs.Produces;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
 import jakarta.ws.rs.core.Response.Status;
+
 @Path("login")
 public class LoginResource {
 
@@ -28,7 +28,7 @@ public class LoginResource {
             Person person = personManager.findByUsername(credentials.getLogin());
             if (person != null && BCrypt.checkpw(credentials.getPassword(), person.getPassword())) {
                 try {
-                    String token = JwtTokenGenerator.generateJWTString("/jwt-token.json", credentials.getLogin());
+                    String token = JwtTokenGenerator.generateJWTString("/jwt-token.json", person);
                     TokenResponse resp = new TokenResponse(token);
                     return Response.ok(resp).build();
                 } catch (Exception e) {

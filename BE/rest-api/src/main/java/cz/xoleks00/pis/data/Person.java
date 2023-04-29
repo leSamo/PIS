@@ -38,6 +38,7 @@ public class Person
     private String password;
     private String username;
     private String email;
+    private boolean isAdmin;
     @Temporal(TemporalType.DATE)
     //@JsonbDateFormat("yyyy-MM-dd z")
     private Date born;
@@ -161,6 +162,14 @@ public class Person
 
     public void setEmail(String email) {
         this.email = email;
+    }
+
+    public boolean isAdmin() {
+        return isAdmin;
+    }
+    
+    public void setAdmin(boolean isAdmin) {
+        this.isAdmin = isAdmin;
     }
     
 }
