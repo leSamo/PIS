@@ -1,6 +1,6 @@
 import React, { Fragment, useEffect, useState } from 'react';
 import '@patternfly/react-core/dist/styles/base.css';
-import { Popover, Split, SplitItem } from '@patternfly/react-core';
+import { Popover, Split, SplitItem, Button } from '@patternfly/react-core';
 import { getMostRecentMonday, getWeekCalendarTitle, getWeekNumber, goBackWeek, goForwardWeek, WEEKDAYS } from '../helpers/CalendarHelper';
 
 const Week = ({ leftButtonClickCount, rightButtonClickCount }) => {
@@ -92,6 +92,11 @@ const Week = ({ leftButtonClickCount, rightButtonClickCount }) => {
                                     <div style={{ marginLeft: 32 }}>- Michal Findra (mfindra@cau.ahoj)</div>
                                     <div style={{ marginLeft: 32 }}>- Findra Michal (mfindra@ahoj.ahoj)</div>
                                 </Fragment>
+                            }
+                            footerContent={
+                                <Button variant="primary" style={{ width: "100%" }}>
+                                    Edit
+                                </Button>
                             }
                             minWidth="400px"
                         >
