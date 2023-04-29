@@ -66,10 +66,11 @@ public class EventManager {
     }
 
     public List<Event> findEventsByUserId(long userId) {
-        TypedQuery<Event> query = em.createQuery("SELECT e FROM Event e WHERE e.creator.id = :userId", Event.class);
+        TypedQuery<Event> query = em.createQuery("SELECT DISTINCT e FROM Event e LEFT JOIN FETCH e.attendees a WHERE e.creator.id = :userId OR a.id = :userId", Event.class);
         query.setParameter("userId", userId);
         return query.getResultList();
     }
+    
 
     @Transactional
     public void removeById(long id) {
