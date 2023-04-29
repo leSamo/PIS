@@ -1,10 +1,11 @@
 import React, { Fragment, useEffect, useState } from 'react';
 import '@patternfly/react-core/dist/styles/base.css';
 import { Popover, Split, SplitItem, Button } from '@patternfly/react-core';
-import { getMostRecentMonday, getWeekCalendarTitle, getWeekNumber, goBackWeek, goForwardWeek, WEEKDAYS } from '../helpers/CalendarHelper';
+import { getMostRecentMonday, getWeekCalendarTitle, getWeekNumber, goBackMonth, goBackWeek, goForwardMonth, goForwardWeek, WEEKDAYS } from '../helpers/CalendarHelper';
 import { COLORS } from './../helpers/Constants';
+import { playFadeInAnimation } from './../helpers/Utils';
 
-const Week = ({ leftButtonClickCount, rightButtonClickCount }) => {
+const Week = ({ doubleLeftButtonClickCount, leftButtonClickCount, rightButtonClickCount, doubleRightButtonClickCount }) => {
     const [splitWidth, setSplitWidth] = useState(0);
     const [currentMonday, setCurrentMonday] = useState(getMostRecentMonday(new Date()));
     const [weekDays, setWeekDays] = useState([]);
@@ -34,6 +35,12 @@ const Week = ({ leftButtonClickCount, rightButtonClickCount }) => {
     }, []);
 
     useEffect(() => {
+        if (doubleLeftButtonClickCount > 0) {
+            setCurrentMonday(getMostRecentMonday(goBackMonth(currentMonday)));
+        }
+    }, [doubleLeftButtonClickCount])
+
+    useEffect(() => {
         if (leftButtonClickCount > 0) {
             setCurrentMonday(goBackWeek(currentMonday));
         }
@@ -46,11 +53,16 @@ const Week = ({ leftButtonClickCount, rightButtonClickCount }) => {
     }, [rightButtonClickCount])
 
     useEffect(() => {
+        if (doubleRightButtonClickCount > 0) {
+            console.log(currentMonday, goForwardMonth(currentMonday))
+            setCurrentMonday(getMostRecentMonday(goForwardMonth(currentMonday)));
+        }
+    }, [doubleRightButtonClickCount])
+
+    useEffect(() => {
         refreshDays();
 
-        document.querySelector("#week-split").classList.remove('fade-in');
-        document.querySelector("#week-split").offsetWidth;
-        document.querySelector("#week-split").classList.add('fade-in');
+        playFadeInAnimation("#week-split");
     }, [currentMonday])
 
     return (

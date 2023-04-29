@@ -17,7 +17,7 @@ const Table = ({ title, columns, isLoading, rows, actions, sortBy, onSort, page,
     onPerPageSelect,
     titles: {
       items: '',
-      perPageSuffix: 'na stránku'
+      perPageSuffix: 'per page'
     },
     style: {
       margin: 8

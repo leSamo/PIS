@@ -3,17 +3,20 @@ import { Card, CardBody, Dropdown, DropdownToggle, DropdownItem, Flex, FlexItem,
 import NewEventModal from './NewEventModal';
 import axios from 'axios';
 import Week from './Week';
-import { AngleLeftIcon, AngleRightIcon } from '@patternfly/react-icons';
+import { AngleDoubleLeftIcon, AngleDoubleRightIcon, AngleLeftIcon, AngleRightIcon } from '@patternfly/react-icons';
 import { MONTH_VIEW, WEEK_VIEW } from '../helpers/Constants';
 import Month from './Month';
+import { isSubstring } from '../helpers/Utils';
 
 const IndexPage = () => {
     const [isNewEventModalOpen, setNewEventModalOpen] = useState(false);
     const [allUsers, setAllUsers] = React.useState([]);
     const [isDropdownOpen, setIsDropdownOpen] = React.useState(false);
     const [isTypeaheadOpen, setTypeaheadOpen] = useState(false);
+    const [doubleLeftButtonClickCount, setDoubleLeftButtonClickCount] = useState(0);
     const [leftButtonClickCount, setLeftButtonClickCount] = useState(0);
     const [rightButtonClickCount, setRightButtonClickCount] = useState(0);
+    const [doubleRightButtonClickCount, setDoubleRightButtonClickCount] = useState(0);
     const [selectedUsers, setSelectedUsers] = useState([]);
     const [selectedView, setSelectedView] = useState(WEEK_VIEW);
 
@@ -58,13 +61,6 @@ const IndexPage = () => {
         setSelectedUsers([]);
         setTypeaheadOpen(false);
     };
-
-    const isSubstring = (substring, string) => {
-        const strippedSubstring = substring.normalize("NFD").replace(/[\u0300-\u036f]/g, "");
-        const strippedString = string.normalize("NFD").replace(/[\u0300-\u036f]/g, "");
-
-        return strippedString.toLowerCase().indexOf(strippedSubstring.toLowerCase()) !== -1;
-    }
 
     const typeaheadFilter = (_, value) => {
         const filteredUsers = allUsers.filter(user => isSubstring(value, user.email) || isSubstring(value, user.username) || isSubstring(value, user.fullname));
@@ -129,6 +125,11 @@ const IndexPage = () => {
                             <Button variant={ButtonVariant.primary} onClick={() => setNewEventModalOpen(true)}>Create event</Button>
                         </FlexItem>
                         <FlexItem>
+                            <Button variant="secondary" onClick={() => setDoubleLeftButtonClickCount(doubleLeftButtonClickCount + 1)}>
+                                <AngleDoubleLeftIcon />
+                            </Button>
+                        </FlexItem>
+                        <FlexItem>
                             <Button variant="secondary" onClick={() => setLeftButtonClickCount(leftButtonClickCount + 1)}>
                                 <AngleLeftIcon />
                             </Button>
@@ -138,11 +139,26 @@ const IndexPage = () => {
                                 <AngleRightIcon />
                             </Button>
                         </FlexItem>
+                        <FlexItem>
+                            <Button variant="secondary" onClick={() => setDoubleRightButtonClickCount(doubleRightButtonClickCount + 1)}>
+                                <AngleDoubleRightIcon />
+                            </Button>
+                        </FlexItem>
                     </Flex>
                 </Toolbar>
                 {selectedView === WEEK_VIEW
-                    ? <Week leftButtonClickCount={leftButtonClickCount} rightButtonClickCount={rightButtonClickCount}/>
-                    : <Month leftButtonClickCount={leftButtonClickCount} rightButtonClickCount={rightButtonClickCount}/>
+                    ? <Week
+                        doubleLeftButtonClickCount={doubleLeftButtonClickCount}
+                        leftButtonClickCount={leftButtonClickCount}
+                        rightButtonClickCount={rightButtonClickCount}
+                        doubleRightButtonClickCount={doubleRightButtonClickCount}
+                    />
+                    : <Month
+                        doubleLeftButtonClickCount={doubleLeftButtonClickCount}
+                        leftButtonClickCount={leftButtonClickCount}
+                        rightButtonClickCount={rightButtonClickCount}
+                        doubleRightButtonClickCount={doubleRightButtonClickCount}
+                    />
                 }
             </CardBody>
         </Card>

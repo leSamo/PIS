@@ -105,29 +105,45 @@ export const getWeekCountInMonth = dateString => {
 
 export const goBackMonth = dateString => {
     const date = new Date(dateString);
+
+    const day = date.getDate();
     const month = date.getMonth();
     const year = date.getFullYear();
 
     const prevMonth = month === 0 ? 11 : month - 1;
     const prevYear = prevMonth === 11 ? year - 1 : year;
 
-    const prevMonthFirstDay = new Date(prevYear, prevMonth, 1);
+    const prevMonthFirstDay = new Date(prevYear, prevMonth, day);
 
     return isoLongToShort(prevMonthFirstDay);
 }
 
 export const goForwardMonth = dateString => {
     const date = new Date(dateString);
+
+    const day = date.getDate();
     const month = date.getMonth();
     const year = date.getFullYear();
 
     const nextMonth = month === 11 ? 0 : month + 1;
     const nextYear = nextMonth === 0 ? year + 1 : year;
 
-    const nextMonthFirstDay = new Date(nextYear, nextMonth, 1);
+    const nextMonthFirstDay = new Date(nextYear, nextMonth, day);
 
     return isoLongToShort(nextMonthFirstDay);
 }
+
+export const goBackYear = dateString => {
+    const [year, month, day] = dateString.split("-")
+
+    return isoLongToShort(new Date(parseInt(year, 10) - 1, parseInt(month, 10) - 1, parseInt(day, 10)));
+};
+
+export const goForwardYear = dateString => {
+    const [year, month, day] = dateString.split("-")
+
+    return isoLongToShort(new Date(parseInt(year, 10) + 1, parseInt(month, 10) - 1, parseInt(day, 10)));
+};
 
 export const addDays = (dateString, days) => {
     const date = new Date(dateString);

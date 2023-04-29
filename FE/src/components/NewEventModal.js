@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { Form, FormGroup, TextInput, TextArea, Modal, ModalVariant, Button, TimePicker, DatePicker, Split, SplitItem, Select, SelectVariant, SelectOption, Tile } from '@patternfly/react-core';
 import axios from 'axios';
 import { COLORS } from './../helpers/Constants';
-import { capitalize } from './../helpers/Utils';
+import { capitalize, isSubstring } from './../helpers/Utils';
 
 // TODO: Automatically select event organizer in typeahead
 // TODO: Disable "Create" button until all fields are valid
@@ -12,7 +12,7 @@ const NewEventModal = ({ isOpen, setOpen, createCallback }) => {
     const [allUsers, setAllUsers] = React.useState([]);
     const [isTypeaheadOpen, setTypeaheadOpen] = useState(false);
     const [selectedUsers, setSelectedUsers] = useState([]);
-    const [selectedColor, setSelectedColor] = useState("Blue");
+    const [selectedColor, setSelectedColor] = useState("blue");
 
     const [dateFrom, setDateFrom] = useState('');
     const [timeFrom, setTimeFrom] = useState('');
@@ -41,13 +41,6 @@ const NewEventModal = ({ isOpen, setOpen, createCallback }) => {
         setSelectedUsers([]);
         setTypeaheadOpen(false);
     };
-
-    const isSubstring = (substring, string) => {
-        const strippedSubstring = substring.normalize("NFD").replace(/[\u0300-\u036f]/g, "");
-        const strippedString = string.normalize("NFD").replace(/[\u0300-\u036f]/g, "");
-
-        return strippedString.toLowerCase().indexOf(strippedSubstring.toLowerCase()) !== -1;
-    }
 
     const typeaheadFilter = (_, value) => {
         const filteredUsers = allUsers.filter(user => isSubstring(value, user.email) || isSubstring(value, user.username) || isSubstring(value, user.fullname));

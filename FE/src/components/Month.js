@@ -1,17 +1,22 @@
 import { Text, TextContent, Popover, Button } from '@patternfly/react-core';
 import React, { Fragment, useEffect, useState } from 'react';
-import { getFirstDayOfMonth, getFirstFollowingSunday, getLastDayOfMonth, getMostRecentMonday, getWeekCountInMonth, goBackMonth, goForwardMonth, isoLongToShort, WEEKDAYS_SHORT } from '../helpers/CalendarHelper';
-import { getMonthCalendarTitle } from './../helpers/CalendarHelper';
+import { getFirstDayOfMonth, getFirstFollowingSunday, getLastDayOfMonth, getMostRecentMonday, getWeekCountInMonth, goBackMonth, goForwardMonth, goForwardYear, isoLongToShort, WEEKDAYS_SHORT } from '../helpers/CalendarHelper';
+import { getMonthCalendarTitle, goBackYear } from './../helpers/CalendarHelper';
 import { COLORS } from './../helpers/Constants';
+import { playFadeInAnimation } from './../helpers/Utils';
 
-const Month = ({ leftButtonClickCount, rightButtonClickCount }) => {
+const Month = ({ doubleLeftButtonClickCount, leftButtonClickCount, rightButtonClickCount, doubleRightButtonClickCount }) => {
     const [firstDayOfMonth, setFirstDayOfMonth] = useState(getFirstDayOfMonth(new Date()));
 
     const refreshDays = () => {
-        console.log(getWeekCountInMonth(firstDayOfMonth), firstDayOfMonth, getLastDayOfMonth(firstDayOfMonth), getMostRecentMonday(firstDayOfMonth), getFirstFollowingSunday(getLastDayOfMonth(firstDayOfMonth)))
+
     }
 
-    console.log("aaa", firstDayOfMonth);
+    useEffect(() => {
+        if (doubleLeftButtonClickCount > 0) {
+            setFirstDayOfMonth(goBackYear(firstDayOfMonth));
+        }
+    }, [doubleLeftButtonClickCount])
 
     useEffect(() => {
         if (leftButtonClickCount > 0) {
@@ -26,11 +31,15 @@ const Month = ({ leftButtonClickCount, rightButtonClickCount }) => {
     }, [rightButtonClickCount])
 
     useEffect(() => {
+        if (doubleRightButtonClickCount > 0) {
+            setFirstDayOfMonth(goForwardYear(firstDayOfMonth));
+        }
+    }, [doubleRightButtonClickCount])
+
+    useEffect(() => {
         refreshDays();
 
-        document.querySelector("#month-container").classList.remove('fade-in');
-        document.querySelector("#month-container").offsetWidth;
-        document.querySelector("#month-container").classList.add('fade-in');
+        playFadeInAnimation("#month-container");
     }, [firstDayOfMonth])
 
     return (
