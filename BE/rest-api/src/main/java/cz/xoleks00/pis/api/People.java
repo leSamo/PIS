@@ -21,6 +21,7 @@ import jakarta.ws.rs.core.UriBuilder;
 import jakarta.ws.rs.core.UriInfo;
 import cz.xoleks00.pis.data.Car;
 import cz.xoleks00.pis.data.ErrorDTO;
+import cz.xoleks00.pis.data.PersonEventsDTO;
 import cz.xoleks00.pis.data.Person;
 import cz.xoleks00.pis.service.PersonManager;
 
@@ -168,6 +169,20 @@ public class People
     	}
     	else
     		return Response.status(Status.NOT_FOUND).entity(new ErrorDTO("not found")).build();
+    }
+
+    @Path("/{id}/events")
+    @GET
+    @Produces(MediaType.APPLICATION_JSON)
+    public Response getEventsForPerson(@PathParam("id") Long id) {
+        Person p = personMgr.find(id);
+    
+        if (p != null) {
+            PersonEventsDTO personEventsDTO = new PersonEventsDTO(p.getEvents());
+            return Response.ok(personEventsDTO).build();
+        } else {
+            return Response.status(Status.NOT_FOUND).entity(new ErrorDTO("not found")).build();
+        }
     }
    
 

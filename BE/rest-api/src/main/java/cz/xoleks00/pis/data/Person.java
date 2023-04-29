@@ -6,6 +6,7 @@ import java.util.Date;
 
 import jakarta.json.bind.annotation.JsonbTransient;
 import jakarta.persistence.CascadeType;
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.Id;
@@ -15,6 +16,8 @@ import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 import jakarta.persistence.Temporal;
 import jakarta.persistence.TemporalType;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
 
 
 @Entity
@@ -27,21 +30,34 @@ import jakarta.persistence.TemporalType;
 public class Person
 {
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
 	private String name;
     private String surname;
+    @Column(nullable = false)
+    private String password;
+    private String username;
     @Temporal(TemporalType.DATE)
     //@JsonbDateFormat("yyyy-MM-dd z")
     private Date born;
     @OneToMany(cascade = { CascadeType.ALL }, fetch = FetchType.EAGER, mappedBy = "owner", orphanRemoval = true)
     @JsonbTransient
 	private Collection<Car> cars;
-
+    @OneToMany(cascade = { CascadeType.ALL }, fetch = FetchType.EAGER, mappedBy = "creator", orphanRemoval = false)
+    @JsonbTransient
+	private Collection<Event> events;
+    
     public Person()
     {
         cars = new ArrayList<>();
+        events = new ArrayList<>();
     }
     
+    public Collection<Event> getEvents()
+    {
+        return events;
+    }
+
     public Collection<Car> getCars()
     {
         return cars;
@@ -114,6 +130,22 @@ public class Person
     public void setBorn(Date born)
     {
         this.born = born;
+    }
+
+    public String getPassword() {
+        return password;
+    }
+
+    public void setPassword(String password) {
+        this.password = password;
+    }
+
+    public String getUsername() {
+        return username;
+    }
+
+    public void setUsername(String username) {
+        this.username = username;
     }
     
     @Override

@@ -1,12 +1,14 @@
 package cz.xoleks00.pis.service;
 
 import java.util.List;
+import java.util.Date;
 
 import jakarta.enterprise.context.RequestScoped;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
 import jakarta.transaction.Transactional;
 import cz.xoleks00.pis.data.Event;
+import cz.xoleks00.pis.data.Person;
 import jakarta.persistence.TypedQuery;
 
 /**
@@ -27,6 +29,13 @@ public class EventManager {
      */
     @Transactional
     public Event save(Event e) {
+        Person creator = em.find(Person.class, e.getCreator().getId());
+        if (creator != null) {
+            creator.getEvents().add(e);
+            e.setCreator(creator);
+        } else {
+            throw new IllegalArgumentException("Invalid creator ID");
+        }
         return em.merge(e);
     }
     
@@ -75,4 +84,12 @@ public class EventManager {
     public Event findById(long id) {
         return em.find(Event.class, id);
     }
+
+    public List<Event> findEventsByDateRange(Date startDate, Date endDate) {
+        TypedQuery<Event> query = em.createQuery("SELECT e FROM Event e WHERE e.date >= :startDate AND e.date <= :endDate", Event.class);
+        query.setParameter("startDate", startDate);
+        query.setParameter("endDate", endDate);
+        return query.getResultList();
+    }
+
 }
