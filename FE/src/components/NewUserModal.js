@@ -1,44 +1,21 @@
 import React, { useState } from 'react';
-import { Form, FormGroup, TextInput, Button, Modal, ModalVariant, ValidatedOptions, TextInputTypes } from '@patternfly/react-core';
+import { Form, FormGroup, TextInput, Button, Modal, ModalVariant, ValidatedOptions, TextInputTypes, InputGroup } from '@patternfly/react-core';
+import { validateEmail, validateUsername, validatePassword } from './../helpers/Validators';
+import EyeIcon from '@patternfly/react-icons/dist/esm/icons/eye-icon';
+import EyeSlashIcon from '@patternfly/react-icons/dist/esm/icons/eye-slash-icon';
 
 const NewUserModal = ({ isOpen, setOpen, registerCallback }) => {
 	const [emailValue, setEmailValue] = useState('');
 	const [usernameValue, setUsernameValue] = useState('');
+	const [fullnameValue, setFullnameValue] = useState('');
 	const [passwordValue, setPasswordValue] = useState('');
-	const [password2Value, setPassword2Value] = useState('');
-	const [startYearValue, setStartYearValue] = useState(new Date().getFullYear());
+	const [isPasswordHidden, setPasswordHidden] = useState(true);
 
-	const validateEmail = email => {
-		if (!email) return true;
-
-		const re = /^[^@ \t\r\n]+@[^@ \t\r\n]+\.[^@ \t\r\n]+$/;
-		return re.test(email) && email.length <= 320;
-	}
-
-	const validateUsername = username => {
-		if (!username) return true;
-
-		const re = /^[a-z0-9_-]{3,32}$/i;
-		return re.test(username);
-	}
-
-	const validatePassword = password => {
-		if (!password) return true;
-
-		const re = /^([a-z0-9!@#&()–{}:;',?/*~$=<> ]){8,128}$/i;
-		return re.test(password);
-	}
-
-	const validatePassword2 = password => {
-		return password === passwordValue;
-	}
 
 	const closeModal = () => {
 		setEmailValue('')
 		setUsernameValue('')
 		setPasswordValue('')
-		setPassword2Value('')
-		setStartYearValue(new Date().getFullYear())
 		setOpen(false)
 	}
 
@@ -52,15 +29,41 @@ const NewUserModal = ({ isOpen, setOpen, registerCallback }) => {
 				<Button
 					key="confirm"
 					variant="primary"
-					onClick={() => { registerCallback(usernameValue, passwordValue, startYearValue, emailValue, closeModal); }}
-					isDisabled={!validateEmail(emailValue) || !validateUsername(usernameValue) || !validatePassword(passwordValue) ||
-						!validatePassword2(password2Value) || !emailValue || !usernameValue || !passwordValue}
+					onClick={() => { registerCallback(usernameValue, passwordValue, emailValue, closeModal); }}
+					isDisabled={!validateEmail(emailValue) || !validateUsername(usernameValue) || !validatePassword(passwordValue) || !emailValue || !usernameValue || !passwordValue || !fullnameValue}
 				>
 					Add new user
 				</Button>,
 				<Button key="cancel" variant="link" onClick={closeModal}>Cancel</Button>
 			]}>
 			<Form>
+			<FormGroup
+					label="User name"
+					isRequired
+					validated={validateUsername(usernameValue) || ValidatedOptions.error}
+					helperTextInvalid="User name must consist of 3-32 characters and must contain alphanumeric characters"
+				>
+					<TextInput
+						isRequired
+						id="reg-username"
+						name="reg-username"
+						validated={validateUsername(usernameValue) || ValidatedOptions.error}
+						value={usernameValue}
+						onChange={value => setUsernameValue(value)}
+					/>
+				</FormGroup>
+				<FormGroup
+					label="Full name"
+					isRequired
+				>
+					<TextInput
+						isRequired
+						id="reg-fullname"
+						name="reg-fullname"
+						value={fullnameValue}
+						onChange={value => setFullnameValue(value)}
+					/>
+				</FormGroup>
 				<FormGroup
 					label="Email address"
 					isRequired
@@ -77,51 +80,29 @@ const NewUserModal = ({ isOpen, setOpen, registerCallback }) => {
 					/>
 				</FormGroup>
 				<FormGroup
-					label="User name"
-					isRequired
-					validated={validateUsername(usernameValue) || ValidatedOptions.error}
-					helperTextInvalid="User name must consist of 3-32 characters and must contain alphanumeric characters"
-				>
-					<TextInput
-						isRequired
-						id="reg-username"
-						name="reg-username"
-						validated={validateUsername(usernameValue) || ValidatedOptions.error}
-						value={usernameValue}
-						onChange={value => setUsernameValue(value)}
-					/>
-				</FormGroup>
-				<FormGroup
 					label="Password"
 					isRequired
 					validated={validatePassword(passwordValue) || ValidatedOptions.error}
 					helperTextInvalid="Password must consist of 8-128 characters and must contain alphanumerical characters and symbols !@#&()–{}:;',?/*~$=<>"
 				>
-					<TextInput
-						isRequired
-						id="reg-password"
-						name="reg-password"
-						type={TextInputTypes.password}
-						validated={validatePassword(passwordValue) || ValidatedOptions.error}
-						value={passwordValue}
-						onChange={value => setPasswordValue(value)}
-					/>
-				</FormGroup>
-				<FormGroup
-					label="Password again"
-					isRequired
-					validated={validatePassword2(password2Value) || ValidatedOptions.error}
-					helperTextInvalid="Passwords do not match"
-				>
-					<TextInput
-						isRequired
-						id="reg-password2"
-						name="reg-password2"
-						type={TextInputTypes.password}
-						validated={validatePassword2(password2Value) || ValidatedOptions.error}
-						value={password2Value}
-						onChange={value => setPassword2Value(value)}
-					/>
+					<InputGroup>
+						<TextInput
+							isRequired
+							id="reg-password"
+							name="reg-password"
+							type={isPasswordHidden ? TextInputTypes.password : TextInputTypes.text}
+							validated={validatePassword(passwordValue) || ValidatedOptions.error}
+							value={passwordValue}
+							onChange={value => setPasswordValue(value)}
+						/>
+						<Button
+							variant="control"
+							onClick={() => setPasswordHidden(!isPasswordHidden)}
+							aria-label={isPasswordHidden ? 'Show password' : 'Hide password'}
+						>
+							{isPasswordHidden ? <EyeIcon /> : <EyeSlashIcon />}
+						</Button>
+					</InputGroup>
 				</FormGroup>
 			</Form>
 		</Modal>

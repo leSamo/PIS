@@ -7,6 +7,7 @@ import Table from './Table';
 import axios from 'axios';
 import { Link } from 'react-router-dom/cjs/react-router-dom';
 import NewUserModal from './NewUserModal';
+import UserEditModal from './UserEditModal';
 
 const UserManagementPage = ({ addToastAlert }) => {
     const COLUMNS = [
@@ -20,6 +21,8 @@ const UserManagementPage = ({ addToastAlert }) => {
 
     const [isLoading, setLoading] = useState(true);
     const [isNewUserModalOpen, setNewUserModalOpen] = useState(false);
+    const [isEditUserModalOpen, setEditUserModalOpen] = useState(false);
+    const [userSelectedForEdit, setUserSelectedForEdit] = useState({});
     const [data, setData] = useState([]);
     const [refreshCounter, setRefreshCounter] = useState(0);
 
@@ -43,9 +46,22 @@ const UserManagementPage = ({ addToastAlert }) => {
         }
     }
 
+    const openUserEditModal = user => {
+        setUserSelectedForEdit(user);
+        setEditUserModalOpen(true);
+    }
+
     return (
         <Card>
             <NewUserModal isOpen={isNewUserModalOpen} setOpen={setNewUserModalOpen} />
+            <UserEditModal
+                isOpen={isEditUserModalOpen}
+                setOpen={setEditUserModalOpen}
+                callback={() => {}}
+                selectedUser={userSelectedForEdit.username}
+                initialFullname={userSelectedForEdit.fullname}
+                initialEmail={userSelectedForEdit.email}
+            />
             <CardBody>
                 <Split>
                     <SplitItem>
@@ -71,13 +87,20 @@ const UserManagementPage = ({ addToastAlert }) => {
                     rows={data}
                     columns={COLUMNS}
                     isLoading={isLoading}
-                    actions={[{
-                        label: 'Remove',
-                        onClick: user => deleteUserAction(user),
-                        buttonProps: {
-                            variant: ButtonVariant.danger
-                        }
-                    }]}
+                    actions={[
+                        {
+                            label: 'Edit user',
+                            onClick: (username, fullname, email) => openUserEditModal({ username, fullname, email }),
+                            buttonProps: {
+                                variant: ButtonVariant.primary
+                            }
+                        },  {
+                            label: 'Remove',
+                            onClick: user => deleteUserAction(user),
+                            buttonProps: {
+                                variant: ButtonVariant.danger
+                            }
+                        }]}
                     sortBy={null}
                     onSort={() => { }}
                     page={1}

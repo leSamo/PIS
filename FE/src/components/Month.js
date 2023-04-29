@@ -1,6 +1,6 @@
 import { Text, TextContent, Popover, Button } from '@patternfly/react-core';
 import React, { Fragment, useEffect, useState } from 'react';
-import { getFirstDayOfMonth, getFirstFollowingSunday, getLastDayOfMonth, getMostRecentMonday, getWeekCountInMonth, goBackMonth, goForwardMonth, goForwardYear, isoLongToShort, WEEKDAYS_SHORT } from '../helpers/CalendarHelper';
+import { getFirstDayOfMonth, getMostRecentMonday, getWeekCountInMonth, goBackMonth, goForwardMonth, goForwardYear, isoLongToShort, WEEKDAYS_SHORT } from '../helpers/CalendarHelper';
 import { getMonthCalendarTitle, goBackYear } from './../helpers/CalendarHelper';
 import { COLORS } from './../helpers/Constants';
 import { playFadeInAnimation } from './../helpers/Utils';
