@@ -2,6 +2,7 @@ import { Text, TextContent, Popover, Button } from '@patternfly/react-core';
 import React, { Fragment, useEffect, useState } from 'react';
 import { getFirstDayOfMonth, getFirstFollowingSunday, getLastDayOfMonth, getMostRecentMonday, getWeekCountInMonth, goBackMonth, goForwardMonth, isoLongToShort, WEEKDAYS_SHORT } from '../helpers/CalendarHelper';
 import { getMonthCalendarTitle } from './../helpers/CalendarHelper';
+import { COLORS } from './../helpers/Constants';
 
 const Month = ({ leftButtonClickCount, rightButtonClickCount }) => {
     const [firstDayOfMonth, setFirstDayOfMonth] = useState(getFirstDayOfMonth(new Date()));
@@ -84,7 +85,7 @@ const Month = ({ leftButtonClickCount, rightButtonClickCount }) => {
                                                     }
                                                     minWidth="400px"
                                                 >
-                                                    <div style={{ width: "calc(100% - 16px)", backgroundColor: "red", marginLeft: 8, marginRight: 8, cursor: "pointer", border: "1px solid black", borderRadius: 4, textAlign: "left", paddingLeft: 8, paddingRight: 8 }}>
+                                                    <div style={{ width: "calc(100% - 16px)", backgroundColor: COLORS.red, marginLeft: 8, marginRight: 8, cursor: "pointer", border: "1px solid black", borderRadius: 4, textAlign: "left", paddingLeft: 8, paddingRight: 8 }}>
                                                         <b>Event name</b>
                                                     </div>
                                                 </Popover>
@@ -100,29 +101,6 @@ const Month = ({ leftButtonClickCount, rightButtonClickCount }) => {
             </div>
         </div>
     )
-    /*
-    return (
-        <Stack style={{ height: "100%" }}>
-            {[...Array(getWeekCountInMonth(firstDayOfMonth)).keys()].map(week =>
-                <StackItem key={week}>
-                    <Split>
-                        {[...Array(7).keys()].map(day => {
-                            const currentDate = new Date(getMostRecentMonday(firstDayOfMonth));
-                            currentDate.setDate(currentDate.getDate() + (week * 7) + day);
-                            const dateAsString = isoLongToShort(currentDate);
-
-                            return (
-                                <SplitItem key={day} style={{ width: "100%" }}>
-                                    {dateAsString}
-                                </SplitItem>
-                            )
-                        })}
-                    </Split>
-                </StackItem>
-            )}
-        </Stack>
-    )
-    */
 };
 
 export default Month;

@@ -1,6 +1,8 @@
 import React, { useEffect, useState } from 'react';
-import { Form, FormGroup, TextInput, TextArea, Modal, ModalVariant, Button, TimePicker, DatePicker, Split, SplitItem, Select, SelectVariant, SelectOption } from '@patternfly/react-core';
+import { Form, FormGroup, TextInput, TextArea, Modal, ModalVariant, Button, TimePicker, DatePicker, Split, SplitItem, Select, SelectVariant, SelectOption, Tile } from '@patternfly/react-core';
 import axios from 'axios';
+import { COLORS } from './../helpers/Constants';
+import { capitalize } from './../helpers/Utils';
 
 // TODO: Automatically select event organizer in typeahead
 // TODO: Disable "Create" button until all fields are valid
@@ -10,6 +12,7 @@ const NewEventModal = ({ isOpen, setOpen, createCallback }) => {
     const [allUsers, setAllUsers] = React.useState([]);
     const [isTypeaheadOpen, setTypeaheadOpen] = useState(false);
     const [selectedUsers, setSelectedUsers] = useState([]);
+    const [selectedColor, setSelectedColor] = useState("Blue");
 
     const [dateFrom, setDateFrom] = useState('');
     const [timeFrom, setTimeFrom] = useState('');
@@ -144,6 +147,13 @@ const NewEventModal = ({ isOpen, setOpen, createCallback }) => {
                             />
                         ))}
                     </Select>
+                </FormGroup>
+                <FormGroup label="Display color">
+                    {
+                        Object.entries(COLORS).map(([colorName, colorValue]) => 
+                            <Tile key={colorName} title={capitalize(colorName)} style={{ backgroundColor: colorValue }} isSelected={selectedColor === colorName} onClick={() => setSelectedColor(colorName)}/>
+                        )
+                    }
                 </FormGroup>
             </Form>
         </Modal >

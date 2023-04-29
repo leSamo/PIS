@@ -2,6 +2,7 @@ import React, { Fragment, useEffect, useState } from 'react';
 import '@patternfly/react-core/dist/styles/base.css';
 import { Popover, Split, SplitItem, Button } from '@patternfly/react-core';
 import { getMostRecentMonday, getWeekCalendarTitle, getWeekNumber, goBackWeek, goForwardWeek, WEEKDAYS } from '../helpers/CalendarHelper';
+import { COLORS } from './../helpers/Constants';
 
 const Week = ({ leftButtonClickCount, rightButtonClickCount }) => {
     const [splitWidth, setSplitWidth] = useState(0);
@@ -100,7 +101,7 @@ const Week = ({ leftButtonClickCount, rightButtonClickCount }) => {
                             }
                             minWidth="400px"
                         >
-                            <div style={{ backgroundColor: "red", height: 48 * 2, width: "100%", padding: 2, marginTop: 48 * 6, cursor: "pointer", border: "1px solid black", borderRadius: 4 }}>
+                            <div style={{ backgroundColor: COLORS.red, height: 48 * 2, width: "100%", padding: 2, marginTop: 48 * 6, cursor: "pointer", border: "1px solid black", borderRadius: 4 }}>
                                 <b>Event name</b>
                             </div>
                         </Popover>
