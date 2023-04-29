@@ -17,7 +17,7 @@ import com.nimbusds.jose.crypto.RSASSASigner;
 import com.nimbusds.jwt.JWTClaimsSet;
 import com.nimbusds.jwt.SignedJWT;
 
-import cz.xoleks00.pis.data.Person;
+import cz.xoleks00.pis.data.PISUser;
 
 
 /**
@@ -26,21 +26,21 @@ import cz.xoleks00.pis.data.Person;
  */
 public class JwtTokenGenerator {
 
-    public static String generateJWTString(String jsonResource, Person person) throws Exception {
+    public static String generateJWTString(String jsonResource, PISUser PISUser) throws Exception {
 
         long currentTimeMillis = System.currentTimeMillis();
         long expirationTimeMillis = currentTimeMillis + (1000 * 1000); // + 1000 seconds
         
     // Set the user role based on the isAdmin field
-    String role = person.isAdmin() ? "admin" : "employee";
+    String role = PISUser.isAdmin() ? "admin" : "employee";
 
     // create the claim set
     JWTClaimsSet claimsSet = new JWTClaimsSet.Builder()
              .issuer("fitdemo")
              .issueTime(new Date(currentTimeMillis))
              .expirationTime(new Date(expirationTimeMillis))
-             .subject(person.getUsername())
-             .claim(Claims.upn.name(), person.getUsername())
+             .subject(PISUser.getUsername())
+             .claim(Claims.upn.name(), PISUser.getUsername())
              .claim(Claims.groups.name(), List.of(role))
              .build();
         // create the signed token

@@ -16,7 +16,7 @@ public class Car
 	private String type;
 	
 	@ManyToOne(fetch=FetchType.EAGER)
-    private Person owner;
+    private PISUser owner;
 	
 	public Car()
 	{
@@ -60,12 +60,12 @@ public class Car
         this.reg = reg;
     }
 
-    public Person getOwner()
+    public PISUser getOwner()
     {
         return owner;
     }
 
-    public void setOwner(Person owner)
+    public void setOwner(PISUser owner)
     {
         this.owner = owner;
     }

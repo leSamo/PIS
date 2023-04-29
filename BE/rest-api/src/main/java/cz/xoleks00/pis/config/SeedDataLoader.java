@@ -1,7 +1,7 @@
 package cz.xoleks00.pis.config;
 
 import cz.xoleks00.pis.data.Event;
-import cz.xoleks00.pis.data.Person;
+import cz.xoleks00.pis.data.PISUser;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
 import jakarta.servlet.ServletContextEvent;
@@ -42,89 +42,89 @@ public class SeedDataLoader implements ServletContextListener {
             em.joinTransaction();
 
             // Check if the database is empty
-            List<Person> persons = em.createQuery("SELECT p FROM Person p", Person.class).getResultList();
-            if (persons.isEmpty()) {
-                // Seeding persons
-                Person person1 = new Person();
-                person1.setName("John Doe");                
-                person1.setUsername("johnko");
-                person1.setEmail("john.doe@example.com");
-                person1.setPassword("pswd");
-                person1.setUserCreated(new Date());
-                person1.setAdmin(true);
-                em.persist(person1);
+            List<PISUser> users = em.createQuery("SELECT p FROM PISUser p", PISUser.class).getResultList();
+            if (users.isEmpty()) {
+                // Seeding users
+                PISUser user1 = new PISUser();
+                user1.setName("John Doe");                
+                user1.setUsername("johnko");
+                user1.setEmail("john.doe@example.com");
+                user1.setPassword("pswd");
+                user1.setUserCreated(new Date());
+                user1.setAdmin(true);
+                em.persist(user1);
 
-                Person person2 = new Person();
-                person2.setName("Samo Jarovic");                
-                person2.setUsername("samoo");
-                person2.setEmail("samo.samovic@example.com");
-                person2.setPassword("pswd");
-                person2.setUserCreated(new Date());
-                person2.setAdmin(false);
-                em.persist(person2);
+                PISUser user2 = new PISUser();
+                user2.setName("Samo Jarovic");                
+                user2.setUsername("samoo");
+                user2.setEmail("samo.samovic@example.com");
+                user2.setPassword("pswd");
+                user2.setUserCreated(new Date());
+                user2.setAdmin(false);
+                em.persist(user2);
 
-                Person person3 = new Person();
-                person3.setName("Michal Michalovic");                
-                person3.setUsername("michall");
-                person3.setEmail("michal.michalovic@example.com");
-                person3.setPassword("pswd");
-                person3.setUserCreated(new Date());
-                person3.setAdmin(false);
-                em.persist(person3);
+                PISUser user3 = new PISUser();
+                user3.setName("Michal Michalovic");                
+                user3.setUsername("michall");
+                user3.setEmail("michal.michalovic@example.com");
+                user3.setPassword("pswd");
+                user3.setUserCreated(new Date());
+                user3.setAdmin(false);
+                em.persist(user3);
 
-                Person[] people = new Person[10];
+                PISUser[] people = new PISUser[10];
                 for (int i = 0; i < 10; i++) {
-                    Person person = new Person();
-                    person.setName("Name" + (i + 1) + " Surname");                    
-                    person.setUsername("user" + (i + 1));
-                    person.setEmail("email" + (i + 1) + "@example.com");
-                    person.setPassword("pswd" + (i + 1));
-                    person.setUserCreated(new Date());
-                    person.setAdmin(false);
-                    em.persist(person);
-                    people[i] = person;
+                    PISUser PISUser = new PISUser();
+                    PISUser.setName("Name" + (i + 1) + " Surname");                    
+                    PISUser.setUsername("user" + (i + 1));
+                    PISUser.setEmail("email" + (i + 1) + "@example.com");
+                    PISUser.setPassword("pswd" + (i + 1));
+                    PISUser.setUserCreated(new Date());
+                    PISUser.setAdmin(false);
+                    em.persist(PISUser);
+                    people[i] = PISUser;
                 }
 
                 // Seeding events
                 Event event1 = new Event();
-                event1.setCreator(person1);
+                event1.setCreator(user1);
                 event1.setDescription("Event 1");
                 event1.setStart(new Date());
                 event1.setEnd(new Date());
-                event1.setAttendees(Arrays.asList(person2, person3));
+                event1.setAttendees(Arrays.asList(user2, user3));
                 em.persist(event1);
 
                 Event event2 = new Event();
-                event2.setCreator(person2);
+                event2.setCreator(user2);
                 event2.setDescription("Event 2");
                 event2.setStart(new Date());
                 event2.setEnd(new Date());
-                event2.setAttendees(Arrays.asList(person1, person3));
+                event2.setAttendees(Arrays.asList(user1, user3));
                 em.persist(event2);
 
                 Event event3 = new Event();
-                event3.setCreator(person2);
+                event3.setCreator(user2);
                 event3.setDescription("Event 3");
                 event3.setStart(new Date());
                 event3.setEnd(new Date());
-                event3.setAttendees(Arrays.asList(person1, person3));
+                event3.setAttendees(Arrays.asList(user1, user3));
                 em.persist(event3);
 
                 Event event4 = new Event();
-                event4.setCreator(person2);
+                event4.setCreator(user2);
                 event4.setDescription("Event 4");
                 event4.setStart(new Date());
                 event4.setEnd(new Date());
-                event4.setAttendees(Arrays.asList(person1, person3));
+                event4.setAttendees(Arrays.asList(user1, user3));
                 em.persist(event4);
 
                 
 
-                // Associate events with persons
-                person1.getEvents().add(event1);
-                person2.getEvents().add(event2);
-                person2.getEvents().add(event3);
-                person2.getEvents().add(event4);
+                // Associate events with users
+                user1.getEvents().add(event1);
+                user2.getEvents().add(event2);
+                user2.getEvents().add(event3);
+                user2.getEvents().add(event4);
 
                 Calendar calendar = Calendar.getInstance();
                 calendar.set(Calendar.DAY_OF_WEEK, Calendar.MONDAY);

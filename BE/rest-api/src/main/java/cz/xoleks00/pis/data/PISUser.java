@@ -23,13 +23,13 @@ import jakarta.persistence.GenerationType;
 
 
 @Entity
-@Table(name = "Person")
+@Table(name = "PISUser")
 @NamedQueries({
-    @NamedQuery(name="Person.findAll", query="SELECT p FROM Person p"),
-    @NamedQuery(name="Person.findByName",
-                query="SELECT p FROM Person p WHERE p.name = :name")
+    @NamedQuery(name="PISUser.findAll", query="SELECT p FROM PISUser p"),
+    @NamedQuery(name="PISUser.findByName",
+                query="SELECT p FROM PISUser p WHERE p.name = :name")
 })
-public class Person
+public class PISUser
 {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -50,7 +50,7 @@ public class Person
     @JsonbTransient
 	private Collection<Event> events;
     
-    public Person()
+    public PISUser()
     {
         cars = new ArrayList<>();
         events = new ArrayList<>();
@@ -130,7 +130,7 @@ public class Person
     @Override
     public String toString()
     {
-        return "Person: " + name + "(" + cars.size() + " cars)";
+        return "PISUser: " + name + "(" + cars.size() + " cars)";
     }
 
     public String getEmail() {

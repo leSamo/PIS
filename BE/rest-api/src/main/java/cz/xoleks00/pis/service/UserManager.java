@@ -12,46 +12,46 @@ import jakarta.persistence.PersistenceContext;
 import jakarta.persistence.TypedQuery;
 import jakarta.transaction.Transactional;
 import cz.xoleks00.pis.data.Car;
-import cz.xoleks00.pis.data.Person;
+import cz.xoleks00.pis.data.PISUser;
 
 
 /**
- * Person manager EJB
+ * PISUser manager EJB
  * @author burgetr
  */
 @RequestScoped
-public class PersonManager 
+public class UserManager 
 {
     @PersistenceContext
     private EntityManager em;
 
-    public PersonManager() 
+    public UserManager() 
     {
     }
     
     @Transactional
-    public Person save(Person p)
+    public PISUser save(PISUser p)
     {
     	return em.merge(p);
     }
 	
     @Transactional
-    public void remove(Person p)
+    public void remove(PISUser p)
     {
     	em.remove(em.merge(p));
     }
     
     @Transactional
-    public void addCar(Person p, Car c)
+    public void addCar(PISUser p, Car c)
     {
     	p.getCars().add(c);
     	c.setOwner(p);
     	save(p);
     }
     
-    public Person findByUsername(String username) {
+    public PISUser findByUsername(String username) {
         try {
-            TypedQuery<Person> query = em.createQuery("SELECT p FROM Person p WHERE p.username = :username", Person.class);
+            TypedQuery<PISUser> query = em.createQuery("SELECT p FROM PISUser p WHERE p.username = :username", PISUser.class);
             query.setParameter("username", username);
             return query.getSingleResult();
         } catch (NoResultException e) {
@@ -59,9 +59,9 @@ public class PersonManager
         }
     }
 
-    public Person findByEmail(String email) {
+    public PISUser findByEmail(String email) {
         try {
-            TypedQuery<Person> query = em.createQuery("SELECT p FROM Person p WHERE p.email = :email", Person.class);
+            TypedQuery<PISUser> query = em.createQuery("SELECT p FROM PISUser p WHERE p.email = :email", PISUser.class);
             query.setParameter("email", email);
             return query.getSingleResult();
         } catch (NoResultException e) {
@@ -69,18 +69,18 @@ public class PersonManager
         }
     }
     
-    public Person find(long id)
+    public PISUser find(long id)
     {
-    	return em.find(Person.class, id);
+    	return em.find(PISUser.class, id);
     }
 
-    public Person findById(long id) {
-    return em.find(Person.class, id);
+    public PISUser findById(long id) {
+    return em.find(PISUser.class, id);
     }
     
-    public List<Person> findAll()
+    public List<PISUser> findAll()
     {
-    	return em.createNamedQuery("Person.findAll", Person.class).getResultList();
+    	return em.createNamedQuery("PISUser.findAll", PISUser.class).getResultList();
     }
 
 }

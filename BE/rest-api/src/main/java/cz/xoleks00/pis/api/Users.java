@@ -28,21 +28,21 @@ import jakarta.ws.rs.core.UriInfo;
 import cz.xoleks00.pis.data.Car;
 import cz.xoleks00.pis.data.ErrorDTO;
 import cz.xoleks00.pis.data.Event;
-import cz.xoleks00.pis.data.PersonEventsDTO;
-import cz.xoleks00.pis.data.Person;
+import cz.xoleks00.pis.data.UserEventsDTO;
+import cz.xoleks00.pis.data.PISUser;
 import cz.xoleks00.pis.service.EventManager;
-import cz.xoleks00.pis.service.PersonManager;
+import cz.xoleks00.pis.service.UserManager;
 
 
 /*
  * TEST URL:
- * http://localhost:8080/jsf-basic/rest/people/list
+ * http://localhost:8080/jsf-basic/rest/users/list
  */
-@Path("/people")
-public class People 
+@Path("/users")
+public class Users
 {
 	@Inject
-	private PersonManager personMgr; 
+	private UserManager userMgr; 
 
     @Inject
     private EventManager eventMgr;
@@ -62,7 +62,7 @@ public class People
     /**
      * Default constructor. 
      */
-    public People() 
+    public Users() 
     {
     }
 
@@ -74,18 +74,18 @@ public class People
     @GET
     @RolesAllowed({ "admin", "employee" })
     @Produces(MediaType.APPLICATION_JSON)
-    public List<Person> getPeople() 
+    public List<PISUser> getUsers() 
     {
-    	return personMgr.findAll();
+    	return userMgr.findAll();
     }
 
     @Path("/{id}")
     @GET
     @Produces(MediaType.APPLICATION_JSON)
     @RolesAllowed({ "admin", "employee" })
-    public Response getPersonSingle(@PathParam("id") Long id) 
+    public Response getUserSingle(@PathParam("id") Long id) 
     {
-    	Person p = personMgr.find(id);
+    	PISUser p = userMgr.find(id);
     	if (p != null)
     		return Response.ok(p).build();
     	else
@@ -96,13 +96,13 @@ public class People
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
     @RolesAllowed({ "admin", "employee" })
-    public Response updatePeople(List<Person> content) 
+    public Response updateUsers(List<PISUser> content) 
     {
     	return Response.status(Response.Status.NOT_IMPLEMENTED).entity(new ErrorDTO("Not implemented")).build();
     }
     
     /**
-     * Updates a person.
+     * Updates a PISUser.
      * @param id
      * @param src
      * @return
@@ -112,9 +112,9 @@ public class People
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
     @RolesAllowed({ "admin", "employee" })
-    public Response updatePersonSingle(@PathParam("id") Long id, Person src) 
+    public Response updateUserSingle(@PathParam("id") Long id, PISUser src) 
     {
-    	Person p = personMgr.find(id);
+    	PISUser p = userMgr.find(id);
     	if (p != null)
     	{
     		p.setName(src.getName());
@@ -126,47 +126,47 @@ public class People
     }
     
     /**
-     * Adds a new person.
-     * @param person The person to add.
+     * Adds a new PISUser.
+     * @param PISUser The PISUser to add.
      * @return
      */
     @POST
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
     @RolesAllowed("admin")
-    public Response addPerson(Person person) {
-        if (!USERNAME_PATTERN.matcher(person.getUsername()).matches()) {
+    public Response addUser(PISUser PISUser) {
+        if (!USERNAME_PATTERN.matcher(PISUser.getUsername()).matches()) {
             return Response.status(Status.BAD_REQUEST).entity(new ErrorDTO("Invalid username")).build();
         }
     
-        if (!PASSWORD_PATTERN.matcher(person.getPassword()).matches()) {
+        if (!PASSWORD_PATTERN.matcher(PISUser.getPassword()).matches()) {
             return Response.status(Status.BAD_REQUEST).entity(new ErrorDTO("Invalid password")).build();
         }
     
-        if (!EMAIL_PATTERN.matcher(person.getEmail()).matches()) {
+        if (!EMAIL_PATTERN.matcher(PISUser.getEmail()).matches()) {
             return Response.status(Status.BAD_REQUEST).entity(new ErrorDTO("Invalid email")).build();
         }
     
-        Person existingByUsername = personMgr.findByUsername(person.getUsername());
+        PISUser existingByUsername = userMgr.findByUsername(PISUser.getUsername());
         if (existingByUsername != null) {
             return Response.status(Status.BAD_REQUEST).entity(new ErrorDTO("Username is taken")).build();
         }
     
-        Person existingByEmail = personMgr.findByEmail(person.getEmail());
+        PISUser existingByEmail = userMgr.findByEmail(PISUser.getEmail());
         if (existingByEmail != null) {
             return Response.status(Status.BAD_REQUEST).entity(new ErrorDTO("Email is taken")).build();
         }
     
-        person.setUserCreated(new Date()); // Set the current date as userCreated
-        person.setAdmin(false); // Set isAdmin to false by default
-        Person savedPerson = personMgr.save(person);
-        final URI uri = UriBuilder.fromPath("/people/{resourceServerId}").build(savedPerson.getId());
+        PISUser.setUserCreated(new Date()); // Set the current date as userCreated
+        PISUser.setAdmin(false); // Set isAdmin to false by default
+        PISUser savedUser = userMgr.save(PISUser);
+        final URI uri = UriBuilder.fromPath("/users/{resourceServerId}").build(savedUser.getId());
         return Response.created(uri).build(); 
     }
     
     
     /**
-     * Deletes a person.
+     * Deletes a PISUser.
      * @param id
      * @return
      */
@@ -174,22 +174,21 @@ public class People
     @DELETE
     @Produces(MediaType.APPLICATION_JSON)
     @RolesAllowed("admin")
-    public Response deletePerson(@PathParam("id") Long id) {
-        Person p = personMgr.find(id);
+    public Response deleteUser(@PathParam("id") Long id) {
+        PISUser p = userMgr.find(id);
     
         // Get the logged-in user's ID
         JsonWebToken token = (JsonWebToken) securityContext.getUserPrincipal();
         String loggedInUsername =token.getClaim("sub");
-        Person o = personMgr.findByUsername(loggedInUsername);
+        PISUser o = userMgr.findByUsername(loggedInUsername);
 
     
         if (id.equals(o.getId())) {
             return Response.status(Status.BAD_REQUEST).entity(new ErrorDTO("User cannot delete themselves")).build();
         }
-        System.out.println(id.equals(o.getId()));
     
         if (p != null) {
-            personMgr.remove(p);
+            userMgr.remove(p);
             return Response.ok().build();
         } else {
             return Response.status(Status.NOT_FOUND).entity(new ErrorDTO("not found")).build();
@@ -200,9 +199,9 @@ public class People
     @GET
     @Produces(MediaType.APPLICATION_JSON)
     @RolesAllowed({ "admin", "employee" })
-    public Response getCarsForPerson(@PathParam("id") Long id) 
+    public Response getCarsForUser(@PathParam("id") Long id) 
     {
-    	Person p = personMgr.find(id);
+    	PISUser p = userMgr.find(id);
     	if (p != null)
     		return Response.ok(p.getCars()).build();
     	else
@@ -214,12 +213,12 @@ public class People
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
     @RolesAllowed({ "admin", "employee" })
-    public Response addCarToPerson(@PathParam("id") Long personId, Car car) 
+    public Response addCarToUser(@PathParam("id") Long userId, Car car) 
     {
-    	Person p = personMgr.find(personId);
+    	PISUser p = userMgr.find(userId);
     	if (p != null)
     	{
-    		personMgr.addCar(p, car);
+    		userMgr.addCar(p, car);
     		return Response.ok(p.getCars()).build();
     	}
     	else
@@ -230,14 +229,14 @@ public class People
     @GET
     @Produces(MediaType.APPLICATION_JSON)
     @RolesAllowed({ "admin", "employee" })
-    public Response getEventsForPerson(@PathParam("id") Long id) {
-        Person p = personMgr.find(id);
+    public Response getEventsForUser(@PathParam("id") Long id) {
+        PISUser p = userMgr.find(id);
     
         if (p != null) {
             // Get the events where the user is a creator or an attendee
             List<Event> userEvents = eventMgr.findEventsByUserId(id);
-            PersonEventsDTO personEventsDTO = new PersonEventsDTO(userEvents);
-            return Response.ok(personEventsDTO).build();
+            UserEventsDTO userEventsDTO = new UserEventsDTO(userEvents);
+            return Response.ok(userEventsDTO).build();
         } else {
             return Response.status(Status.NOT_FOUND).entity(new ErrorDTO("not found")).build();
         }

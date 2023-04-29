@@ -19,7 +19,7 @@ import jakarta.ws.rs.core.UriBuilder;
 import jakarta.ws.rs.core.UriInfo;
 import cz.xoleks00.pis.data.Event;
 import cz.xoleks00.pis.service.EventManager;
-import cz.xoleks00.pis.service.PersonManager;
+import cz.xoleks00.pis.service.UserManager;
 import jakarta.ws.rs.DELETE;
 
 @Path("/events")
@@ -27,7 +27,7 @@ public class Events {
     @Inject
     private EventManager evntMgr;
     @Inject
-    private PersonManager personMgr; // Added PersonManager to verify person existence
+    private UserManager userMgr; // Added UserManager to verify PISUser existence
     @Context
     private UriInfo context;
 
@@ -50,9 +50,9 @@ public class Events {
     @Produces(MediaType.APPLICATION_JSON)
     @RolesAllowed({ "admin", "employee" })
     public Response addEvent(Event event) {
-        if (personMgr.find(event.getCreator().getId()) == null) {
+        if (userMgr.find(event.getCreator().getId()) == null) {
             return Response.status(Response.Status.BAD_REQUEST)
-                           .entity("Person with the provided ID does not exist.")
+                           .entity("PISUser with the provided ID does not exist.")
                            .build();
         }
         Event savedEvent = evntMgr.save(event);

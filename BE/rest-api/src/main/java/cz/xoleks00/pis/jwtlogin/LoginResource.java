@@ -2,8 +2,8 @@ package cz.xoleks00.pis.jwtlogin;
 
 import org.mindrot.jbcrypt.BCrypt;
 
-import cz.xoleks00.pis.data.Person;
-import cz.xoleks00.pis.service.PersonManager;
+import cz.xoleks00.pis.data.PISUser;
+import cz.xoleks00.pis.service.UserManager;
 import jakarta.inject.Inject;
 import jakarta.ws.rs.Consumes;
 import jakarta.ws.rs.POST;
@@ -17,17 +17,17 @@ import jakarta.ws.rs.core.Response.Status;
 public class LoginResource {
 
     @Inject
-    private PersonManager personManager;
+    private UserManager userManager;
 
     @POST
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
     public Response login(Credentials credentials) {
         if (credentials != null) {
-            Person person = personManager.findByUsername(credentials.getLogin());
-            if (person != null && BCrypt.checkpw(credentials.getPassword(), person.getPassword())) {
+            PISUser PISUser = userManager.findByUsername(credentials.getLogin());
+            if (PISUser != null && BCrypt.checkpw(credentials.getPassword(), PISUser.getPassword())) {
                 try {
-                    String token = JwtTokenGenerator.generateJWTString("/jwt-token.json", person);
+                    String token = JwtTokenGenerator.generateJWTString("/jwt-token.json", PISUser);
                     TokenResponse resp = new TokenResponse(token);
                     return Response.ok(resp).build();
                 } catch (Exception e) {
