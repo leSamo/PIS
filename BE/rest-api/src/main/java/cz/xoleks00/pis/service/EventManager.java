@@ -8,7 +8,7 @@ import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
 import jakarta.transaction.Transactional;
 import cz.xoleks00.pis.data.Event;
-import cz.xoleks00.pis.data.Person;
+import cz.xoleks00.pis.data.PISUser;
 import jakarta.persistence.TypedQuery;
 
 /**
@@ -29,7 +29,7 @@ public class EventManager {
      */
     @Transactional
     public Event save(Event e) {
-        Person creator = em.find(Person.class, e.getCreator().getId());
+        PISUser creator = em.find(PISUser.class, e.getCreator().getId());
         if (creator != null) {
             creator.getEvents().add(e);
             e.setCreator(creator);

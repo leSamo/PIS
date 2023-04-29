@@ -3,10 +3,10 @@ package cz.xoleks00.pis.data;
 import java.util.Collection;
 import cz.xoleks00.pis.data.Event;
 
-public class PersonEventsDTO {
+public class UserEventsDTO {
     private Collection<Event> events;
 
-    public PersonEventsDTO(Collection<Event> events) {
+    public UserEventsDTO(Collection<Event> events) {
         this.events = events;
     }
 

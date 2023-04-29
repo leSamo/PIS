@@ -4,10 +4,14 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
 
+import org.mindrot.jbcrypt.BCrypt;
+
 import jakarta.json.bind.annotation.JsonbTransient;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.Id;
 import jakarta.persistence.NamedQueries;
@@ -20,27 +24,31 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 
 
+
 @Entity
-@Table(name = "Person")
+@Table(name = "PISUser")
 @NamedQueries({
-    @NamedQuery(name="Person.findAll", query="SELECT p FROM Person p"),
-    @NamedQuery(name="Person.findByName",
-                query="SELECT p FROM Person p WHERE p.name = :name")
+    @NamedQuery(name="PISUser.findAll", query="SELECT p FROM PISUser p"),
+    @NamedQuery(name="PISUser.findByName",
+                query="SELECT p FROM PISUser p WHERE p.name = :name")
 })
-public class Person
+public class PISUser
 {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
 	private String name;
-    private String surname;
     @Column(nullable = false)
     private String password;
     private String username;
     private String email;
+    private boolean isAdmin;
+    @Column(name = "user_role")
+    @Enumerated(EnumType.STRING)
+    private UserRole userRole;
     @Temporal(TemporalType.DATE)
     //@JsonbDateFormat("yyyy-MM-dd z")
-    private Date born;
+    private Date userCreated;
     @OneToMany(cascade = { CascadeType.ALL }, fetch = FetchType.EAGER, mappedBy = "owner", orphanRemoval = true)
     @JsonbTransient
 	private Collection<Car> cars;
@@ -48,7 +56,7 @@ public class Person
     @JsonbTransient
 	private Collection<Event> events;
     
-    public Person()
+    public PISUser()
     {
         cars = new ArrayList<>();
         events = new ArrayList<>();
@@ -86,22 +94,6 @@ public class Person
     }
     
     /**
-     * @return the surname
-     */
-    public String getSurname()
-    {
-        return surname;
-    }
-    
-    /**
-     * @param surname the surname to set
-     */
-    public void setSurname(String surname)
-    {
-        this.surname = surname;
-    }
-    
-    /**
      * @return the rc
      */
     public long getId()
@@ -117,20 +109,12 @@ public class Person
         this.id = id;
     }
     
-    /**
-     * @return the born
-     */
-    public Date getBorn()
-    {
-        return born;
+    public Date getUserCreated() {
+        return userCreated;
     }
-    
-    /**
-     * @param born the born to set
-     */
-    public void setBorn(Date born)
-    {
-        this.born = born;
+
+    public void setUserCreated(Date userCreated) {
+        this.userCreated = userCreated;
     }
 
     public String getPassword() {
@@ -138,7 +122,7 @@ public class Person
     }
 
     public void setPassword(String password) {
-        this.password = password;
+        this.password = BCrypt.hashpw(password, BCrypt.gensalt());
     }
 
     public String getUsername() {
@@ -152,7 +136,7 @@ public class Person
     @Override
     public String toString()
     {
-        return "Person: " + name + " " + surname + "(" + cars.size() + " cars)";
+        return "PISUser: " + name + "(" + cars.size() + " cars)";
     }
 
     public String getEmail() {
@@ -161,6 +145,22 @@ public class Person
 
     public void setEmail(String email) {
         this.email = email;
+    }
+
+    public boolean isAdmin() {
+        return isAdmin;
+    }
+    
+    public void setAdmin(boolean isAdmin) {
+        this.isAdmin = isAdmin;
+    }
+
+    public UserRole getUserRole() {
+        return userRole;
+    }
+
+    public void setUserRole(UserRole userRole) {
+        this.userRole = userRole;
     }
     
 }

@@ -38,15 +38,15 @@ public class Event {
     private Date eventEnd;
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "creator_id", referencedColumnName = "id")
-    private Person creator;
+    private PISUser creator;
     private String name;
     private String place;
     private String description;
     @ManyToMany(fetch = FetchType.EAGER, cascade = { CascadeType.PERSIST, CascadeType.MERGE })
     @JoinTable(name = "event_attendees",
             joinColumns = @JoinColumn(name = "event_id"),
-            inverseJoinColumns = @JoinColumn(name = "person_id"))
-    private List<Person> attendees;
+            inverseJoinColumns = @JoinColumn(name = "user_id"))
+    private List<PISUser> attendees;
 
     public long getId() {
         return id;
@@ -80,11 +80,11 @@ public class Event {
         this.eventEnd = eventEnd;
     }
 
-    public Person getCreator() {
+    public PISUser getCreator() {
         return creator;
     }
 
-    public void setCreator(Person creator) {
+    public void setCreator(PISUser creator) {
         this.creator = creator;
     }
 
@@ -112,11 +112,11 @@ public class Event {
         this.description = description;
     }
 
-    public List<Person> getAttendees() {
+    public List<PISUser> getAttendees() {
         return attendees;
     }
 
-    public void setAttendees(List<Person> attendees) {
+    public void setAttendees(List<PISUser> attendees) {
         this.attendees = attendees;
     }
 
