@@ -1,35 +1,48 @@
 import React, { useState, useEffect } from 'react';
-import { Form, Button, Modal, ModalVariant, FormGroup, TextInput, ValidatedOptions, TextInputTypes, InputGroup, Checkbox } from '@patternfly/react-core';
-import { validateEmail, validatePassword } from './../helpers/Validators';
+import { Form, Button, Modal, ModalVariant, FormGroup, TextInput, ValidatedOptions, TextInputTypes, InputGroup, Checkbox, Select, SelectVariant, SelectOption } from '@patternfly/react-core';
+import { validateEmail, validatePassword } from '../helpers/Validators';
 import EyeIcon from '@patternfly/react-icons/dist/esm/icons/eye-icon';
 import EyeSlashIcon from '@patternfly/react-icons/dist/esm/icons/eye-slash-icon';
+import { decapitalize } from '../helpers/Utils';
+import { ROLES } from '../helpers/Constants';
+import { capitalize } from './../helpers/Utils';
 
-const UserEditModal = ({ isOpen, setOpen, callback, selectedUser, initialFullname, initialEmail }) => {
+const EditUserModal = ({ isOpen, setOpen, callback, selectedUser }) => {
     const [emailValue, setEmailValue] = useState('');
     const [fullnameValue, setFullnameValue] = useState('');
     const [passwordValue, setPasswordValue] = useState('');
     const [isPasswordUnchanged, setPasswordUnchanged] = useState(true);
     const [isPasswordHidden, setPasswordHidden] = useState(true);
-
-    const closeModal = () => {
-        // TODO: set all fields to empty
-        setOpen(false)
-    }
+    const [shouldUserBeAdmin, setShouldUserBeAdmin] = useState(false);
+	const [isRoleSelectOpen, setRoleSelectOpen] = useState(false);
+	const [selectedRole, setSelectedRole] = useState('manager');
 
     useEffect(() => {
         if (isOpen) {
-            setFullnameValue(initialFullname);
-            setEmailValue(initialEmail);
+            setFullnameValue(selectedUser.initialFullname);
+            setEmailValue(selectedUser.initialEmail);
             setPasswordUnchanged(true);
             setPasswordHidden(true);
             setPasswordValue('');
+            setShouldUserBeAdmin(selectedUser.isAdmin);
+            setSelectedRole(decapitalize(selectedUser.role));
         }
     }, [isOpen]);
+
+    const closeModal = () => {
+        setOpen(false)
+    }
+
+    const onRoleSelect = (event, selection) => {
+		setSelectedRole(selection);
+		setRoleSelectOpen(false);
+		document.getElementById('reg-role').focus();
+	};
 
     return (
         <Modal
             variant={ModalVariant.small}
-            title={`Editing user ${selectedUser}`}
+            title={`Editing user ${selectedUser.username}`}
             isOpen={isOpen}
             onClose={closeModal}
             actions={[
@@ -52,7 +65,7 @@ const UserEditModal = ({ isOpen, setOpen, callback, selectedUser, initialFullnam
                         isRequired
                         id="edit-username"
                         name="edit-username"
-                        value={selectedUser}
+                        value={selectedUser.username}
                         isDisabled
                     />
                 </FormGroup>
@@ -120,9 +133,42 @@ const UserEditModal = ({ isOpen, setOpen, callback, selectedUser, initialFullnam
                         </FormGroup>
                     }
                 </FormGroup>
+                <FormGroup
+					label="Role"
+					isRequired
+				>
+					<Select
+						variant={SelectVariant.single}
+						placeholderText="Select role"
+						onToggle={newState => setRoleSelectOpen(newState)}
+						onSelect={onRoleSelect}
+						selections={selectedRole}
+						isOpen={isRoleSelectOpen}
+						menuAppendTo={document.body}
+						id="reg-role"
+					>
+						{ROLES.map(option => (
+							<SelectOption
+								key={option}
+								value={option}
+							>
+								{capitalize(option)}
+							</SelectOption>
+						))}
+					</Select>
+				</FormGroup>
+				<FormGroup>
+					<Checkbox
+						label="User can manage other users"
+						isChecked={shouldUserBeAdmin}
+						onChange={newValue => setShouldUserBeAdmin(newValue)}
+						id="reg-admin"
+						name="reg-admin"
+					/>
+				</FormGroup>
             </Form>
         </Modal>
     )
 };
 
-export default UserEditModal;
+export default EditUserModal;

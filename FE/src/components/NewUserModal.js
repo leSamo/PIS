@@ -31,10 +31,6 @@ const NewUserModal = ({ isOpen, setOpen, registerCallback }) => {
 		document.getElementById('reg-role').focus();
 	};
 
-	const onRoleSelectToggle = newState => {
-
-	}
-
 	return (
 		<Modal
 			variant={ModalVariant.small}

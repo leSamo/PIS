@@ -1,3 +1,15 @@
+.pf-c-dual-list-selector__status-text {
+    display: none;
+}
+
+.pf-c-dual-list-selector__controls-item button[aria-label="Add all"] {
+    display: none;
+}
+
+.pf-c-dual-list-selector__controls-item button[aria-label="Remove all"] {
+    display: none;
+}
+
 .fade-in {
     opacity: 0;
     animation: fadeIn 0.4s ease-in-out forwards;

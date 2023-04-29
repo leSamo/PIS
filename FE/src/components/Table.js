@@ -73,14 +73,14 @@ const Table = ({ title, columns, isLoading, rows, actions, sortBy, onSort, page,
                       : columns[cellIndex].type === 'date'
                         ? new Date(cell).toLocaleString("en-US")
                         : columns[cellIndex].type === 'boolean'
-                          ? (cell ? <CheckIcon /> : <TimesIcon />)
+                          ? (cell ? <CheckIcon color="green" /> : <TimesIcon color="red" />)
                           : cell ?? columns[cellIndex].fallback
                     }
                   </Td>
                 ))}
                 <Td key={rowIndex + "_actions"}>
                   {actions && [].concat(actions).map(({ label, onClick, buttonProps, resolver }) => resolver?.(row) !== false &&
-                    <Button key="label" style={{ marginRight: 16 }} variant={ButtonVariant.secondary} onClick={() => onClick(row[0], row[1], row[2])} {...buttonProps}>{label}</Button>
+                    <Button key={label} style={{ marginRight: 16 }} variant={ButtonVariant.secondary} onClick={() => onClick(row)} {...buttonProps}>{label}</Button>
                   )}
                 </Td>
               </Tr>

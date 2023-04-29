@@ -54,7 +54,6 @@ const Week = ({ doubleLeftButtonClickCount, leftButtonClickCount, rightButtonCli
 
     useEffect(() => {
         if (doubleRightButtonClickCount > 0) {
-            console.log(currentMonday, goForwardMonth(currentMonday))
             setCurrentMonday(getMostRecentMonday(goForwardMonth(currentMonday)));
         }
     }, [doubleRightButtonClickCount])

@@ -7,7 +7,9 @@ import Table from './Table';
 import axios from 'axios';
 import { Link } from 'react-router-dom/cjs/react-router-dom';
 import NewUserModal from './NewUserModal';
-import UserEditModal from './UserEditModal';
+import EditUserModal from './EditUserModal';
+import { AngleLeftIcon } from '@patternfly/react-icons';
+import EditAssignedManagersModal from './EditAssignedManagersModal';
 
 const UserManagementPage = ({ addToastAlert }) => {
     const COLUMNS = [
@@ -23,6 +25,7 @@ const UserManagementPage = ({ addToastAlert }) => {
     const [isNewUserModalOpen, setNewUserModalOpen] = useState(false);
     const [isEditUserModalOpen, setEditUserModalOpen] = useState(false);
     const [userSelectedForEdit, setUserSelectedForEdit] = useState({});
+    const [isEditAssignedManagersModalOpen, setEditAssignedManagersModalOpen] = useState(false);
     const [data, setData] = useState([]);
     const [refreshCounter, setRefreshCounter] = useState(0);
 
@@ -46,27 +49,36 @@ const UserManagementPage = ({ addToastAlert }) => {
         }
     }
 
-    const openUserEditModal = user => {
+    const openEditUserModal = user => {
         setUserSelectedForEdit(user);
         setEditUserModalOpen(true);
+    }
+
+    const openEditAssignedManagersModal = user => {
+        setUserSelectedForEdit(user);
+        setEditAssignedManagersModalOpen(true);
     }
 
     return (
         <Card>
             <NewUserModal isOpen={isNewUserModalOpen} setOpen={setNewUserModalOpen} />
-            <UserEditModal
+            <EditUserModal
                 isOpen={isEditUserModalOpen}
                 setOpen={setEditUserModalOpen}
                 callback={() => {}}
-                selectedUser={userSelectedForEdit.username}
-                initialFullname={userSelectedForEdit.fullname}
-                initialEmail={userSelectedForEdit.email}
+                selectedUser={userSelectedForEdit}
+            />
+            <EditAssignedManagersModal
+                isOpen={isEditAssignedManagersModalOpen}
+                setOpen={setEditAssignedManagersModalOpen}
+                callback={() => {}}
+                selectedUser={userSelectedForEdit}
             />
             <CardBody>
                 <Split>
                     <SplitItem>
                         <Link to="/">
-                            <Button variant={ButtonVariant.secondary}>Go back</Button>
+                            <Button variant={ButtonVariant.secondary}><AngleLeftIcon style={{ marginRight: 8, verticalAlign: -2 }}/>Go back</Button>
                         </Link>
                     </SplitItem>
                     <SplitItem isFilled />
@@ -90,13 +102,13 @@ const UserManagementPage = ({ addToastAlert }) => {
                     actions={[
                         {
                             label: 'Edit',
-                            onClick: (username, fullname, email) => openUserEditModal({ username, fullname, email }),
+                            onClick: ([username, fullname, email, role, isAdmin]) => openEditUserModal({ username, fullname, email, role, isAdmin }),
                             buttonProps: {
                                 variant: ButtonVariant.primary
                             }
                         },  {
                             label: 'Edit assigned managers',
-                            onClick: (username) => {},
+                            onClick: ([username, fullname, email, role, isAdmin]) => openEditAssignedManagersModal({ username, fullname, email, role, isAdmin }),
                             buttonProps: {
                                 variant: ButtonVariant.secondary
                             },
