@@ -12,6 +12,7 @@ import jakarta.ws.rs.POST;
 import jakarta.ws.rs.Path;
 import jakarta.ws.rs.PathParam;
 import jakarta.ws.rs.Produces;
+import jakarta.ws.rs.QueryParam;
 import jakarta.ws.rs.core.Context;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
@@ -41,8 +42,8 @@ public class Events {
     @GET
     @Produces(MediaType.APPLICATION_JSON)
     @RolesAllowed({ "admin", "employee" })
-    public List<Event> getEvents() {
-        return evntMgr.findAll();
+    public List<Event> getEvents(@QueryParam("start_date") String startDate, @QueryParam("end_date") String endDate, @QueryParam("users") List<String> users) {
+        return evntMgr.findEventsInRange(startDate, endDate, users);
     }
 
     @POST

@@ -1,6 +1,9 @@
 package cz.xoleks00.pis.service;
 
 import java.util.List;
+import java.util.stream.Collectors;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.Date;
 
 import jakarta.enterprise.context.RequestScoped;
@@ -93,4 +96,30 @@ public class EventManager {
         return query.getResultList();
     }
 
+    @Transactional
+    public List<Event> findEventsInRange(String startDateStr, String endDateStr, List<String> users) {
+        try {
+            SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssX");
+            Date startDate = sdf.parse(startDateStr);
+            Date endDate = sdf.parse(endDateStr);
+    
+            List<Event> eventsInRange = em.createQuery("SELECT e FROM Event e WHERE (e.start BETWEEN :startDate AND :endDate) OR (e.eventEnd BETWEEN :startDate AND :endDate) OR (e.start <= :startDate AND e.eventEnd >= :endDate)", Event.class)
+                     .setParameter("startDate", startDate)
+                     .setParameter("endDate", endDate)
+                     .getResultList();
+    
+            if (users == null || users.isEmpty()) {
+                return eventsInRange;
+            }
+    
+            return eventsInRange.stream()
+                    .filter(event -> event.getAttendees().stream()
+                            .anyMatch(attendee -> users.contains(attendee.getUsername())))
+                    .collect(Collectors.toList());
+        } catch (ParseException e) {
+            throw new IllegalArgumentException("Invalid date format. Expected format: yyyy-MM-dd'T'HH:mm:ssX");
+        }
+    }
+    // http://localhost:9080/rest-api/rest/events?start_date=2023-04-28T00:00:00Z&end_date=2023-04-30T23:59:59Z&users=michall
+    // http://localhost:9080/rest-api/rest/events?start_date=2023-04-28T00:00:00Z&end_date=2023-04-30T23:59:59Z&users=michall&users=user4
 }
