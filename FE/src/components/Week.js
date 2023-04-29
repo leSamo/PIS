@@ -1,73 +1,11 @@
 import React, { Fragment, useEffect, useState } from 'react';
 import '@patternfly/react-core/dist/styles/base.css';
 import { Popover, Split, SplitItem } from '@patternfly/react-core';
-
-const WEEKDAYS = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"]
-const MONTHS = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
-
-
-// ISO long format: 2023-04-24T013:00:00.000Z or 2023-04-24T013:00:00.000+02:00
-// ISO short format: 2023-04-24 (don't forget timezone correction)
-const isoLongToShort = date => {
-    date = new Date(date)
-    return date.getFullYear() + "-" + (date.getMonth() + 1).toString().padStart(2, "0") + "-" + date.getDate().toString().padStart(2, "0");
-}
-
-const getPreviousMonday = dateString => {
-    let date = new Date(dateString);
-    let daysSinceMonday = date.getDay() === 0 ? 6 : date.getDay() - 1;
-    date.setDate(date.getDate() - daysSinceMonday);
-
-    return isoLongToShort(date);
-}
-
-const goBackWeek = input => {
-    const date = (new Date(input));
-
-    date.setDate(new Date(date).getDate() - 7);
-    return isoLongToShort(date);
-}
-
-const goForwardWeek = input => {
-    const date = (new Date(input));
-
-    date.setDate(new Date(date).getDate() + 7);
-    return isoLongToShort(date);
-}
-
-function getWeekNumber(dateString) {
-    let date = new Date(dateString);
-    let yearStart = new Date(date.getFullYear(), 0, 1);
-    let timeDiff = date.getTime() - yearStart.getTime();
-    let weekNumber = Math.ceil(timeDiff / (1000 * 3600 * 24 * 7));
-
-    return weekNumber;
-}
-
-const getCalendarTitle = (currentMonday) => {
-    currentMonday = new Date(currentMonday);
-    let currentSunday = new Date(currentMonday);
-    currentSunday.setDate(new Date(currentSunday).getDate() + 6);
-
-    const mondayMonth = MONTHS[currentMonday.getMonth()]
-    const sundayMonth = MONTHS[currentSunday.getMonth()]
-    const mondayYear = currentMonday.getFullYear()
-    const sundayYear = currentSunday.getFullYear()
-
-    if (mondayMonth === sundayMonth) {
-        return mondayMonth + " " + mondayYear;
-    }
-
-    if (mondayYear === sundayYear) {
-        return mondayMonth + " – " + sundayMonth + " " + mondayYear;
-    }
-
-    return mondayYear + " – " + sundayYear
-}
+import { getMostRecentMonday, getWeekCalendarTitle, getWeekNumber, goBackWeek, goForwardWeek, WEEKDAYS } from '../helpers/CalendarHelper';
 
 const Week = ({ leftButtonClickCount, rightButtonClickCount }) => {
     const [splitWidth, setSplitWidth] = useState(0);
-    const [currentMonday, setCurrentMonday] = useState(getPreviousMonday(new Date()));
+    const [currentMonday, setCurrentMonday] = useState(getMostRecentMonday(new Date()));
     const [weekDays, setWeekDays] = useState([]);
 
     const refreshDays = () => {
@@ -104,7 +42,6 @@ const Week = ({ leftButtonClickCount, rightButtonClickCount }) => {
         if (rightButtonClickCount > 0) {
             setCurrentMonday(goForwardWeek(currentMonday));
         }
-
     }, [rightButtonClickCount])
 
     useEffect(() => {
@@ -120,7 +57,7 @@ const Week = ({ leftButtonClickCount, rightButtonClickCount }) => {
             <SplitItem style={{ flex: 1, height: 1200 }}>
                 <b>
                     <div style={{ textAlign: "center", height: 24 }}>Week {getWeekNumber(currentMonday)}</div>
-                    <div style={{ textAlign: "center", height: 24 }}>{getCalendarTitle(currentMonday)}</div>
+                    <div style={{ textAlign: "center", height: 24 }}>{getWeekCalendarTitle(currentMonday)}</div>
                 </b>
                 {
                     [...Array(24).keys()].map(hour =>

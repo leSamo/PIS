@@ -4,6 +4,8 @@ import NewEventModal from './NewEventModal';
 import axios from 'axios';
 import Week from './Week';
 import { AngleLeftIcon, AngleRightIcon } from '@patternfly/react-icons';
+import { MONTH_VIEW, WEEK_VIEW } from '../helpers/Constants';
+import Month from './Month';
 
 const IndexPage = () => {
     const [isNewEventModalOpen, setNewEventModalOpen] = useState(false);
@@ -13,6 +15,7 @@ const IndexPage = () => {
     const [leftButtonClickCount, setLeftButtonClickCount] = useState(0);
     const [rightButtonClickCount, setRightButtonClickCount] = useState(0);
     const [selectedUsers, setSelectedUsers] = useState([]);
+    const [selectedView, setSelectedView] = useState(WEEK_VIEW);
 
     useEffect(() => {
         // TODO: Remove own self
@@ -21,7 +24,7 @@ const IndexPage = () => {
         })
     }, []);
 
-    const onDropdownToggle = (isOpen) => {
+    const onDropdownToggle = isOpen => {
         setIsDropdownOpen(isOpen);
     };
 
@@ -31,10 +34,10 @@ const IndexPage = () => {
     };
 
     const dropdownItems = [
-        <DropdownItem key="week">
+        <DropdownItem key="week" onClick={() => setSelectedView(WEEK_VIEW)}>
             Week
         </DropdownItem>,
-        <DropdownItem key="month">
+        <DropdownItem key="month" onClick={() => setSelectedView(MONTH_VIEW)}>
             Month
         </DropdownItem>
     ];
@@ -137,7 +140,10 @@ const IndexPage = () => {
                         </FlexItem>
                     </Flex>
                 </Toolbar>
-                <Week leftButtonClickCount={leftButtonClickCount} rightButtonClickCount={rightButtonClickCount}/>
+                {selectedView === WEEK_VIEW
+                    ? <Week leftButtonClickCount={leftButtonClickCount} rightButtonClickCount={rightButtonClickCount}/>
+                    : <Month leftButtonClickCount={leftButtonClickCount} rightButtonClickCount={rightButtonClickCount}/>
+                }
             </CardBody>
         </Card>
     );
