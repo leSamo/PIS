@@ -47,8 +47,7 @@ public class SeedDataLoader implements ServletContextListener {
             if (persons.isEmpty()) {
                 // Seeding persons
                 Person person1 = new Person();
-                person1.setName("John");
-                person1.setSurname("Doe");
+                person1.setName("John Doe");                
                 person1.setUsername("johnko");
                 person1.setEmail("john.doe@example.com");
                 person1.setPassword(BCrypt.hashpw("pswd", BCrypt.gensalt()));
@@ -57,8 +56,7 @@ public class SeedDataLoader implements ServletContextListener {
                 em.persist(person1);
 
                 Person person2 = new Person();
-                person2.setName("Samo");
-                person2.setSurname("Samovic");
+                person2.setName("Samo Jarovic");                
                 person2.setUsername("samoo");
                 person2.setEmail("samo.samovic@example.com");
                 person2.setPassword(BCrypt.hashpw("pswd", BCrypt.gensalt()));
@@ -67,10 +65,9 @@ public class SeedDataLoader implements ServletContextListener {
                 em.persist(person2);
 
                 Person person3 = new Person();
-                person3.setName("Michal");
-                person3.setSurname("Samovic");
+                person3.setName("Michal Michalovic");                
                 person3.setUsername("michall");
-                person3.setEmail("michal.samovic@example.com");
+                person3.setEmail("michal.michalovic@example.com");
                 person3.setPassword(BCrypt.hashpw("pswd", BCrypt.gensalt()));
                 person3.setUserCreated(new Date());
                 person3.setAdmin(false);
@@ -79,8 +76,7 @@ public class SeedDataLoader implements ServletContextListener {
                 Person[] people = new Person[10];
                 for (int i = 0; i < 10; i++) {
                     Person person = new Person();
-                    person.setName("Name" + (i + 1));
-                    person.setSurname("Surname" + (i + 1));
+                    person.setName("Name" + (i + 1) + " Surname");                    
                     person.setUsername("user" + (i + 1));
                     person.setEmail("email" + (i + 1) + "@example.com");
                     person.setPassword(BCrypt.hashpw("pswd" + (i + 1), BCrypt.gensalt()));

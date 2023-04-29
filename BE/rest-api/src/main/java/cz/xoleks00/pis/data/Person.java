@@ -4,6 +4,8 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
 
+import org.mindrot.jbcrypt.BCrypt;
+
 import jakarta.json.bind.annotation.JsonbTransient;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
@@ -33,7 +35,6 @@ public class Person
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
 	private String name;
-    private String surname;
     @Column(nullable = false)
     private String password;
     private String username;
@@ -87,22 +88,6 @@ public class Person
     }
     
     /**
-     * @return the surname
-     */
-    public String getSurname()
-    {
-        return surname;
-    }
-    
-    /**
-     * @param surname the surname to set
-     */
-    public void setSurname(String surname)
-    {
-        this.surname = surname;
-    }
-    
-    /**
      * @return the rc
      */
     public long getId()
@@ -125,14 +110,14 @@ public class Person
     public void setUserCreated(Date userCreated) {
         this.userCreated = userCreated;
     }
-    
+
 
     public String getPassword() {
         return password;
     }
 
     public void setPassword(String password) {
-        this.password = password;
+        this.password = BCrypt.hashpw(password, BCrypt.gensalt());
     }
 
     public String getUsername() {
@@ -146,7 +131,7 @@ public class Person
     @Override
     public String toString()
     {
-        return "Person: " + name + " " + surname + "(" + cars.size() + " cars)";
+        return "Person: " + name + "(" + cars.size() + " cars)";
     }
 
     public String getEmail() {

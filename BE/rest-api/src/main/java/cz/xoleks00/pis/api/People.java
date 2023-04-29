@@ -1,6 +1,7 @@
 package cz.xoleks00.pis.api;
 
 import java.net.URI;
+import java.util.Date;
 import java.util.List;
 
 import jakarta.annotation.PostConstruct;
@@ -104,7 +105,6 @@ public class People
     	if (p != null)
     	{
     		p.setName(src.getName());
-    		p.setSurname(src.getSurname());
     		p.setUserCreated(src.getUserCreated());
     		return Response.ok(p).build();
     	}
@@ -121,20 +121,19 @@ public class People
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
     @RolesAllowed("admin")
-    public Response addPerson(Person person)
-    {
-    	Person existing = personMgr.find(person.getId());
-    	if (existing == null)
-    	{
-	    	Person savedPerson = personMgr.save(person);
-	    	final URI uri = UriBuilder.fromPath("/people/{resourceServerId}").build(savedPerson.getId());
-	    	return Response.created(uri).entity(savedPerson).build();
-    	}
-    	else
-    	{
-    		return Response.status(Status.CONFLICT).entity(new ErrorDTO("duplicate id")).build();
-    	}
+    public Response addPerson(Person person) {
+        Person existing = personMgr.find(person.getId());
+        if (existing == null) {
+            person.setUserCreated(new Date()); // Set the current date as userCreated
+            person.setAdmin(false); // Set isAdmin to false by default
+            Person savedPerson = personMgr.save(person);
+            final URI uri = UriBuilder.fromPath("/people/{resourceServerId}").build(savedPerson.getId());
+            return Response.created(uri).entity(savedPerson).build();
+        } else {
+            return Response.status(Status.CONFLICT).entity(new ErrorDTO("duplicate id")).build();
+        }
     }
+    
     
     /**
      * Deletes a person.
