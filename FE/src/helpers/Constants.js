@@ -7,3 +7,5 @@ export const COLORS = {
     red: "#ff7878",
     yellow: "#F6D173"
 }
+
+export const ROLES = ["director", "manager", "assistant"]

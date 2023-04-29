@@ -1,8 +1,10 @@
 import React, { useState } from 'react';
-import { Form, FormGroup, TextInput, Button, Modal, ModalVariant, ValidatedOptions, TextInputTypes, InputGroup } from '@patternfly/react-core';
+import { Form, FormGroup, TextInput, Button, Modal, ModalVariant, ValidatedOptions, TextInputTypes, InputGroup, Checkbox, Select, SelectVariant, SelectOption } from '@patternfly/react-core';
 import { validateEmail, validateUsername, validatePassword } from './../helpers/Validators';
 import EyeIcon from '@patternfly/react-icons/dist/esm/icons/eye-icon';
 import EyeSlashIcon from '@patternfly/react-icons/dist/esm/icons/eye-slash-icon';
+import { ROLES } from '../helpers/Constants';
+import { capitalize } from './../helpers/Utils';
 
 const NewUserModal = ({ isOpen, setOpen, registerCallback }) => {
 	const [emailValue, setEmailValue] = useState('');
@@ -10,13 +12,27 @@ const NewUserModal = ({ isOpen, setOpen, registerCallback }) => {
 	const [fullnameValue, setFullnameValue] = useState('');
 	const [passwordValue, setPasswordValue] = useState('');
 	const [isPasswordHidden, setPasswordHidden] = useState(true);
-
+	const [shouldUserBeAdmin, setShouldUserBeAdmin] = useState(false);
+	const [isRoleSelectOpen, setRoleSelectOpen] = useState(false);
+	const [selectedRole, setSelectedRole] = useState('manager');
 
 	const closeModal = () => {
 		setEmailValue('')
 		setUsernameValue('')
 		setPasswordValue('')
+		setPasswordHidden(true)
+		setShouldUserBeAdmin(false)
 		setOpen(false)
+	}
+
+	const onRoleSelect = (event, selection) => {
+		setSelectedRole(selection);
+		setRoleSelectOpen(false);
+		document.getElementById('reg-role').focus();
+	};
+
+	const onRoleSelectToggle = newState => {
+
 	}
 
 	return (
@@ -37,7 +53,7 @@ const NewUserModal = ({ isOpen, setOpen, registerCallback }) => {
 				<Button key="cancel" variant="link" onClick={closeModal}>Cancel</Button>
 			]}>
 			<Form>
-			<FormGroup
+				<FormGroup
 					label="User name"
 					isRequired
 					validated={validateUsername(usernameValue) || ValidatedOptions.error}
@@ -103,6 +119,39 @@ const NewUserModal = ({ isOpen, setOpen, registerCallback }) => {
 							{isPasswordHidden ? <EyeIcon /> : <EyeSlashIcon />}
 						</Button>
 					</InputGroup>
+				</FormGroup>
+				<FormGroup
+					label="Role"
+					isRequired
+				>
+					<Select
+						variant={SelectVariant.single}
+						placeholderText="Select role"
+						onToggle={newState => setRoleSelectOpen(newState)}
+						onSelect={onRoleSelect}
+						selections={selectedRole}
+						isOpen={isRoleSelectOpen}
+						menuAppendTo={document.body}
+						id="reg-role"
+					>
+						{ROLES.map(option => (
+							<SelectOption
+								key={option}
+								value={option}
+							>
+								{capitalize(option)}
+							</SelectOption>
+						))}
+					</Select>
+				</FormGroup>
+				<FormGroup>
+					<Checkbox
+						label="User can manage other users"
+						isChecked={shouldUserBeAdmin}
+						onChange={newValue => setShouldUserBeAdmin(newValue)}
+						id="reg-admin"
+						name="reg-admin"
+					/>
 				</FormGroup>
 			</Form>
 		</Modal>
