@@ -27,7 +27,7 @@ let USERS = [{
   username: "mfindra",
   fullname: "Michal Findra",
   email: "mfindra@redhat.com",
-  role: "Boss",
+  role: "Director",
   registered: Date.now(),
   isUserAdmin: false
 }];

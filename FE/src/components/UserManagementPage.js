@@ -89,11 +89,18 @@ const UserManagementPage = ({ addToastAlert }) => {
                     isLoading={isLoading}
                     actions={[
                         {
-                            label: 'Edit user',
+                            label: 'Edit',
                             onClick: (username, fullname, email) => openUserEditModal({ username, fullname, email }),
                             buttonProps: {
                                 variant: ButtonVariant.primary
                             }
+                        },  {
+                            label: 'Edit assigned managers',
+                            onClick: (username) => {},
+                            buttonProps: {
+                                variant: ButtonVariant.secondary
+                            },
+                            resolver: row => row[3] === 'Assistant'
                         },  {
                             label: 'Remove',
                             onClick: user => deleteUserAction(user),
