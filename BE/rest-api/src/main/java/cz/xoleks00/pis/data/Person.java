@@ -111,7 +111,6 @@ public class Person
         this.userCreated = userCreated;
     }
 
-
     public String getPassword() {
         return password;
     }
