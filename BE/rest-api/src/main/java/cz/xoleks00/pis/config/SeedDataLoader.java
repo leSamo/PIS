@@ -2,6 +2,7 @@ package cz.xoleks00.pis.config;
 
 import cz.xoleks00.pis.data.Event;
 import cz.xoleks00.pis.data.PISUser;
+import cz.xoleks00.pis.data.UserRole;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
 import jakarta.servlet.ServletContextEvent;
@@ -52,6 +53,7 @@ public class SeedDataLoader implements ServletContextListener {
                 user1.setPassword("pswd");
                 user1.setUserCreated(new Date());
                 user1.setAdmin(true);
+                user1.setUserRole(UserRole.DIRECTOR);
                 em.persist(user1);
 
                 PISUser user2 = new PISUser();
@@ -60,6 +62,7 @@ public class SeedDataLoader implements ServletContextListener {
                 user2.setEmail("samo.samovic@example.com");
                 user2.setPassword("pswd");
                 user2.setUserCreated(new Date());
+                user2.setUserRole(UserRole.SECRETARY);
                 user2.setAdmin(false);
                 em.persist(user2);
 
@@ -69,6 +72,7 @@ public class SeedDataLoader implements ServletContextListener {
                 user3.setEmail("michal.michalovic@example.com");
                 user3.setPassword("pswd");
                 user3.setUserCreated(new Date());
+                user3.setUserRole(UserRole.MANAGER);
                 user3.setAdmin(false);
                 em.persist(user3);
 
@@ -81,6 +85,7 @@ public class SeedDataLoader implements ServletContextListener {
                     PISUser.setPassword("pswd" + (i + 1));
                     PISUser.setUserCreated(new Date());
                     PISUser.setAdmin(false);
+                    PISUser.setUserRole(UserRole.MANAGER);
                     em.persist(PISUser);
                     people[i] = PISUser;
                 }

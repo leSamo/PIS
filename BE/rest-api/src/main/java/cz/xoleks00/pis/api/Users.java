@@ -4,6 +4,7 @@ import java.net.URI;
 import java.util.Date;
 import java.util.List;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
 import org.eclipse.microprofile.jwt.JsonWebToken;
 
@@ -31,6 +32,7 @@ import cz.xoleks00.pis.data.ErrorDTO;
 import cz.xoleks00.pis.data.Event;
 import cz.xoleks00.pis.data.UserEventsDTO;
 import cz.xoleks00.pis.data.PISUser;
+import cz.xoleks00.pis.data.UserDTO;
 import cz.xoleks00.pis.service.EventManager;
 import cz.xoleks00.pis.service.UserManager;
 
@@ -76,13 +78,22 @@ public class Users
     @GET
     @RolesAllowed({ "admin", "employee" })
     @Produces(MediaType.APPLICATION_JSON)
-    public List<PISUser> getUsers(@QueryParam("filter") String filter) {
-        if (filter == null || filter.isEmpty()) {
-            return userMgr.findAll();
+    public List<UserDTO> getUsers(@QueryParam("filter") String filter) {
+        List<PISUser> users;
+        if (filter != null && !filter.isEmpty()) {
+            users = userMgr.findBySubstring(filter);
         } else {
-            return userMgr.findBySubstring(filter);
+            users = userMgr.findAll();
         }
+    
+        List<UserDTO> userDTOs = users.stream()
+            .map(user -> new UserDTO(user.getUsername(), user.getName(), user.getEmail(), user.getUserCreated(), user.isAdmin(), user.getUserRole()))
+            .collect(Collectors.toList());
+    
+        return userDTOs;
     }
+
+    
     @Path("/{id}")
     @GET
     @Produces(MediaType.APPLICATION_JSON)
