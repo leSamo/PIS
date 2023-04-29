@@ -18,6 +18,7 @@ import jakarta.ws.rs.PUT;
 import jakarta.ws.rs.Path;
 import jakarta.ws.rs.PathParam;
 import jakarta.ws.rs.Produces;
+import jakarta.ws.rs.QueryParam;
 import jakarta.ws.rs.core.Context;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
@@ -71,14 +72,17 @@ public class Users
     {
     }
     
+
     @GET
     @RolesAllowed({ "admin", "employee" })
     @Produces(MediaType.APPLICATION_JSON)
-    public List<PISUser> getUsers() 
-    {
-    	return userMgr.findAll();
+    public List<PISUser> getUsers(@QueryParam("filter") String filter) {
+        if (filter == null || filter.isEmpty()) {
+            return userMgr.findAll();
+        } else {
+            return userMgr.findBySubstring(filter);
+        }
     }
-
     @Path("/{id}")
     @GET
     @Produces(MediaType.APPLICATION_JSON)

@@ -10,6 +10,10 @@ import jakarta.persistence.EntityManager;
 import jakarta.persistence.NoResultException;
 import jakarta.persistence.PersistenceContext;
 import jakarta.persistence.TypedQuery;
+import jakarta.persistence.criteria.CriteriaBuilder;
+import jakarta.persistence.criteria.CriteriaQuery;
+import jakarta.persistence.criteria.Predicate;
+import jakarta.persistence.criteria.Root;
 import jakarta.transaction.Transactional;
 import cz.xoleks00.pis.data.Car;
 import cz.xoleks00.pis.data.PISUser;
@@ -67,6 +71,21 @@ public class UserManager
         } catch (NoResultException e) {
             return null;
         }
+    }
+
+    public List<PISUser> findBySubstring(String filter) {
+        CriteriaBuilder cb = em.getCriteriaBuilder();
+        CriteriaQuery<PISUser> cq = cb.createQuery(PISUser.class);
+        Root<PISUser> user = cq.from(PISUser.class);
+    
+        Predicate usernamePredicate = cb.like(user.get("username"), "%" + filter + "%");
+        Predicate namePredicate = cb.like(user.get("name"), "%" + filter + "%");
+        Predicate emailPredicate = cb.like(user.get("email"), "%" + filter + "%");
+    
+        cq.where(cb.or(usernamePredicate, namePredicate, emailPredicate));
+    
+        TypedQuery<PISUser> query = em.createQuery(cq);
+        return query.getResultList();
     }
     
     public PISUser find(long id)
