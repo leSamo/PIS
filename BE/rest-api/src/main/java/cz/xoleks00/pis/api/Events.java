@@ -2,9 +2,6 @@ package cz.xoleks00.pis.api;
 
 import java.net.URI;
 import java.util.List;
-import java.util.Date;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
 
 import jakarta.annotation.PostConstruct;
 import jakarta.annotation.security.RolesAllowed;

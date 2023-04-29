@@ -16,7 +16,6 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 
-import org.mindrot.jbcrypt.BCrypt;
 
 @WebListener
 public class SeedDataLoader implements ServletContextListener {
@@ -50,7 +49,7 @@ public class SeedDataLoader implements ServletContextListener {
                 person1.setName("John Doe");                
                 person1.setUsername("johnko");
                 person1.setEmail("john.doe@example.com");
-                person1.setPassword(BCrypt.hashpw("pswd", BCrypt.gensalt()));
+                person1.setPassword("pswd");
                 person1.setUserCreated(new Date());
                 person1.setAdmin(true);
                 em.persist(person1);
@@ -59,7 +58,7 @@ public class SeedDataLoader implements ServletContextListener {
                 person2.setName("Samo Jarovic");                
                 person2.setUsername("samoo");
                 person2.setEmail("samo.samovic@example.com");
-                person2.setPassword(BCrypt.hashpw("pswd", BCrypt.gensalt()));
+                person2.setPassword("pswd");
                 person2.setUserCreated(new Date());
                 person2.setAdmin(false);
                 em.persist(person2);
@@ -68,7 +67,7 @@ public class SeedDataLoader implements ServletContextListener {
                 person3.setName("Michal Michalovic");                
                 person3.setUsername("michall");
                 person3.setEmail("michal.michalovic@example.com");
-                person3.setPassword(BCrypt.hashpw("pswd", BCrypt.gensalt()));
+                person3.setPassword("pswd");
                 person3.setUserCreated(new Date());
                 person3.setAdmin(false);
                 em.persist(person3);
@@ -79,7 +78,7 @@ public class SeedDataLoader implements ServletContextListener {
                     person.setName("Name" + (i + 1) + " Surname");                    
                     person.setUsername("user" + (i + 1));
                     person.setEmail("email" + (i + 1) + "@example.com");
-                    person.setPassword(BCrypt.hashpw("pswd" + (i + 1), BCrypt.gensalt()));
+                    person.setPassword("pswd" + (i + 1));
                     person.setUserCreated(new Date());
                     person.setAdmin(false);
                     em.persist(person);

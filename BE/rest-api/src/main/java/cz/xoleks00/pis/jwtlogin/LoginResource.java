@@ -16,7 +16,6 @@ import jakarta.ws.rs.core.Response.Status;
 @Path("login")
 public class LoginResource {
 
-    // Inject your PersonManager or UserService here to access the database
     @Inject
     private PersonManager personManager;
 
@@ -35,10 +34,10 @@ public class LoginResource {
                     return Response.status(Status.INTERNAL_SERVER_ERROR).entity(e).build();
                 }
             } else {
-                return Response.status(Status.FORBIDDEN).entity("invalid login").build();
+                return Response.status(Status.FORBIDDEN).entity("Invalid login").build();
             }
         } else {
-            return Response.status(Status.FORBIDDEN).entity("invalid login").build();
+            return Response.status(Status.FORBIDDEN).entity("Invalid login").build();
         }
     }
 }

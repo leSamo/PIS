@@ -58,6 +58,16 @@ public class PersonManager
             return null;
         }
     }
+
+    public Person findByEmail(String email) {
+        try {
+            TypedQuery<Person> query = em.createQuery("SELECT p FROM Person p WHERE p.email = :email", Person.class);
+            query.setParameter("email", email);
+            return query.getSingleResult();
+        } catch (NoResultException e) {
+            return null;
+        }
+    }
     
     public Person find(long id)
     {
