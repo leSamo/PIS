@@ -7,6 +7,7 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 
 import jakarta.annotation.PostConstruct;
+import jakarta.annotation.security.RolesAllowed;
 import jakarta.inject.Inject;
 import jakarta.ws.rs.Consumes;
 import jakarta.ws.rs.GET;
@@ -42,6 +43,7 @@ public class Events {
 
     @GET
     @Produces(MediaType.APPLICATION_JSON)
+    @RolesAllowed({ "admin", "employee" })
     public List<Event> getEvents() {
         return evntMgr.findAll();
     }
@@ -49,6 +51,7 @@ public class Events {
     @POST
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
+    @RolesAllowed({ "admin", "employee" })
     public Response addEvent(Event event) {
         if (personMgr.find(event.getCreator().getId()) == null) {
             return Response.status(Response.Status.BAD_REQUEST)
@@ -63,6 +66,7 @@ public class Events {
     @GET
     @Path("/{userId}")
     @Produces(MediaType.APPLICATION_JSON)
+    @RolesAllowed({ "admin", "employee" })
     public List<Event> getEventsForUser(@PathParam("userId") long userId) {
         return evntMgr.findEventsByUserId(userId);
     }
@@ -70,6 +74,7 @@ public class Events {
 
     @DELETE
     @Path("/{id}")
+    @RolesAllowed({ "admin", "employee" })
     public Response deleteEvent(@PathParam("id") long id) {
         Event event = evntMgr.findById(id);
         if (event == null) {

@@ -58,6 +58,7 @@ public class People
     }
     
     @GET
+    @RolesAllowed({ "admin", "employee" })
     @Produces(MediaType.APPLICATION_JSON)
     public List<Person> getPeople() 
     {
@@ -67,6 +68,7 @@ public class People
     @Path("/{id}")
     @GET
     @Produces(MediaType.APPLICATION_JSON)
+    @RolesAllowed({ "admin", "employee" })
     public Response getPersonSingle(@PathParam("id") Long id) 
     {
     	Person p = personMgr.find(id);
@@ -79,6 +81,7 @@ public class People
     @PUT
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
+    @RolesAllowed({ "admin", "employee" })
     public Response updatePeople(List<Person> content) 
     {
     	return Response.status(Response.Status.NOT_IMPLEMENTED).entity(new ErrorDTO("Not implemented")).build();
@@ -94,6 +97,7 @@ public class People
     @PUT
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
+    @RolesAllowed({ "admin", "employee" })
     public Response updatePersonSingle(@PathParam("id") Long id, Person src) 
     {
     	Person p = personMgr.find(id);
@@ -101,7 +105,7 @@ public class People
     	{
     		p.setName(src.getName());
     		p.setSurname(src.getSurname());
-    		p.setBorn(src.getBorn());
+    		p.setUserCreated(src.getUserCreated());
     		return Response.ok(p).build();
     	}
     	else
@@ -156,6 +160,7 @@ public class People
     @Path("/{id}/cars")
     @GET
     @Produces(MediaType.APPLICATION_JSON)
+    @RolesAllowed({ "admin", "employee" })
     public Response getCarsForPerson(@PathParam("id") Long id) 
     {
     	Person p = personMgr.find(id);
@@ -169,6 +174,7 @@ public class People
     @POST
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
+    @RolesAllowed({ "admin", "employee" })
     public Response addCarToPerson(@PathParam("id") Long personId, Car car) 
     {
     	Person p = personMgr.find(personId);
@@ -184,6 +190,7 @@ public class People
     @Path("/{id}/events")
     @GET
     @Produces(MediaType.APPLICATION_JSON)
+    @RolesAllowed({ "admin", "employee" })
     public Response getEventsForPerson(@PathParam("id") Long id) {
         Person p = personMgr.find(id);
     

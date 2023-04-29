@@ -41,7 +41,7 @@ public class Person
     private boolean isAdmin;
     @Temporal(TemporalType.DATE)
     //@JsonbDateFormat("yyyy-MM-dd z")
-    private Date born;
+    private Date userCreated;
     @OneToMany(cascade = { CascadeType.ALL }, fetch = FetchType.EAGER, mappedBy = "owner", orphanRemoval = true)
     @JsonbTransient
 	private Collection<Car> cars;
@@ -118,21 +118,14 @@ public class Person
         this.id = id;
     }
     
-    /**
-     * @return the born
-     */
-    public Date getBorn()
-    {
-        return born;
+    public Date getUserCreated() {
+        return userCreated;
+    }
+
+    public void setUserCreated(Date userCreated) {
+        this.userCreated = userCreated;
     }
     
-    /**
-     * @param born the born to set
-     */
-    public void setBorn(Date born)
-    {
-        this.born = born;
-    }
 
     public String getPassword() {
         return password;
