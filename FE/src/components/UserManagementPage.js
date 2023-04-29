@@ -9,6 +9,7 @@ import { Link } from 'react-router-dom/cjs/react-router-dom';
 import NewUserModal from './NewUserModal';
 import EditUserModal from './EditUserModal';
 import { AngleLeftIcon } from '@patternfly/react-icons';
+import EditAssignedManagersModal from './EditAssignedManagersModal';
 
 const UserManagementPage = ({ addToastAlert }) => {
     const COLUMNS = [
@@ -24,6 +25,7 @@ const UserManagementPage = ({ addToastAlert }) => {
     const [isNewUserModalOpen, setNewUserModalOpen] = useState(false);
     const [isEditUserModalOpen, setEditUserModalOpen] = useState(false);
     const [userSelectedForEdit, setUserSelectedForEdit] = useState({});
+    const [isEditAssignedManagersModalOpen, setEditAssignedManagersModalOpen] = useState(false);
     const [data, setData] = useState([]);
     const [refreshCounter, setRefreshCounter] = useState(0);
 
@@ -52,12 +54,23 @@ const UserManagementPage = ({ addToastAlert }) => {
         setEditUserModalOpen(true);
     }
 
+    const openEditAssignedManagersModal = user => {
+        setUserSelectedForEdit(user);
+        setEditAssignedManagersModalOpen(true);
+    }
+
     return (
         <Card>
             <NewUserModal isOpen={isNewUserModalOpen} setOpen={setNewUserModalOpen} />
             <EditUserModal
                 isOpen={isEditUserModalOpen}
                 setOpen={setEditUserModalOpen}
+                callback={() => {}}
+                selectedUser={userSelectedForEdit}
+            />
+            <EditAssignedManagersModal
+                isOpen={isEditAssignedManagersModalOpen}
+                setOpen={setEditAssignedManagersModalOpen}
                 callback={() => {}}
                 selectedUser={userSelectedForEdit}
             />
@@ -95,7 +108,7 @@ const UserManagementPage = ({ addToastAlert }) => {
                             }
                         },  {
                             label: 'Edit assigned managers',
-                            onClick: (username) => {},
+                            onClick: ([username, fullname, email, role, isAdmin]) => openEditAssignedManagersModal({ username, fullname, email, role, isAdmin }),
                             buttonProps: {
                                 variant: ButtonVariant.secondary
                             },

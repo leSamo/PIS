@@ -15,7 +15,7 @@ const EditUserModal = ({ isOpen, setOpen, callback, selectedUser }) => {
     const [isPasswordHidden, setPasswordHidden] = useState(true);
     const [shouldUserBeAdmin, setShouldUserBeAdmin] = useState(false);
 	const [isRoleSelectOpen, setRoleSelectOpen] = useState(false);
-	const [selectedRole, setSelectedRole] = useState('');
+	const [selectedRole, setSelectedRole] = useState('manager');
 
     useEffect(() => {
         if (isOpen) {
