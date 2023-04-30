@@ -94,17 +94,17 @@ public class Users
     }
 
     
-    @Path("/{id}")
+    @Path("/{username}")
     @GET
     @Produces(MediaType.APPLICATION_JSON)
     @RolesAllowed({ "admin", "employee" })
-    public Response getUserSingle(@PathParam("id") Long id) 
-    {
-    	PISUser p = userMgr.find(id);
-    	if (p != null)
-    		return Response.ok(p).build();
-    	else
-    		return Response.status(Status.NOT_FOUND).entity(new ErrorDTO("not found")).build();
+    public Response getUserSingle(@PathParam("username") String username) {
+        PISUser p = userMgr.findByUsername(username);
+        if (p != null) {
+            return Response.ok(p).build();
+        } else {
+            return Response.status(Status.NOT_FOUND).entity(new ErrorDTO("User not found for username: " + username)).type(MediaType.APPLICATION_JSON).build();
+        }
     }
 
     @PUT
@@ -113,7 +113,7 @@ public class Users
     @RolesAllowed({ "admin", "employee" })
     public Response updateUsers(List<PISUser> content) 
     {
-    	return Response.status(Response.Status.NOT_IMPLEMENTED).entity(new ErrorDTO("Not implemented")).build();
+    	return Response.status(Response.Status.NOT_IMPLEMENTED).entity(new ErrorDTO("Not implemented")).type(MediaType.APPLICATION_JSON).build();
     }
     
     /**
@@ -137,7 +137,7 @@ public class Users
     		return Response.ok(p).build();
     	}
     	else
-    		return Response.status(Status.NOT_FOUND).entity(new ErrorDTO("not found")).build();
+    		return Response.status(Status.NOT_FOUND).entity(new ErrorDTO("not found")).type(MediaType.APPLICATION_JSON).build();
     }
     
     /**
@@ -151,25 +151,25 @@ public class Users
     @RolesAllowed("admin")
     public Response addUser(PISUser PISUser) {
         if (!USERNAME_PATTERN.matcher(PISUser.getUsername()).matches()) {
-            return Response.status(Status.BAD_REQUEST).entity(new ErrorDTO("Invalid username")).build();
+            return Response.status(Status.BAD_REQUEST).entity(new ErrorDTO("Invalid username")).type(MediaType.APPLICATION_JSON).build();
         }
     
         if (!PASSWORD_PATTERN.matcher(PISUser.getPassword()).matches()) {
-            return Response.status(Status.BAD_REQUEST).entity(new ErrorDTO("Invalid password")).build();
+            return Response.status(Status.BAD_REQUEST).entity(new ErrorDTO("Invalid password")).type(MediaType.APPLICATION_JSON).build();
         }
     
         if (!EMAIL_PATTERN.matcher(PISUser.getEmail()).matches()) {
-            return Response.status(Status.BAD_REQUEST).entity(new ErrorDTO("Invalid email")).build();
+            return Response.status(Status.BAD_REQUEST).entity(new ErrorDTO("Invalid email")).type(MediaType.APPLICATION_JSON).build();
         }
     
         PISUser existingByUsername = userMgr.findByUsername(PISUser.getUsername());
         if (existingByUsername != null) {
-            return Response.status(Status.BAD_REQUEST).entity(new ErrorDTO("Username is taken")).build();
+            return Response.status(Status.BAD_REQUEST).entity(new ErrorDTO("Username is taken")).type(MediaType.APPLICATION_JSON).build();
         }
     
         PISUser existingByEmail = userMgr.findByEmail(PISUser.getEmail());
         if (existingByEmail != null) {
-            return Response.status(Status.BAD_REQUEST).entity(new ErrorDTO("Email is taken")).build();
+            return Response.status(Status.BAD_REQUEST).entity(new ErrorDTO("Email is taken")).type(MediaType.APPLICATION_JSON).build();
         }
     
         PISUser.setUserCreated(new Date()); // Set the current date as userCreated
@@ -198,7 +198,7 @@ public class Users
         PISUser o = userMgr.findByUsername(loggedInUsername);
     
         if (username.equals(o.getUsername())) {
-            return Response.status(Status.BAD_REQUEST).entity(new ErrorDTO("User cannot delete themselves")).build();
+            return Response.status(Status.BAD_REQUEST).entity(new ErrorDTO("User cannot delete themselves")).type(MediaType.APPLICATION_JSON).build();
         }
     
         if (p != null) {
@@ -212,7 +212,7 @@ public class Users
             userMgr.remove(p);
             return Response.ok().build();
         } else {
-            return Response.status(Status.NOT_FOUND).entity(new ErrorDTO("not found")).build();
+            return Response.status(Status.NOT_FOUND).entity(new ErrorDTO("not found")).type(MediaType.APPLICATION_JSON).build();
         }
     }
     
@@ -228,7 +228,7 @@ public class Users
     	if (p != null)
     		return Response.ok(p.getCars()).build();
     	else
-    		return Response.status(Status.NOT_FOUND).entity(new ErrorDTO("not found")).build();
+    		return Response.status(Status.NOT_FOUND).entity(new ErrorDTO("not found")).type(MediaType.APPLICATION_JSON).build();
     }
    
     @Path("/{id}/cars")
@@ -245,7 +245,7 @@ public class Users
     		return Response.ok(p.getCars()).build();
     	}
     	else
-    		return Response.status(Status.NOT_FOUND).entity(new ErrorDTO("not found")).build();
+    		return Response.status(Status.NOT_FOUND).entity(new ErrorDTO("not found")).type(MediaType.APPLICATION_JSON).build();
     }
 
     @Path("/{id}/events")
@@ -261,7 +261,7 @@ public class Users
             UserEventsDTO userEventsDTO = new UserEventsDTO(userEvents);
             return Response.ok(userEventsDTO).build();
         } else {
-            return Response.status(Status.NOT_FOUND).entity(new ErrorDTO("not found")).build();
+            return Response.status(Status.NOT_FOUND).entity(new ErrorDTO("not found")).type(MediaType.APPLICATION_JSON).build();
         }
     }
    

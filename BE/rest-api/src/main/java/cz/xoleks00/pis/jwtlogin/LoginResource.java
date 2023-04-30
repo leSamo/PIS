@@ -31,13 +31,13 @@ public class LoginResource {
                     TokenResponse resp = new TokenResponse(token);
                     return Response.ok(resp).build();
                 } catch (Exception e) {
-                    return Response.status(Status.INTERNAL_SERVER_ERROR).entity(e).build();
+                    return Response.status(Status.INTERNAL_SERVER_ERROR).entity(e).type(MediaType.APPLICATION_JSON).build();
                 }
             } else {
-                return Response.status(Status.UNAUTHORIZED).entity("Invalid login").build();
+                return Response.status(Status.UNAUTHORIZED).entity("Invalid login").type(MediaType.APPLICATION_JSON).build();
             }
         } else {
-            return Response.status(Status.UNAUTHORIZED).entity("Invalid login").build();
+            return Response.status(Status.UNAUTHORIZED).entity("Invalid login").type(MediaType.APPLICATION_JSON).build();
         }
     }
 }

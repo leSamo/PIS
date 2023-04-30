@@ -63,7 +63,7 @@ public class SeedDataLoader implements ServletContextListener {
                 user2.setEmail("samo.samovic@example.com");
                 user2.setPassword("pswd");
                 user2.setUserCreated(new Date());
-                user2.setUserRole(UserRole.SECRETARY);
+                user2.setUserRole(UserRole.ASSISTANT);
                 user2.setAdmin(false);
                 em.persist(user2);
 

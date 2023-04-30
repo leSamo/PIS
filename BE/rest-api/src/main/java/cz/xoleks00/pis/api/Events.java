@@ -25,6 +25,7 @@ import jakarta.ws.rs.core.SecurityContext;
 import jakarta.ws.rs.core.UriBuilder;
 import jakarta.ws.rs.core.UriInfo;
 import cz.xoleks00.pis.data.CreateEventRequest;
+import cz.xoleks00.pis.data.ErrorDTO;
 import cz.xoleks00.pis.data.Event;
 import cz.xoleks00.pis.data.EventDTO;
 import cz.xoleks00.pis.data.PISUser;
@@ -54,12 +55,16 @@ public class Events {
     @GET
     @Produces(MediaType.APPLICATION_JSON)
     @RolesAllowed({"admin", "employee"})
-    public List<EventDTO> getEvents(@QueryParam("start_date") String startDate, @QueryParam("end_date") String endDate, @QueryParam("users") List<String> users) {
+    public Response getEvents(@QueryParam("start_date") String startDate, @QueryParam("end_date") String endDate, @QueryParam("users") List<String> users) {
         // Check if all usernames exist in the database
         if (users != null && !users.isEmpty()) {
             for (String username : users) {
                 if (userMgr.findByUsername(username) == null) {
-                    throw new WebApplicationException("Username not found: " + username, Response.Status.BAD_REQUEST);
+                    ErrorDTO errorDTO = new ErrorDTO("Username not found: " + username);
+                    return Response.status(Response.Status.BAD_REQUEST)
+                            .entity(errorDTO)
+                            .type(MediaType.APPLICATION_JSON)
+                            .build();
                 }
             }
         }
@@ -80,12 +85,17 @@ public class Events {
                     ))
                     .collect(Collectors.toList());
     
-            return eventDTOs;
+            return Response.ok(eventDTOs).build();
         } catch (IllegalArgumentException e) {
             // Invalid date format
-            throw new WebApplicationException(e.getMessage(), Response.Status.BAD_REQUEST);
+            ErrorDTO errorDTO = new ErrorDTO(e.getMessage());
+            return Response.status(Response.Status.BAD_REQUEST)
+                    .entity(errorDTO)
+                    .type(MediaType.APPLICATION_JSON)
+                    .build();
         }
     }
+    
 
     @POST
     @Consumes(MediaType.APPLICATION_JSON)
@@ -122,7 +132,7 @@ public class Events {
     public Response updateEvent(@PathParam("eventId") long eventId, CreateEventRequest createEventRequest) {
         Event event = evntMgr.findById(eventId);
         if (event == null) {
-            return Response.status(Response.Status.NOT_FOUND).entity("Event not found for ID: " + eventId).build();
+            return Response.status(Response.Status.NOT_FOUND).entity("Event not found for ID: " + eventId).type(MediaType.APPLICATION_JSON).build();
         }
         
         // Update the event properties based on the request
@@ -174,10 +184,10 @@ public class Events {
         PISUser loggedInUser = userMgr.findByUsername(loggedInUsername);
         
         if (event == null) {
-            return Response.status(Response.Status.NOT_FOUND).entity("Event not found for ID: " + id).build();
+            return Response.status(Response.Status.NOT_FOUND).entity("Event not found for ID: " + id).type(MediaType.APPLICATION_JSON).build();
         }
         if (event.getCreator().getId() != loggedInUser.getId()) {
-            return Response.status(Response.Status.UNAUTHORIZED).entity("Logged user is not event creator ID: " + id).build();
+            return Response.status(Response.Status.UNAUTHORIZED).entity("Logged user is not event creator ID: " + id).type(MediaType.APPLICATION_JSON).build();
         }
         evntMgr.removeById(id);
         return Response.noContent().build();
