@@ -29,9 +29,11 @@ import cz.xoleks00.pis.data.CreateEventRequest;
 import cz.xoleks00.pis.data.ErrorDTO;
 import cz.xoleks00.pis.data.Event;
 import cz.xoleks00.pis.data.EventDTO;
+import cz.xoleks00.pis.data.Notification;
 import cz.xoleks00.pis.data.PISUser;
 import cz.xoleks00.pis.data.UserDTO;
 import cz.xoleks00.pis.service.EventManager;
+import cz.xoleks00.pis.service.NotificationManager;
 import cz.xoleks00.pis.service.UserManager;
 import jakarta.ws.rs.DELETE;
 
@@ -40,7 +42,9 @@ public class Events {
     @Inject
     private EventManager evntMgr;
     @Inject
-    private UserManager userMgr; // Added UserManager to verify PISUser existence
+    private UserManager userMgr; 
+    @Inject
+    private NotificationManager ntfMgr; 
     @Context
     private UriInfo context;
     @Context
@@ -101,12 +105,11 @@ public class Events {
     @POST
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
-    @RolesAllowed({ "admin", "employee" })
+    @RolesAllowed({"admin", "employee"})
     public Response addEvent(CreateEventRequest createEventRequest) {
         JsonWebToken token = (JsonWebToken) securityContext.getUserPrincipal();
         String loggedInUsername = token.getClaim("sub");
         PISUser loggedInUser = userMgr.findByUsername(loggedInUsername);
-        
     
         List<PISUser> attendees = new ArrayList<>();
         for (String attendeeUsername : createEventRequest.getAttendees()) {
@@ -129,10 +132,18 @@ public class Events {
         event.setDescription(createEventRequest.getDescription());
         event.setColor(createEventRequest.getColor());
         event.setAttendees(attendees);
-
-        System.out.println(event.getCreator());
     
         Event savedEvent = evntMgr.save(event);
+    
+        // Create notifications for each attendee
+        for (PISUser attendee : attendees) {
+            Notification notification = new Notification();
+            notification.setEvent(savedEvent);
+            notification.setAttendee(attendee);
+            notification.setAck(false);
+            ntfMgr.save(notification); 
+        }
+    
         final URI uri = UriBuilder.fromPath("/events/{resourceServerId}").build(savedEvent.getId());
         return Response.created(uri).build();
     }

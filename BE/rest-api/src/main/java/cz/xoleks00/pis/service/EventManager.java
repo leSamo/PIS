@@ -89,6 +89,7 @@ public class EventManager {
         return em.find(Event.class, id);
     }
 
+    @Transactional
     public List<Event> findEventsByDateRange(Date startDate, Date endDate) {
         TypedQuery<Event> query = em.createQuery("SELECT e FROM Event e WHERE e.date >= :startDate AND e.date <= :endDate", Event.class);
         query.setParameter("startDate", startDate);
