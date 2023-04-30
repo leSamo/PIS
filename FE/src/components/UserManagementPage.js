@@ -1,17 +1,18 @@
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import {
     Card, CardBody, TextContent, Text, TextVariants, AlertVariant, ButtonVariant, Button, SplitItem, Split
 } from '@patternfly/react-core';
 import { useAction } from '../helpers/Hooks';
 import Table from './Table';
-import axios from 'axios';
 import { Link } from 'react-router-dom/cjs/react-router-dom';
 import NewUserModal from './NewUserModal';
 import EditUserModal from './EditUserModal';
 import { AngleLeftIcon } from '@patternfly/react-icons';
 import EditAssignedManagersModal from './EditAssignedManagersModal';
+import { useFetch } from './../helpers/Hooks';
+import { capitalize } from './../helpers/Utils';
 
-const UserManagementPage = ({ addToastAlert }) => {
+const UserManagementPage = ({ addToastAlert, userInfo }) => {
     const COLUMNS = [
         { label: 'User name' },
         { label: 'Full name' },
@@ -21,31 +22,22 @@ const UserManagementPage = ({ addToastAlert }) => {
         { label: 'Registered', type: 'date' }
     ];
 
-    const [isLoading, setLoading] = useState(true);
     const [isNewUserModalOpen, setNewUserModalOpen] = useState(false);
     const [isEditUserModalOpen, setEditUserModalOpen] = useState(false);
     const [userSelectedForEdit, setUserSelectedForEdit] = useState({});
     const [isEditAssignedManagersModalOpen, setEditAssignedManagersModalOpen] = useState(false);
-    const [data, setData] = useState([]);
-    const [refreshCounter, setRefreshCounter] = useState(0);
 
-    useEffect(() => {
-        axios.get("/allUsers").then(response => {
-            setData(response.data.map(row => [row.username, row.fullname, row.email, row.role, row.isUserAdmin, row.registered]));
-            setLoading(false);
-        })
-    }, [refreshCounter]);
-
-    const deleteUser = useAction('/removeUser', {});
+    const [fetchedUsers, areUsersLoading, refreshUsers] = useFetch('/users', userInfo);
+    const deleteUser = useAction('DELETE', '/users', userInfo);
 
     const deleteUserAction = name => {
         if (confirm(`Are you sure you want to remove ${name}?`)) {
             const callback = () => {
                 addToastAlert(AlertVariant.success, `User "${name}" was successfully deleted`);
-                setRefreshCounter(refreshCounter + 1);
+                refreshUsers();
             }
 
-            deleteUser({ user: name }, callback);
+            deleteUser(name, {}, callback);
         }
     }
 
@@ -96,9 +88,9 @@ const UserManagementPage = ({ addToastAlert }) => {
                             </Text>
                         </TextContent>
                     }
-                    rows={data}
+                    rows={fetchedUsers.map(user => [user.username, user.name, user.email, capitalize(user.userRole.toLowerCase()), user.admin, user.userCreated.split("[")[0]])}
                     columns={COLUMNS}
-                    isLoading={isLoading}
+                    isLoading={areUsersLoading}
                     actions={[
                         {
                             label: 'Edit',
@@ -115,7 +107,7 @@ const UserManagementPage = ({ addToastAlert }) => {
                             resolver: row => row[3] === 'Assistant'
                         },  {
                             label: 'Remove',
-                            onClick: user => deleteUserAction(user),
+                            onClick: ([username]) => deleteUserAction(username),
                             buttonProps: {
                                 variant: ButtonVariant.danger
                             }
@@ -124,7 +116,7 @@ const UserManagementPage = ({ addToastAlert }) => {
                     onSort={() => { }}
                     page={1}
                     perPage={20}
-                    itemCount={data?.length}
+                    itemCount={fetchedUsers?.length}
                     onSetPage={() => { }}
                     onPerPageSelect={() => { }}
                 />

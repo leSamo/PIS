@@ -2,7 +2,7 @@
   "name": "pis",
   "version": "0.1.0",
   "private": true,
-  "proxy": "http://localhost:5000",
+  "proxy": "https://localhost:9443",
   "dependencies": {
     "@patternfly/react-core": "^4.276.6",
     "@patternfly/react-icons": "^4.93.6",
