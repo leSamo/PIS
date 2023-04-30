@@ -1,6 +1,7 @@
 package cz.xoleks00.pis.api;
 
 import java.net.URI;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -23,6 +24,7 @@ import jakarta.ws.rs.core.Response;
 import jakarta.ws.rs.core.SecurityContext;
 import jakarta.ws.rs.core.UriBuilder;
 import jakarta.ws.rs.core.UriInfo;
+import jakarta.ws.rs.core.Response.Status;
 import cz.xoleks00.pis.data.CreateEventRequest;
 import cz.xoleks00.pis.data.ErrorDTO;
 import cz.xoleks00.pis.data.Event;
@@ -104,19 +106,31 @@ public class Events {
         JsonWebToken token = (JsonWebToken) securityContext.getUserPrincipal();
         String loggedInUsername = token.getClaim("sub");
         PISUser loggedInUser = userMgr.findByUsername(loggedInUsername);
+        
     
-        List<PISUser> attendees = createEventRequest.getAttendees().stream()
-                .map(userMgr::findByUsername)
-                .collect(Collectors.toList());
+        List<PISUser> attendees = new ArrayList<>();
+        for (String attendeeUsername : createEventRequest.getAttendees()) {
+            PISUser attendee = userMgr.findByUsername(attendeeUsername);
+            if (attendee == null) {
+                // Return 400 Bad Request if the username does not exist
+                return Response.status(Status.BAD_REQUEST)
+                        .entity(new ErrorDTO("Username not found: " + attendeeUsername))
+                        .type(MediaType.APPLICATION_JSON)
+                        .build();
+            }
+            attendees.add(attendee);
+        }
     
         Event event = new Event();
+        event.setCreator(loggedInUser);
         event.setStart(createEventRequest.getStart());
         event.setEnd(createEventRequest.getEnd());
         event.setName(createEventRequest.getName());
         event.setDescription(createEventRequest.getDescription());
         event.setColor(createEventRequest.getColor());
         event.setAttendees(attendees);
-        event.setCreator(loggedInUser);
+
+        System.out.println(event.getCreator());
     
         Event savedEvent = evntMgr.save(event);
         final URI uri = UriBuilder.fromPath("/events/{resourceServerId}").build(savedEvent.getId());

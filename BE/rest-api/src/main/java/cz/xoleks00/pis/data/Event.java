@@ -45,10 +45,6 @@ public class Event {
     @Enumerated(EnumType.STRING)
     private EventColor color;
     private String description;
-    @ManyToMany(fetch = FetchType.EAGER, cascade = { CascadeType.PERSIST, CascadeType.MERGE})
-    @JoinTable(name = "event_attendees",
-            joinColumns = @JoinColumn(name = "event_id"),
-            inverseJoinColumns = @JoinColumn(name = "user_id"))
     private List<PISUser> attendees;
 
     public long getId() {
