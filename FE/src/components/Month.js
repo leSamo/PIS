@@ -1,4 +1,4 @@
-import { Text, TextContent, Popover, Button, Stack, StackItem } from '@patternfly/react-core';
+import { Text, TextContent, Popover, Button, Stack, StackItem, AlertVariant } from '@patternfly/react-core';
 import React, { Fragment, useEffect, useState } from 'react';
 import {
     daysApart,
@@ -17,13 +17,27 @@ import {
 } from '../helpers/CalendarHelper';
 import { COLORS } from './../helpers/Constants';
 import { playFadeInAnimation } from './../helpers/Utils';
-import { useFetch } from './../helpers/Hooks';
+import { useAction, useFetch } from './../helpers/Hooks';
 
-const Month = ({ userInfo, doubleLeftButtonClickCount, leftButtonClickCount, rightButtonClickCount, doubleRightButtonClickCount, refreshCounter }) => {
+// TODO: Handle overflowing events
+const Month = ({ userInfo, addToastAlert, doubleLeftButtonClickCount, leftButtonClickCount, rightButtonClickCount, doubleRightButtonClickCount, refreshCounter }) => {
     const [firstDayOfMonth, setFirstDayOfMonth] = useState(getFirstDayOfMonth(new Date()));
     const [fetchedEvents, areEventsLoading, refreshEvents] = useFetch('/events', userInfo, { users: userInfo.upn, start_date: (new Date(getMostRecentMonday(firstDayOfMonth))).toISOString().replace(/\.[0-9]{3}/, ''), end_date: (new Date(getFirstFollowingSunday(goForwardMonth(firstDayOfMonth)))).toISOString().replace(/\.[0-9]{3}/, '') });
 
     console.log(fetchedEvents);
+
+    const deleteEvent = useAction('DELETE', '/events', userInfo);
+
+    const deleteEventAction = eventId => {
+        if (confirm(`Are you sure you want to remove this event?`)) {
+            const callback = () => {
+                addToastAlert(AlertVariant.success, `Event was successfully deleted`);
+                refreshEvents();
+            }
+
+            deleteEvent(eventId, {}, callback);
+        }
+    }
 
     const refreshDays = () => {
         refreshEvents();
@@ -129,7 +143,7 @@ const Month = ({ userInfo, doubleLeftButtonClickCount, leftButtonClickCount, rig
                                                                 }
                                                             </Fragment>
                                                         }
-                                                        footerContent={
+                                                        footerContent={event.creator.username === userInfo.upn &&
                                                             <Stack hasGutter>
                                                                 <StackItem>
                                                                     <Button variant="primary" style={{ width: "100%" }}>
@@ -137,7 +151,7 @@ const Month = ({ userInfo, doubleLeftButtonClickCount, leftButtonClickCount, rig
                                                                     </Button>
                                                                 </StackItem>
                                                                 <StackItem>
-                                                                    <Button variant="danger" style={{ width: "100%" }}>
+                                                                    <Button variant="danger" style={{ width: "100%" }} onClick={() => deleteEventAction(event.id)}>
                                                                         Delete
                                                                     </Button>
                                                                 </StackItem>
