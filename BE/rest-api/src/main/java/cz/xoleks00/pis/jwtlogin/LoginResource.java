@@ -34,10 +34,10 @@ public class LoginResource {
                     return Response.status(Status.INTERNAL_SERVER_ERROR).entity(e).build();
                 }
             } else {
-                return Response.status(Status.FORBIDDEN).entity("Invalid login").build();
+                return Response.status(Status.UNAUTHORIZED).entity("Invalid login").build();
             }
         } else {
-            return Response.status(Status.FORBIDDEN).entity("Invalid login").build();
+            return Response.status(Status.UNAUTHORIZED).entity("Invalid login").build();
         }
     }
 }

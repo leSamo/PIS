@@ -11,6 +11,7 @@ import jakarta.annotation.security.RolesAllowed;
 import jakarta.inject.Inject;
 import jakarta.ws.rs.Consumes;
 import jakarta.ws.rs.GET;
+import jakarta.ws.rs.PATCH;
 import jakarta.ws.rs.POST;
 import jakarta.ws.rs.Path;
 import jakarta.ws.rs.PathParam;
@@ -113,6 +114,46 @@ public class Events {
         return Response.created(uri).build();
     }
 
+    @PATCH
+    @Path("/{eventId}")
+    @Consumes(MediaType.APPLICATION_JSON)
+    @Produces(MediaType.APPLICATION_JSON)
+    @RolesAllowed({ "admin", "employee" })
+    public Response updateEvent(@PathParam("eventId") long eventId, CreateEventRequest createEventRequest) {
+        Event event = evntMgr.findById(eventId);
+        if (event == null) {
+            return Response.status(Response.Status.NOT_FOUND).entity("Event not found for ID: " + eventId).build();
+        }
+        
+        // Update the event properties based on the request
+        if (createEventRequest.getStart() != null) {
+            event.setStart(createEventRequest.getStart());
+        }
+        if (createEventRequest.getEnd() != null) {
+            event.setEnd(createEventRequest.getEnd());
+        }
+        if (createEventRequest.getName() != null) {
+            event.setName(createEventRequest.getName());
+        }
+        if (createEventRequest.getDescription() != null) {
+            event.setDescription(createEventRequest.getDescription());
+        }
+        if (createEventRequest.getColor() != null) {
+            event.setColor(createEventRequest.getColor());
+        }
+        if (createEventRequest.getAttendees() != null) {
+            List<PISUser> attendees = createEventRequest.getAttendees().stream()
+                    .map(userMgr::findByUsername)
+                    .collect(Collectors.toList());
+            event.setAttendees(attendees);
+        }
+        
+        // Save the updated event
+        Event updatedEvent = evntMgr.save(event);
+        
+        return Response.ok().entity(updatedEvent).build();
+    }
+    
     @GET
     @Path("/{userId}")
     @Produces(MediaType.APPLICATION_JSON)
@@ -127,8 +168,16 @@ public class Events {
     @RolesAllowed({ "admin", "employee" })
     public Response deleteEvent(@PathParam("id") long id) {
         Event event = evntMgr.findById(id);
+
+        JsonWebToken token = (JsonWebToken) securityContext.getUserPrincipal();
+        String loggedInUsername = token.getClaim("sub");
+        PISUser loggedInUser = userMgr.findByUsername(loggedInUsername);
+        
         if (event == null) {
             return Response.status(Response.Status.NOT_FOUND).entity("Event not found for ID: " + id).build();
+        }
+        if (event.getCreator().getId() != loggedInUser.getId()) {
+            return Response.status(Response.Status.UNAUTHORIZED).entity("Logged user is not event creator ID: " + id).build();
         }
         evntMgr.removeById(id);
         return Response.noContent().build();

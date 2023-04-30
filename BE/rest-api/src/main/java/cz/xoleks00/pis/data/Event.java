@@ -46,7 +46,7 @@ public class Event {
     @Enumerated(EnumType.STRING)
     private EventColor color;
     private String description;
-    @ManyToMany(fetch = FetchType.EAGER, cascade = { CascadeType.PERSIST, CascadeType.MERGE })
+    @ManyToMany(fetch = FetchType.EAGER, cascade = { CascadeType.PERSIST, CascadeType.MERGE})
     @JoinTable(name = "event_attendees",
             joinColumns = @JoinColumn(name = "event_id"),
             inverseJoinColumns = @JoinColumn(name = "user_id"))
@@ -135,6 +135,6 @@ public class Event {
     @Override
     public String toString() {
         return "Event [id=" + id + ", title=" + title + ", start=" + start + ", end=" + eventEnd + ", creator=" + creator
-                + ", name=" + name + ", place=" + place + ", description=" + description + "]";
+                + ", name=" + name + ", place=" + place + ", description=" + description + "attendees" + attendees +"]";
     }
 }

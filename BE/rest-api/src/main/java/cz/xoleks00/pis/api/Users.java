@@ -182,33 +182,41 @@ public class Users
     
     /**
      * Deletes a PISUser.
-     * @param id
+     * @param username
      * @return
      */
-    @Path("/{id}")
+    @Path("/{username}")
     @DELETE
     @Produces(MediaType.APPLICATION_JSON)
     @RolesAllowed("admin")
-    public Response deleteUser(@PathParam("id") Long id) {
-        PISUser p = userMgr.find(id);
+    public Response deleteUser(@PathParam("username") String username) {
+        PISUser p = userMgr.findByUsername(username);
     
         // Get the logged-in user's ID
         JsonWebToken token = (JsonWebToken) securityContext.getUserPrincipal();
-        String loggedInUsername =token.getClaim("sub");
+        String loggedInUsername = token.getClaim("sub");
         PISUser o = userMgr.findByUsername(loggedInUsername);
-
     
-        if (id.equals(o.getId())) {
+        if (username.equals(o.getUsername())) {
             return Response.status(Status.BAD_REQUEST).entity(new ErrorDTO("User cannot delete themselves")).build();
         }
     
         if (p != null) {
+            // Remove the user from all associated events
+            List<Event> events = eventMgr.findEventsByAttendee(p);
+            for (Event event : events) {
+                event.getAttendees().remove(p);
+                eventMgr.update(event);
+            }
+    
             userMgr.remove(p);
             return Response.ok().build();
         } else {
             return Response.status(Status.NOT_FOUND).entity(new ErrorDTO("not found")).build();
         }
     }
+    
+    
     
     @Path("/{id}/cars")
     @GET

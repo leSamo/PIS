@@ -120,6 +120,19 @@ public class EventManager {
             throw new IllegalArgumentException("Invalid date format. Expected format: yyyy-MM-dd'T'HH:mm:ssX");
         }
     }
+
+    @Transactional
+    public List<Event> findEventsByAttendee(PISUser user) {
+        return em.createQuery("SELECT e FROM Event e JOIN e.attendees a WHERE a = :user", Event.class)
+                 .setParameter("user", user)
+                 .getResultList();
+    }
+    
+
+    @Transactional
+    public void update(Event event) {
+        em.merge(event);
+    }
     // http://localhost:9080/rest-api/rest/events?start_date=2023-04-28T00:00:00Z&end_date=2023-04-30T23:59:59Z&users=michall
     // http://localhost:9080/rest-api/rest/events?start_date=2023-04-28T00:00:00Z&end_date=2023-04-30T23:59:59Z&users=michall&users=user4
 }
