@@ -17,6 +17,7 @@ import jakarta.inject.Inject;
 import jakarta.ws.rs.Consumes;
 import jakarta.ws.rs.DELETE;
 import jakarta.ws.rs.GET;
+import jakarta.ws.rs.PATCH;
 import jakarta.ws.rs.POST;
 import jakarta.ws.rs.PUT;
 import jakarta.ws.rs.Path;
@@ -110,15 +111,6 @@ public class Users
         }
     }
 
-    @PUT
-    @Consumes(MediaType.APPLICATION_JSON)
-    @Produces(MediaType.APPLICATION_JSON)
-    @RolesAllowed({ "admin", "employee" })
-    public Response updateUsers(List<PISUser> content) 
-    {
-    	return Response.status(Response.Status.NOT_IMPLEMENTED).entity(new ErrorDTO("Not implemented")).type(MediaType.APPLICATION_JSON).build();
-    }
-    
     /**
      * Updates a PISUser.
      * @param id
@@ -143,6 +135,55 @@ public class Users
     		return Response.status(Status.NOT_FOUND).entity(new ErrorDTO("not found")).type(MediaType.APPLICATION_JSON).build();
     }
     
+
+    /**
+     * Update a PISUser.
+     * @param username The username of the PISUser to update.
+     * @param src The PISUser object containing the updated fields.
+     * @return A response indicating success or failure.
+     */
+    @Path("/{username}")
+    @PATCH
+    @Consumes(MediaType.APPLICATION_JSON)
+    @Produces(MediaType.APPLICATION_JSON)
+    @RolesAllowed({ "admin" })
+    public Response patchUser(@PathParam("username") String username, PISUser src) {
+        PISUser p = userMgr.findByUsername(username);
+        if (p != null) {
+            boolean isUpdated = false;
+            
+            if (src.getName() != null && !src.getName().isEmpty()) {
+                p.setName(src.getName());
+                isUpdated = true;
+            }
+
+            if (src.getPassword() != null && !src.getPassword().isEmpty() && PASSWORD_PATTERN.matcher(src.getPassword()).matches()) {
+                p.setPassword(src.getPassword());
+                isUpdated = true;
+            }
+
+            if (src.getEmail() != null && !src.getEmail().isEmpty() && EMAIL_PATTERN.matcher(src.getEmail()).matches()) {
+                p.setEmail(src.getEmail());
+                isUpdated = true;
+            }
+
+            if (src.getUserRole() != null) {
+                p.setUserRole(src.getUserRole());
+                isUpdated = true;
+            }
+
+            if (isUpdated) {
+                p.setAdmin(src.isAdmin());
+                userMgr.save(p);
+                return Response.ok(p).build();
+            } else {
+                return Response.status(Status.BAD_REQUEST).entity(new ErrorDTO("No valid updates provided")).type(MediaType.APPLICATION_JSON).build();
+            }
+        } else {
+            return Response.status(Status.NOT_FOUND).entity(new ErrorDTO("User not found for username: " + username)).type(MediaType.APPLICATION_JSON).build();
+        }
+    }
+
     /**
      * Adds a new PISUser.
      * @param PISUser The PISUser to add.
