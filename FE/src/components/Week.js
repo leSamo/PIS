@@ -1,19 +1,34 @@
 import React, { Fragment, useEffect, useState } from 'react';
 import '@patternfly/react-core/dist/styles/base.css';
-import { Popover, Split, SplitItem, Button, Stack, StackItem } from '@patternfly/react-core';
+import { Popover, Split, SplitItem, Button, Stack, StackItem, AlertVariant } from '@patternfly/react-core';
 import { getMostRecentMonday, getWeekCalendarTitle, getWeekNumber, goBackMonth, goBackWeek, goForwardMonth, goForwardWeek, WEEKDAYS, isoLongToShort, daysApart } from '../helpers/CalendarHelper';
 import { COLORS } from './../helpers/Constants';
 import { playFadeInAnimation } from './../helpers/Utils';
-import { useFetch } from './../helpers/Hooks';
+import { useAction, useFetch } from './../helpers/Hooks';
 import { prettyTime } from './../helpers/CalendarHelper';
 
-const Week = ({ userInfo, doubleLeftButtonClickCount, leftButtonClickCount, rightButtonClickCount, doubleRightButtonClickCount, refreshCounter }) => {
+// TODO: Handle overlapping events
+// TODO: Handle multiday events
+const Week = ({ userInfo, addToastAlert, doubleLeftButtonClickCount, leftButtonClickCount, rightButtonClickCount, doubleRightButtonClickCount, refreshCounter }) => {
     const [splitWidth, setSplitWidth] = useState(0);
     const [currentMonday, setCurrentMonday] = useState(getMostRecentMonday(new Date()));
     const [weekDays, setWeekDays] = useState([]);
     const [fetchedEvents, areEventsLoading, refreshEvents] = useFetch('/events', userInfo, { users: userInfo.upn, start_date: (new Date(currentMonday)).toISOString().replace(/\.[0-9]{3}/, ''), end_date: (new Date(goForwardWeek(currentMonday))).toISOString().replace(/\.[0-9]{3}/, '') });
 
     console.log(fetchedEvents);
+
+    const deleteEvent = useAction('DELETE', '/events', userInfo);
+
+    const deleteEventAction = eventId => {
+        if (confirm(`Are you sure you want to remove this event?`)) {
+            const callback = () => {
+                addToastAlert(AlertVariant.success, `Event was successfully deleted`);
+                refreshEvents();
+            }
+
+            deleteEvent(eventId, {}, callback);
+        }
+    }
 
     const refreshDays = () => {
         const weekDays = [];
@@ -119,7 +134,7 @@ const Week = ({ userInfo, doubleLeftButtonClickCount, leftButtonClickCount, righ
 
             </SplitItem>
             {WEEKDAYS.map((weekday, index) => (
-                <SplitItem key={weekday} style={{
+                <SplitItem key={weekday} className="weekday-split" style={{
                     flex: 1,
                     height: 1200,
                     border: "1px solid black",
@@ -147,7 +162,7 @@ const Week = ({ userInfo, doubleLeftButtonClickCount, leftButtonClickCount, righ
                                         }
                                     </Fragment>
                                 }
-                                footerContent={
+                                footerContent={event.creator.username === userInfo.upn &&
                                     <Stack hasGutter>
                                         <StackItem>
                                             <Button variant="primary" style={{ width: "100%" }}>
@@ -155,7 +170,7 @@ const Week = ({ userInfo, doubleLeftButtonClickCount, leftButtonClickCount, righ
                                             </Button>
                                         </StackItem>
                                         <StackItem>
-                                            <Button variant="danger" style={{ width: "100%" }}>
+                                            <Button variant="danger" style={{ width: "100%" }} onClick={() => deleteEventAction(event.id)}>
                                                 Delete
                                             </Button>
                                         </StackItem>
@@ -166,12 +181,13 @@ const Week = ({ userInfo, doubleLeftButtonClickCount, leftButtonClickCount, righ
                                 <div style={{
                                     backgroundColor: COLORS[event.color.toLowerCase()],
                                     height: event.height,
-                                    width: "100%",
+                                    width: document.querySelectorAll(".weekday-split")[index].offsetWidth - 2,
                                     padding: 2,
                                     marginTop: event.marginTop,
                                     cursor: "pointer",
                                     border: "1px solid black",
-                                    borderRadius: 4
+                                    borderRadius: 4,
+                                    position: "absolute"
                                 }}>
                                     <b>{event.name}</b>
                                 </div>

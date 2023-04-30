@@ -8,7 +8,7 @@ import Month from './Month';
 import { isSubstring } from '../helpers/Utils';
 import { useAction } from '../helpers/Hooks';
 
-const IndexPage = ({ userInfo }) => {
+const IndexPage = ({ userInfo, addToastAlert }) => {
     const [isNewEventModalOpen, setNewEventModalOpen] = useState(false);
     const [allUsers, setAllUsers] = React.useState([]);
     const [isDropdownOpen, setIsDropdownOpen] = React.useState(false);
@@ -166,6 +166,7 @@ const IndexPage = ({ userInfo }) => {
                 {selectedView === WEEK_VIEW
                     ? <Week
                         userInfo={userInfo}
+                        addToastAlert={addToastAlert}
                         doubleLeftButtonClickCount={doubleLeftButtonClickCount}
                         leftButtonClickCount={leftButtonClickCount}
                         rightButtonClickCount={rightButtonClickCount}
@@ -174,6 +175,7 @@ const IndexPage = ({ userInfo }) => {
                     />
                     : <Month
                         userInfo={userInfo}
+                        addToastAlert={addToastAlert}
                         doubleLeftButtonClickCount={doubleLeftButtonClickCount}
                         leftButtonClickCount={leftButtonClickCount}
                         rightButtonClickCount={rightButtonClickCount}
