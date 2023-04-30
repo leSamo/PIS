@@ -40,7 +40,7 @@ export const useAction = (verb, endpoint, userInfo = {}) => {
 				userInfo.raw && { headers: { 'Authorization': `Bearer ${userInfo.raw}` } }
 			)
 				.then(response => successCallback?.(response))
-				.catch(error => errorCallback?.(error));
+				.catch(error => errorCallback?.(error?.response?.data?.message));
 		}
 		else if (verb === "DELETE") {
 			axios.delete(
@@ -48,7 +48,7 @@ export const useAction = (verb, endpoint, userInfo = {}) => {
 				userInfo.raw && { headers: { 'Authorization': `Bearer ${userInfo.raw}` } }
 			)
 				.then(response => successCallback?.(response))
-				.catch(error => errorCallback?.(error));
+				.catch(error => errorCallback?.(error?.response?.data?.message));
 		}
 	}
 

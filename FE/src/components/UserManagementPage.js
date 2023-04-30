@@ -53,7 +53,18 @@ const UserManagementPage = ({ addToastAlert, userInfo }) => {
 
     return (
         <Card>
-            <NewUserModal isOpen={isNewUserModalOpen} setOpen={setNewUserModalOpen} />
+            <NewUserModal
+                isOpen={isNewUserModalOpen}
+                setOpen={setNewUserModalOpen}
+                userInfo={userInfo}
+                successCallback={() => {
+                    refreshUsers();
+                    addToastAlert(AlertVariant.success, `User was successfully created`);
+                }}
+                failureCallback={reason => {
+                    addToastAlert(AlertVariant.danger, `Failed to create user: ${reason}`);
+                }}
+            />
             <EditUserModal
                 isOpen={isEditUserModalOpen}
                 setOpen={setEditUserModalOpen}
@@ -110,12 +121,13 @@ const UserManagementPage = ({ addToastAlert, userInfo }) => {
                             onClick: ([username]) => deleteUserAction(username),
                             buttonProps: {
                                 variant: ButtonVariant.danger
-                            }
+                            },
+                            resolver: ([username]) => username !== userInfo.upn
                         }]}
                     sortBy={null}
                     onSort={() => { }}
                     page={1}
-                    perPage={20}
+                    perPage={10000}
                     itemCount={fetchedUsers?.length}
                     onSetPage={() => { }}
                     onPerPageSelect={() => { }}
