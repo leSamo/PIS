@@ -2,6 +2,9 @@ package cz.xoleks00.pis.api;
 
 import java.net.URI;
 import java.util.List;
+import java.util.stream.Collectors;
+
+import org.eclipse.microprofile.jwt.JsonWebToken;
 
 import jakarta.annotation.PostConstruct;
 import jakarta.annotation.security.RolesAllowed;
@@ -13,12 +16,18 @@ import jakarta.ws.rs.Path;
 import jakarta.ws.rs.PathParam;
 import jakarta.ws.rs.Produces;
 import jakarta.ws.rs.QueryParam;
+import jakarta.ws.rs.WebApplicationException;
 import jakarta.ws.rs.core.Context;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
+import jakarta.ws.rs.core.SecurityContext;
 import jakarta.ws.rs.core.UriBuilder;
 import jakarta.ws.rs.core.UriInfo;
+import cz.xoleks00.pis.data.CreateEventRequest;
 import cz.xoleks00.pis.data.Event;
+import cz.xoleks00.pis.data.EventDTO;
+import cz.xoleks00.pis.data.PISUser;
+import cz.xoleks00.pis.data.UserDTO;
 import cz.xoleks00.pis.service.EventManager;
 import cz.xoleks00.pis.service.UserManager;
 import jakarta.ws.rs.DELETE;
@@ -31,6 +40,8 @@ public class Events {
     private UserManager userMgr; // Added UserManager to verify PISUser existence
     @Context
     private UriInfo context;
+    @Context
+    private SecurityContext securityContext;
 
     public Events() {
     }
@@ -41,24 +52,65 @@ public class Events {
 
     @GET
     @Produces(MediaType.APPLICATION_JSON)
-    @RolesAllowed({ "admin", "employee" })
-    public List<Event> getEvents(@QueryParam("start_date") String startDate, @QueryParam("end_date") String endDate, @QueryParam("users") List<String> users) {
-        return evntMgr.findEventsInRange(startDate, endDate, users);
+    @RolesAllowed({"admin", "employee"})
+    public List<EventDTO> getEvents(@QueryParam("start_date") String startDate, @QueryParam("end_date") String endDate, @QueryParam("users") List<String> users) {
+        // Check if all usernames exist in the database
+        if (users != null && !users.isEmpty()) {
+            for (String username : users) {
+                if (userMgr.findByUsername(username) == null) {
+                    throw new WebApplicationException("Username not found: " + username, Response.Status.BAD_REQUEST);
+                }
+            }
+        }
+    
+        try {
+            List<Event> events = evntMgr.findEventsInRange(startDate, endDate, users);
+    
+            List<EventDTO> eventDTOs = events.stream()
+                    .map(event -> new EventDTO(
+                            event.getId(),
+                            event.getTitle(),
+                            event.getDescription(),
+                            event.getStart(),
+                            event.getEnd(),
+                            event.getColor(),
+                            new UserDTO(event.getCreator().getUsername(), event.getCreator().getName(), event.getCreator().getEmail(), event.getCreator().getUserCreated(), event.getCreator().isAdmin(), event.getCreator().getUserRole(), event.getCreator().getId()),
+                            event.getAttendees().stream().map(attendee -> new UserDTO(attendee.getUsername(), attendee.getName(), attendee.getEmail(), attendee.getUserCreated(), attendee.isAdmin(), attendee.getUserRole(), attendee.getId())).collect(Collectors.toList())
+                    ))
+                    .collect(Collectors.toList());
+    
+            return eventDTOs;
+        } catch (IllegalArgumentException e) {
+            // Invalid date format
+            throw new WebApplicationException(e.getMessage(), Response.Status.BAD_REQUEST);
+        }
     }
 
     @POST
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
     @RolesAllowed({ "admin", "employee" })
-    public Response addEvent(Event event) {
-        if (userMgr.find(event.getCreator().getId()) == null) {
-            return Response.status(Response.Status.BAD_REQUEST)
-                           .entity("PISUser with the provided ID does not exist.")
-                           .build();
-        }
+    public Response addEvent(CreateEventRequest createEventRequest) {
+        JsonWebToken token = (JsonWebToken) securityContext.getUserPrincipal();
+        String loggedInUsername = token.getClaim("sub");
+        PISUser loggedInUser = userMgr.findByUsername(loggedInUsername);
+    
+        List<PISUser> attendees = createEventRequest.getAttendees().stream()
+                .map(userMgr::findByUsername)
+                .collect(Collectors.toList());
+    
+        Event event = new Event();
+        event.setStart(createEventRequest.getStart());
+        event.setEnd(createEventRequest.getEnd());
+        event.setName(createEventRequest.getName());
+        event.setDescription(createEventRequest.getDescription());
+        event.setColor(createEventRequest.getColor());
+        event.setAttendees(attendees);
+        event.setCreator(loggedInUser);
+    
         Event savedEvent = evntMgr.save(event);
         final URI uri = UriBuilder.fromPath("/events/{resourceServerId}").build(savedEvent.getId());
-        return Response.created(uri).entity(savedEvent).build();
+        return Response.created(uri).build();
     }
 
     @GET

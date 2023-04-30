@@ -1,6 +1,7 @@
 package cz.xoleks00.pis.config;
 
 import cz.xoleks00.pis.data.Event;
+import cz.xoleks00.pis.data.EventColor;
 import cz.xoleks00.pis.data.PISUser;
 import cz.xoleks00.pis.data.UserRole;
 import jakarta.persistence.EntityManager;
@@ -97,6 +98,7 @@ public class SeedDataLoader implements ServletContextListener {
                 event1.setStart(new Date());
                 event1.setEnd(new Date());
                 event1.setAttendees(Arrays.asList(user2, user3));
+                event1.setColor(EventColor.BLUE);
                 em.persist(event1);
 
                 Event event2 = new Event();
@@ -105,6 +107,7 @@ public class SeedDataLoader implements ServletContextListener {
                 event2.setStart(new Date());
                 event2.setEnd(new Date());
                 event2.setAttendees(Arrays.asList(user1, user3));
+                event2.setColor(EventColor.GREEN);
                 em.persist(event2);
 
                 Event event3 = new Event();
@@ -113,6 +116,7 @@ public class SeedDataLoader implements ServletContextListener {
                 event3.setStart(new Date());
                 event3.setEnd(new Date());
                 event3.setAttendees(Arrays.asList(user1, user3));
+                event3.setColor(EventColor.YELLOW);
                 em.persist(event3);
 
                 Event event4 = new Event();
@@ -121,6 +125,7 @@ public class SeedDataLoader implements ServletContextListener {
                 event4.setStart(new Date());
                 event4.setEnd(new Date());
                 event4.setAttendees(Arrays.asList(user1, user3));
+                event4.setColor(EventColor.RED);
                 em.persist(event4);
 
                 
@@ -142,6 +147,7 @@ public class SeedDataLoader implements ServletContextListener {
                     calendar.add(Calendar.HOUR_OF_DAY, 2);
                     event.setEnd(calendar.getTime());
                     event.setAttendees(Arrays.asList(people[i], people[i + 1], people[i + 2]));
+                    event.setColor(EventColor.BLUE);
                     em.persist(event);
 
                     // Add event to attendees

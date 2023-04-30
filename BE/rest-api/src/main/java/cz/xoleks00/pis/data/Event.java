@@ -5,6 +5,8 @@ import java.util.List;
 
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -41,6 +43,8 @@ public class Event {
     private PISUser creator;
     private String name;
     private String place;
+    @Enumerated(EnumType.STRING)
+    private EventColor color;
     private String description;
     @ManyToMany(fetch = FetchType.EAGER, cascade = { CascadeType.PERSIST, CascadeType.MERGE })
     @JoinTable(name = "event_attendees",
@@ -118,6 +122,14 @@ public class Event {
 
     public void setAttendees(List<PISUser> attendees) {
         this.attendees = attendees;
+    }
+
+    public EventColor getColor() {
+        return color;
+    }
+
+    public void setColor(EventColor color) {
+        this.color = color;
     }
 
     @Override

@@ -87,7 +87,7 @@ public class Users
         }
     
         List<UserDTO> userDTOs = users.stream()
-            .map(user -> new UserDTO(user.getUsername(), user.getName(), user.getEmail(), user.getUserCreated(), user.isAdmin(), user.getUserRole()))
+            .map(user -> new UserDTO(user.getUsername(), user.getName(), user.getEmail(), user.getUserCreated(), user.isAdmin(), user.getUserRole(), user.getId()))
             .collect(Collectors.toList());
     
         return userDTOs;
