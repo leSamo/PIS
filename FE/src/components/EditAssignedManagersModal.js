@@ -1,14 +1,35 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Form, Button, Modal, ModalVariant, DualListSelector } from '@patternfly/react-core';
+import { useAction, useFetch } from './../helpers/Hooks';
 
-const EditAssignedManagersModal = ({ isOpen, setOpen, callback, selectedUser }) => {
-    const [availableOptions, setAvailableOptions] = useState([
-        '<Director username>',
-        '<Manager 1 username>',
-        '<Manager 2 username>',
-        '<Manager 3 username>'
-    ]);
+const EditAssignedManagersModal = ({ userInfo, isOpen, setOpen, callback, selectedUser }) => {
+    const [availableOptions, setAvailableOptions] = useState([]);
     const [chosenOptions, setChosenOptions] = useState([]);
+
+    const [allUsers, areAllUsersLoading, refreshUsers] = useFetch('/users', userInfo);
+    const [managedUsers, areManagedUsersLoading, refreshManagedUsers] = useFetch(`/users/${selectedUser.username ?? userInfo.upn}/managed_users`, userInfo);
+
+    const selectManagedUsers = useAction('POST', `/users/${selectedUser.username}/managed_users`, userInfo);
+
+    console.log("ccc", managedUsers);
+
+    useEffect(() => {
+        if (isOpen) {
+            refreshUsers();
+            refreshManagedUsers();
+        }
+    }, [isOpen]);
+
+    useEffect(() => {
+        setAvailableOptions(allUsers
+            .filter(user => user.userRole === "MANAGER" || user.userRole === "DIRECTOR")
+            .filter(user => !managedUsers.map(user => user.username).includes(user.username))
+            .map(user => user.username));
+    }, [allUsers, managedUsers]);
+
+    useEffect(() => {
+        setChosenOptions(managedUsers.map(user => user.username));
+    }, [managedUsers]);    
 
     const onListChange = (newAvailableOptions, newChosenOptions) => {
         setAvailableOptions(newAvailableOptions.sort());
@@ -17,6 +38,11 @@ const EditAssignedManagersModal = ({ isOpen, setOpen, callback, selectedUser }) 
 
     const closeModal = () => {
         setOpen(false)
+    }
+
+    const onSubmit = () => {
+        selectManagedUsers(null, { usernames: chosenOptions }, () => console.log("succ"));
+        closeModal();
     }
 
     return (
@@ -29,9 +55,7 @@ const EditAssignedManagersModal = ({ isOpen, setOpen, callback, selectedUser }) 
                 <Button
                     key="confirm"
                     variant="primary"
-                    onClick={callback}
-                    /* TODO */
-                    isDisabled={false}
+                    onClick={onSubmit}
                 >
                     Save
                 </Button>,
