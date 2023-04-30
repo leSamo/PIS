@@ -202,12 +202,6 @@ public class Users
         }
     
         if (p != null) {
-            // Remove the user from all associated events
-            List<Event> events = eventMgr.findEventsByAttendee(p);
-            for (Event event : events) {
-                event.getAttendees().removeIf(attendee -> attendee.getUsername().equals(username));
-                eventMgr.update(event);
-            }
 
             // Remove the events where the user is the creator
             List<Event> userEvents = eventMgr.findEventsByCreator(p);
@@ -215,6 +209,14 @@ public class Users
                 eventMgr.remove(event);
             }
     
+            // Remove the user from all associated events
+            List<Event> events = eventMgr.findEventsByAttendee(p);
+            for (Event event : events) {
+                event.getAttendees().removeIf(attendee -> attendee.getUsername().equals(username));
+                eventMgr.update(event);
+            }
+
+
             userMgr.remove(p);
             return Response.ok().build();
         } else {
