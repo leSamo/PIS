@@ -32,7 +32,8 @@ public class JwtTokenGenerator {
         long expirationTimeMillis = currentTimeMillis + (1000 * 1000); // + 1000 seconds
         
     // Set the user role based on the isAdmin field
-    String role = PISUser.isAdmin() ? "admin" : "employee";
+    Boolean admin = PISUser.isAdmin();
+    String role = PISUser.getUserRole().toString();
 
     // create the claim set
     JWTClaimsSet claimsSet = new JWTClaimsSet.Builder()
@@ -41,7 +42,8 @@ public class JwtTokenGenerator {
              .expirationTime(new Date(expirationTimeMillis))
              .subject(PISUser.getUsername())
              .claim(Claims.upn.name(), PISUser.getUsername())
-             .claim(Claims.groups.name(), List.of(role))
+             .claim(Claims.acr.name(), admin)
+             .claim(Claims.groups.name(), role)
              .build();
         // create the signed token
         SignedJWT signedJWT = new SignedJWT(new JWSHeader
