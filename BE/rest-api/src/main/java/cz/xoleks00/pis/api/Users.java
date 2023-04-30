@@ -205,7 +205,7 @@ public class Users
             // Remove the user from all associated events
             List<Event> events = eventMgr.findEventsByAttendee(p);
             for (Event event : events) {
-                event.getAttendees().remove(p);
+                event.getAttendees().removeIf(attendee -> attendee.getUsername().equals(username));
                 eventMgr.update(event);
             }
     
