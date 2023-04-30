@@ -1,13 +1,13 @@
 import React, { Fragment, useEffect, useState } from 'react';
 import '@patternfly/react-core/dist/styles/base.css';
-import { Popover, Split, SplitItem, Button } from '@patternfly/react-core';
+import { Popover, Split, SplitItem, Button, Stack, StackItem } from '@patternfly/react-core';
 import { getMostRecentMonday, getWeekCalendarTitle, getWeekNumber, goBackMonth, goBackWeek, goForwardMonth, goForwardWeek, WEEKDAYS, isoLongToShort, daysApart } from '../helpers/CalendarHelper';
 import { COLORS } from './../helpers/Constants';
 import { playFadeInAnimation } from './../helpers/Utils';
 import { useFetch } from './../helpers/Hooks';
 import { prettyTime } from './../helpers/CalendarHelper';
 
-const Week = ({ userInfo, doubleLeftButtonClickCount, leftButtonClickCount, rightButtonClickCount, doubleRightButtonClickCount }) => {
+const Week = ({ userInfo, doubleLeftButtonClickCount, leftButtonClickCount, rightButtonClickCount, doubleRightButtonClickCount, refreshCounter }) => {
     const [splitWidth, setSplitWidth] = useState(0);
     const [currentMonday, setCurrentMonday] = useState(getMostRecentMonday(new Date()));
     const [weekDays, setWeekDays] = useState([]);
@@ -68,7 +68,7 @@ const Week = ({ userInfo, doubleLeftButtonClickCount, leftButtonClickCount, righ
         refreshDays();
 
         playFadeInAnimation("#week-split");
-    }, [currentMonday])
+    }, [currentMonday, refreshCounter])
 
     const eventsToElements = events => {
         events = events.map(event => ({ ...event, start: event.start.split("[")[0], end: event.end.split("[")[0] }))
@@ -148,9 +148,18 @@ const Week = ({ userInfo, doubleLeftButtonClickCount, leftButtonClickCount, righ
                                     </Fragment>
                                 }
                                 footerContent={
-                                    <Button variant="primary" style={{ width: "100%" }}>
-                                        Edit
-                                    </Button>
+                                    <Stack hasGutter>
+                                        <StackItem>
+                                            <Button variant="primary" style={{ width: "100%" }}>
+                                                Edit
+                                            </Button>
+                                        </StackItem>
+                                        <StackItem>
+                                            <Button variant="danger" style={{ width: "100%" }}>
+                                                Delete
+                                            </Button>
+                                        </StackItem>
+                                    </Stack>
                                 }
                                 minWidth="400px"
                             >

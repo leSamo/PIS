@@ -6,6 +6,7 @@ import { AngleDoubleLeftIcon, AngleDoubleRightIcon, AngleLeftIcon, AngleRightIco
 import { MONTH_VIEW, WEEK_VIEW } from '../helpers/Constants';
 import Month from './Month';
 import { isSubstring } from '../helpers/Utils';
+import { useAction } from '../helpers/Hooks';
 
 const IndexPage = ({ userInfo }) => {
     const [isNewEventModalOpen, setNewEventModalOpen] = useState(false);
@@ -16,9 +17,12 @@ const IndexPage = ({ userInfo }) => {
     const [leftButtonClickCount, setLeftButtonClickCount] = useState(0);
     const [rightButtonClickCount, setRightButtonClickCount] = useState(0);
     const [doubleRightButtonClickCount, setDoubleRightButtonClickCount] = useState(0);
+    const [refreshCounter, setRefreshCounter] = useState(0);
     const [selectedUsers, setSelectedUsers] = useState([]);
     const [selectedView, setSelectedView] = useState(WEEK_VIEW);
     const [showMyOwnCalendar, setShowMyOwnCalendar] = useState(true);
+
+    const createEvent = useAction('POST', '/events', userInfo);
 
     useEffect(() => {
         // TODO: Remove own self
@@ -77,12 +81,13 @@ const IndexPage = ({ userInfo }) => {
     }
 
     const createCallback = event => {
-        console.log("Create event", event)
+        createEvent(null, event, () => setRefreshCounter(refreshCounter + 1));
     };
 
     return (
         <Card>
             <NewEventModal
+                userInfo={userInfo}
                 isOpen={isNewEventModalOpen}
                 setOpen={setNewEventModalOpen}
                 createCallback={createCallback}
@@ -165,13 +170,15 @@ const IndexPage = ({ userInfo }) => {
                         leftButtonClickCount={leftButtonClickCount}
                         rightButtonClickCount={rightButtonClickCount}
                         doubleRightButtonClickCount={doubleRightButtonClickCount}
-                        />
+                        refreshCounter={refreshCounter}
+                    />
                     : <Month
                         userInfo={userInfo}
                         doubleLeftButtonClickCount={doubleLeftButtonClickCount}
                         leftButtonClickCount={leftButtonClickCount}
                         rightButtonClickCount={rightButtonClickCount}
                         doubleRightButtonClickCount={doubleRightButtonClickCount}
+                        refreshCounter={refreshCounter}
                     />
                 }
             </CardBody>
