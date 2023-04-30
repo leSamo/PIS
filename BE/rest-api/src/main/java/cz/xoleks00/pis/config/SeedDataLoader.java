@@ -93,11 +93,16 @@ public class SeedDataLoader implements ServletContextListener {
                 }
 
                 // Seeding events
+                Calendar calendar1 = Calendar.getInstance();
+
+
                 Event event1 = new Event();
                 event1.setCreator(user1);
                 event1.setDescription("Event 1");
-                event1.setStart(new Date());
-                event1.setEnd(new Date());
+                calendar1.setTime(new Date());
+                event1.setStart(calendar1.getTime());
+                calendar1.add(Calendar.HOUR_OF_DAY, 1);
+                event1.setEnd(calendar1.getTime());
                 event1.setAttendees(Arrays.asList(user2, user3));
                 event1.setColor(EventColor.BLUE);
                 em.persist(event1);
@@ -105,8 +110,10 @@ public class SeedDataLoader implements ServletContextListener {
                 Event event2 = new Event();
                 event2.setCreator(user2);
                 event2.setDescription("Event 2");
-                event2.setStart(new Date());
-                event2.setEnd(new Date());
+                calendar1.setTime(new Date());
+                event2.setStart(calendar1.getTime());
+                calendar1.add(Calendar.HOUR_OF_DAY, 1);
+                event2.setEnd(calendar1.getTime());
                 event2.setAttendees(Arrays.asList(user1, user3));
                 event2.setColor(EventColor.GREEN);
                 em.persist(event2);
@@ -114,8 +121,10 @@ public class SeedDataLoader implements ServletContextListener {
                 Event event3 = new Event();
                 event3.setCreator(user2);
                 event3.setDescription("Event 3");
-                event3.setStart(new Date());
-                event3.setEnd(new Date());
+                calendar1.setTime(new Date());
+                event3.setStart(calendar1.getTime());
+                calendar1.add(Calendar.HOUR_OF_DAY, 1);
+                event3.setEnd(calendar1.getTime());
                 event3.setAttendees(Arrays.asList(user1, user3));
                 event3.setColor(EventColor.YELLOW);
                 em.persist(event3);
@@ -123,8 +132,10 @@ public class SeedDataLoader implements ServletContextListener {
                 Event event4 = new Event();
                 event4.setCreator(user2);
                 event4.setDescription("Event 4");
-                event4.setStart(new Date());
-                event4.setEnd(new Date());
+                calendar1.setTime(new Date());
+                event4.setStart(calendar1.getTime());
+                calendar1.add(Calendar.HOUR_OF_DAY, 1);
+                event4.setEnd(calendar1.getTime());
                 event4.setAttendees(Arrays.asList(user1, user3));
                 event4.setColor(EventColor.RED);
                 em.persist(event4);

@@ -176,7 +176,7 @@ public class Users
         }
     
         PISUser.setUserCreated(new Date()); // Set the current date as userCreated
-        PISUser.setAdmin(false); // Set isAdmin to false by default
+        PISUser.setAdmin(PISUser.isAdmin()); 
         PISUser savedUser = userMgr.save(PISUser);
         final URI uri = UriBuilder.fromPath("/users/{resourceServerId}").build(savedUser.getId());
         return Response.created(uri).build(); 
