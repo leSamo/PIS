@@ -72,6 +72,7 @@ const UserManagementPage = ({ addToastAlert, userInfo }) => {
                 selectedUser={userSelectedForEdit}
             />
             <EditAssignedManagersModal
+                userInfo={userInfo}
                 isOpen={isEditAssignedManagersModalOpen}
                 setOpen={setEditAssignedManagersModalOpen}
                 callback={() => {}}
