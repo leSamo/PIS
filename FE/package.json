@@ -13,6 +13,7 @@
     "bcryptjs": "^2.4.3",
     "express": "^4.17.1",
     "jsonwebtoken": "^9.0.0",
+    "jwt-decode": "^3.1.2",
     "react": "^17.0.2",
     "react-dom": "^17.0.2",
     "react-router-dom": "^5.3.4",
@@ -22,7 +23,8 @@
     "build": "react-scripts build",
     "start": "react-scripts start",
     "lint": "npx eslint src/components/**/*.js",
-    "lint:fix": "npx eslint src/components/**/*.js --fix"
+    "lint:fix": "npx eslint src/components/**/*.js --fix",
+    "e2e": "cypress open"
   },
   "eslintConfig": {
     "extends": [
@@ -41,6 +43,8 @@
     ]
   },
   "devDependencies": {
+    "chance": "^1.1.11",
+    "cypress": "^12.11.0",
     "eslint": "^8.39.0",
     "eslint-plugin-import": "^2.24.2",
     "eslint-plugin-jsx-a11y": "^6.4.1",
