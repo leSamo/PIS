@@ -5,8 +5,9 @@ import EyeIcon from '@patternfly/react-icons/dist/esm/icons/eye-icon';
 import EyeSlashIcon from '@patternfly/react-icons/dist/esm/icons/eye-slash-icon';
 import { ROLES } from '../helpers/Constants';
 import { capitalize } from './../helpers/Utils';
+import { useAction } from '../helpers/Hooks';
 
-const NewUserModal = ({ isOpen, setOpen, registerCallback }) => {
+const NewUserModal = ({ isOpen, setOpen, successCallback, failureCallback, userInfo }) => {
 	const [emailValue, setEmailValue] = useState('');
 	const [usernameValue, setUsernameValue] = useState('');
 	const [fullnameValue, setFullnameValue] = useState('');
@@ -16,9 +17,12 @@ const NewUserModal = ({ isOpen, setOpen, registerCallback }) => {
 	const [isRoleSelectOpen, setRoleSelectOpen] = useState(false);
 	const [selectedRole, setSelectedRole] = useState('manager');
 
+	const registerUser = useAction('POST', '/users', userInfo);
+
 	const closeModal = () => {
 		setEmailValue('')
 		setUsernameValue('')
+		setFullnameValue('')
 		setPasswordValue('')
 		setPasswordHidden(true)
 		setShouldUserBeAdmin(false)
@@ -31,6 +35,20 @@ const NewUserModal = ({ isOpen, setOpen, registerCallback }) => {
 		document.getElementById('reg-role').focus();
 	};
 
+	const registerUserCallback = () => {
+		registerUser(null, {
+			name: fullnameValue,
+			password: passwordValue,
+			username: usernameValue,
+			email: emailValue,
+			userRole: selectedRole.toUpperCase(),
+			admin: shouldUserBeAdmin
+		}, () => {
+			setOpen(false);
+			successCallback();
+		}, failureCallback);
+	}
+
 	return (
 		<Modal
 			variant={ModalVariant.small}
@@ -41,8 +59,16 @@ const NewUserModal = ({ isOpen, setOpen, registerCallback }) => {
 				<Button
 					key="confirm"
 					variant="primary"
-					onClick={() => { registerCallback(usernameValue, passwordValue, emailValue, closeModal); }}
-					isDisabled={!validateEmail(emailValue) || !validateUsername(usernameValue) || !validatePassword(passwordValue) || !emailValue || !usernameValue || !passwordValue || !fullnameValue}
+					onClick={registerUserCallback}
+					isDisabled={
+						!validateEmail(emailValue) ||
+						!validateUsername(usernameValue) ||
+						!validatePassword(passwordValue) ||
+						!emailValue ||
+						!usernameValue ||
+						!passwordValue ||
+						!fullnameValue
+					}
 				>
 					Add new user
 				</Button>,
@@ -53,7 +79,7 @@ const NewUserModal = ({ isOpen, setOpen, registerCallback }) => {
 					label="User name"
 					isRequired
 					validated={validateUsername(usernameValue) || ValidatedOptions.error}
-					helperTextInvalid="User name must consist of 3-32 characters and must contain alphanumeric characters"
+					helperTextInvalid="User name must consist of 4-32 characters and must contain alphanumeric characters"
 				>
 					<TextInput
 						isRequired
