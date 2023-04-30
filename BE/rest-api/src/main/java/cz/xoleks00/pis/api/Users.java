@@ -208,6 +208,12 @@ public class Users
                 event.getAttendees().removeIf(attendee -> attendee.getUsername().equals(username));
                 eventMgr.update(event);
             }
+
+            // Remove the events where the user is the creator
+            List<Event> userEvents = eventMgr.findEventsByCreator(p);
+            for (Event event : userEvents) {
+                eventMgr.remove(event);
+            }
     
             userMgr.remove(p);
             return Response.ok().build();

@@ -127,6 +127,13 @@ public class EventManager {
                  .setParameter("user", user)
                  .getResultList();
     }
+
+    @Transactional
+    public List<Event> findEventsByCreator(PISUser creator) {
+        return em.createQuery("SELECT e FROM Event e WHERE e.creator = :creator", Event.class)
+                 .setParameter("creator", creator)
+                 .getResultList();
+    }
     
 
     @Transactional
