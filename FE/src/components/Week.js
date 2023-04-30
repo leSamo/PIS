@@ -11,7 +11,7 @@ const Week = ({ userInfo, doubleLeftButtonClickCount, leftButtonClickCount, righ
     const [splitWidth, setSplitWidth] = useState(0);
     const [currentMonday, setCurrentMonday] = useState(getMostRecentMonday(new Date()));
     const [weekDays, setWeekDays] = useState([]);
-    const [fetchedEvents, areEventsLoading, refreshEvents] = useFetch('/events', userInfo, { users: "samoo", start_date: (new Date(currentMonday)).toISOString().replace(/\.[0-9]{3}/, ''), end_date: (new Date(goForwardWeek(currentMonday))).toISOString().replace(/\.[0-9]{3}/, '') });
+    const [fetchedEvents, areEventsLoading, refreshEvents] = useFetch('/events', userInfo, { users: userInfo.upn, start_date: (new Date(currentMonday)).toISOString().replace(/\.[0-9]{3}/, ''), end_date: (new Date(goForwardWeek(currentMonday))).toISOString().replace(/\.[0-9]{3}/, '') });
 
     console.log(fetchedEvents);
 
@@ -133,7 +133,7 @@ const Week = ({ userInfo, doubleLeftButtonClickCount, leftButtonClickCount, righ
                         eventsToElements(fetchedEvents)[index].map(event => (
                             <Popover
                                 key={event.id}
-                                headerContent={<div>{event.description}</div>}
+                                headerContent={<div>{event.name}</div>}
                                 bodyContent={
                                     <Fragment>
                                         <div>🕒 {prettyTime(event.start)} – {prettyTime(event.end)}</div>
@@ -164,7 +164,7 @@ const Week = ({ userInfo, doubleLeftButtonClickCount, leftButtonClickCount, righ
                                     border: "1px solid black",
                                     borderRadius: 4
                                 }}>
-                                    <b>Event name</b>
+                                    <b>{event.name}</b>
                                 </div>
                             </Popover>
                         ))
