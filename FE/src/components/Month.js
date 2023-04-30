@@ -1,15 +1,32 @@
 import { Text, TextContent, Popover, Button } from '@patternfly/react-core';
 import React, { Fragment, useEffect, useState } from 'react';
-import { getFirstDayOfMonth, getMostRecentMonday, getWeekCountInMonth, goBackMonth, goForwardMonth, goForwardYear, isoLongToShort, WEEKDAYS_SHORT } from '../helpers/CalendarHelper';
-import { getMonthCalendarTitle, goBackYear } from './../helpers/CalendarHelper';
+import {
+    daysApart,
+    getFirstDayOfMonth,
+    getMostRecentMonday,
+    getWeekCountInMonth,
+    goBackMonth,
+    goForwardMonth,
+    goForwardYear,
+    isoLongToShort,
+    WEEKDAYS_SHORT,
+    getMonthCalendarTitle,
+    goBackYear,
+    prettyTime,
+    getFirstFollowingSunday
+} from '../helpers/CalendarHelper';
 import { COLORS } from './../helpers/Constants';
 import { playFadeInAnimation } from './../helpers/Utils';
+import { useFetch } from './../helpers/Hooks';
 
 const Month = ({ userInfo, doubleLeftButtonClickCount, leftButtonClickCount, rightButtonClickCount, doubleRightButtonClickCount }) => {
     const [firstDayOfMonth, setFirstDayOfMonth] = useState(getFirstDayOfMonth(new Date()));
+    const [fetchedEvents, areEventsLoading, refreshEvents] = useFetch('/events', userInfo, { users: userInfo.upn, start_date: (new Date(getMostRecentMonday(firstDayOfMonth))).toISOString().replace(/\.[0-9]{3}/, ''), end_date: (new Date(getFirstFollowingSunday(goForwardMonth(firstDayOfMonth)))).toISOString().replace(/\.[0-9]{3}/, '') });
+
+    console.log(fetchedEvents);
 
     const refreshDays = () => {
-
+        refreshEvents();
     }
 
     useEffect(() => {
@@ -41,6 +58,26 @@ const Month = ({ userInfo, doubleLeftButtonClickCount, leftButtonClickCount, rig
 
         playFadeInAnimation("#month-container");
     }, [firstDayOfMonth])
+
+    const eventsToElements = events => {
+        events = events.map(event => ({ ...event, start: event.start.split("[")[0], end: event.end.split("[")[0] }))
+        // handle single day events
+        const elements = [...Array(getWeekCountInMonth(firstDayOfMonth) * 7).keys()].map(() => []);
+
+        const singleDayEvents = events.filter(event => isoLongToShort(event.start) === isoLongToShort(event.end));
+
+        singleDayEvents.forEach(event => {
+            const index = daysApart(getMostRecentMonday(firstDayOfMonth), isoLongToShort(event.start));
+
+            if (index >= 0 && index < getWeekCountInMonth(firstDayOfMonth) * 7)
+                elements[index].push(event);
+        });
+
+        console.log("aaa", elements);
+
+        // return array of 7 elements
+        return elements;
+    }
 
     return (
         <div id="month-container" style={{ height: "calc(100vh - 170px)" }}>
@@ -74,41 +111,47 @@ const Month = ({ userInfo, doubleLeftButtonClickCount, leftButtonClickCount, rig
                                     return (
                                         <td key={day} style={{ textAlign: "center", verticalAlign: "top" }}>
                                             <b>{dayNumber}</b>
-                                            {week * 7 + day === 25 &&
-                                                <Popover
-                                                    headerContent={<div>Event name</div>}
-                                                    bodyContent={
-                                                        <Fragment>
-                                                            <div>🕒 06:00 – 08:00</div>
-                                                            <div>📝 Event description</div>
-                                                            <div>✏️ Author: Samuel Olekšák (soleksak@ahoj.cau)</div>
-                                                            <div>🙋‍♀️ Attendees:</div>
-                                                            <div style={{ marginLeft: 32 }}>- Michal Findra (mfindra@cau.ahoj)</div>
-                                                            <div style={{ marginLeft: 32 }}>- Findra Michal (mfindra@ahoj.ahoj)</div>
-                                                        </Fragment>
-                                                    }
-                                                    footerContent={
-                                                        <Button variant="primary" style={{ width: "100%" }}>
-                                                            Edit
-                                                        </Button>
-                                                    }
-                                                    minWidth="400px"
-                                                >
-                                                    <div style={{
-                                                        width: "calc(100% - 16px)",
-                                                        backgroundColor: COLORS.red,
-                                                        marginLeft: 8,
-                                                        marginRight: 8,
-                                                        cursor: "pointer",
-                                                        border: "1px solid black",
-                                                        borderRadius: 4,
-                                                        textAlign: "left",
-                                                        paddingLeft: 8,
-                                                        paddingRight: 8
-                                                    }}>
-                                                        <b>Event name</b>
-                                                    </div>
-                                                </Popover>
+                                            {
+                                                eventsToElements(fetchedEvents)[week * 7 + day].map(event => (
+                                                    <Popover
+                                                        key={event.id}
+                                                        headerContent={<div>{event.description}</div>}
+                                                        bodyContent={
+                                                            <Fragment>
+                                                                <div>🕒 {prettyTime(event.start)} – {prettyTime(event.end)}</div>
+                                                                <div>📝 {event.description}</div>
+                                                                <div>✏️ Author: {event.creator.name} ({event.creator.email})</div>
+                                                                <div>🙋‍♀️ Attendees:</div>
+                                                                {
+                                                                    event.attendees.map(attendee => (
+                                                                        <div key={attendee.username} style={{ marginLeft: 32 }}>- {attendee.name} ({attendee.email})</div>
+                                                                    ))
+                                                                }
+                                                            </Fragment>
+                                                        }
+                                                        footerContent={
+                                                            <Button variant="primary" style={{ width: "100%" }}>
+                                                                Edit
+                                                            </Button>
+                                                        }
+                                                        minWidth="400px"
+                                                    >
+                                                        <div style={{
+                                                            width: "calc(100% - 16px)",
+                                                            backgroundColor: COLORS[event.color.toLowerCase()],
+                                                            marginLeft: 8,
+                                                            marginRight: 8,
+                                                            cursor: "pointer",
+                                                            border: "1px solid black",
+                                                            borderRadius: 4,
+                                                            textAlign: "left",
+                                                            paddingLeft: 8,
+                                                            paddingRight: 8
+                                                        }}>
+                                                            <b>{event.name}</b>
+                                                        </div>
+                                                    </Popover>
+                                                ))
                                             }
                                         </td>
                                     )
