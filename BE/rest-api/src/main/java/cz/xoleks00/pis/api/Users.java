@@ -336,6 +336,8 @@ public class Users
             return Response.status(Status.NOT_FOUND).entity(new ErrorDTO("User not found")).type(MediaType.APPLICATION_JSON).build();
         }
 
+        user.getManagedUsers().clear();
+
         List<String> managedUsernames = requestBody.getUsernames();
         for (String managedUsername : managedUsernames) {
             PISUser managedUser = userMgr.findByUsername(managedUsername);
