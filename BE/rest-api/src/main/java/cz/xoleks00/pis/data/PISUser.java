@@ -3,6 +3,8 @@ package cz.xoleks00.pis.data;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
+import java.util.HashSet;
+import java.util.Set;
 
 import org.mindrot.jbcrypt.BCrypt;
 
@@ -42,6 +44,7 @@ public class PISUser
     private String password;
     private String username;
     private String email;
+    private Set<String> managedUsers;
     private boolean isAdmin;
     @Column(name = "user_role")
     @Enumerated(EnumType.STRING)
@@ -56,6 +59,7 @@ public class PISUser
     public PISUser()
     {
         events = new ArrayList<>();
+        managedUsers = new HashSet<>();
     }
     
     public Collection<Event> getEvents()
@@ -148,6 +152,14 @@ public class PISUser
 
     public void setUserRole(UserRole userRole) {
         this.userRole = userRole;
+    }
+
+    public Set<String> getManagedUsers() {
+        return managedUsers;
+    }
+
+    public void setManagedUsers(Collection<String> managedUsers) {
+        this.managedUsers = new HashSet<>(managedUsers); // Create a new HashSet from the input collection
     }
     
 }

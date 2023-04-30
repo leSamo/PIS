@@ -3,10 +3,13 @@ package cz.xoleks00.pis.api;
 import java.net.URI;
 import java.util.Date;
 import java.util.List;
+import java.util.Objects;
+import java.util.Set;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 import org.eclipse.microprofile.jwt.JsonWebToken;
+
 
 import jakarta.annotation.PostConstruct;
 import jakarta.annotation.security.RolesAllowed;
@@ -27,6 +30,7 @@ import jakarta.ws.rs.core.Response.Status;
 import jakarta.ws.rs.core.SecurityContext;
 import jakarta.ws.rs.core.UriBuilder;
 import jakarta.ws.rs.core.UriInfo;
+import cz.xoleks00.pis.data.AddManagedUsersRequest;
 import cz.xoleks00.pis.data.ErrorDTO;
 import cz.xoleks00.pis.data.Event;
 import cz.xoleks00.pis.data.UserEventsDTO;
@@ -86,7 +90,7 @@ public class Users
         }
     
         List<UserDTO> userDTOs = users.stream()
-            .map(user -> new UserDTO(user.getUsername(), user.getName(), user.getEmail(), user.getUserCreated(), user.isAdmin(), user.getUserRole(), user.getId()))
+            .map(user -> new UserDTO(user.getUsername(), user.getName(), user.getEmail(), user.getUserCreated(), user.isAdmin(), user.getUserRole(), user.getId(), user.getManagedUsers()))
             .collect(Collectors.toList());
     
         return userDTOs;
@@ -241,6 +245,72 @@ public class Users
             return Response.status(Status.NOT_FOUND).entity(new ErrorDTO("not found")).type(MediaType.APPLICATION_JSON).build();
         }
     }
-   
+
+    /**
+     * Get all users managed by a given user.
+     * @param username Username of the user whose managed users to retrieve.
+     * @return A list of users managed by the given user.
+     */
+    @GET
+    @Path("/{username}/managed_users")
+    @Produces(MediaType.APPLICATION_JSON)
+    @RolesAllowed({"admin", "employee"})
+    public Response getManagedUsers(@PathParam("username") String username) {
+        PISUser user = userMgr.findByUsername(username);
+        if (user == null) {
+            return Response.status(Status.NOT_FOUND).entity(new ErrorDTO("User not found")).type(MediaType.APPLICATION_JSON).build();
+        }
+        Set<String> managedUsernames = user.getManagedUsers();
+        List<UserDTO> managedUsers = managedUsernames.stream()
+                .map(managedUsername -> {
+                    PISUser managedUser = userMgr.findByUsername(managedUsername);
+                    if (managedUser != null) {
+                        return new UserDTO(managedUser.getUsername(), managedUser.getName(), managedUser.getEmail(),
+                                managedUser.getUserCreated(), managedUser.isAdmin(), managedUser.getUserRole(), managedUser.getId(), managedUser.getManagedUsers());
+                    }
+                    return null;
+                })
+                .filter(Objects::nonNull)
+                .collect(Collectors.toList());
+        return Response.ok().entity(managedUsers).build();
+    }
+    
+
+
+    /**
+     * Add multiple managed users to a user.
+     *
+     * @param username         Username of the user to add managed users to.
+     * @param managedUsernames Array of usernames of the users to be managed.
+     * @return A response indicating success or failure.
+     */
+    @POST
+    @Path("/{username}/managed_users")
+    @Consumes(MediaType.APPLICATION_JSON)
+    @Produces(MediaType.APPLICATION_JSON)
+    @RolesAllowed({"admin"})
+    public Response addManagedUsers(@PathParam("username") String username, AddManagedUsersRequest requestBody) {
+        PISUser user = userMgr.findByUsername(username);
+        if (user == null) {
+            return Response.status(Status.NOT_FOUND).entity(new ErrorDTO("User not found")).type(MediaType.APPLICATION_JSON).build();
+        }
+
+        List<String> managedUsernames = requestBody.getUsernames();
+        for (String managedUsername : managedUsernames) {
+            PISUser managedUser = userMgr.findByUsername(managedUsername);
+            if (managedUser == null) {
+                return Response.status(Status.BAD_REQUEST).entity(new ErrorDTO("Managed user not found: " + managedUsername)).type(MediaType.APPLICATION_JSON).build();
+            }
+        }
+
+        user.getManagedUsers().addAll(managedUsernames);
+        userMgr.save(user);
+
+        return Response.ok().build();
+    }
+
+    //{
+    //"usernames": ["user1", "user2", "user3"]
+    //}
 
 }
