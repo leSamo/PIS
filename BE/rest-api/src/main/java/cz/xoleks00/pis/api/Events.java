@@ -2,6 +2,7 @@ package cz.xoleks00.pis.api;
 
 import java.net.URI;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -123,7 +124,19 @@ public class Events {
             }
             attendees.add(attendee);
         }
+        
+        Date start = createEventRequest.getStart();
+        Date end = createEventRequest.getEnd();
     
+        // Check if the event duration is less than 10 minutes or end date is before the start date
+        long durationInMinutes = (end.getTime() - start.getTime()) / (1000 * 60);
+        if (end.before(start) || durationInMinutes < 10) {
+            return Response.status(Status.BAD_REQUEST)
+                    .entity(new ErrorDTO("Event duration must be at least 10 minutes and end date must be after start date"))
+                    .type(MediaType.APPLICATION_JSON)
+                    .build();
+        }
+
         Event event = new Event();
         event.setCreator(loggedInUser);
         event.setStart(createEventRequest.getStart());
