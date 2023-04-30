@@ -113,10 +113,10 @@ public class EventManager {
                 return eventsInRange;
             }
     
-            return eventsInRange.stream()
-                    .filter(event -> event.getAttendees().stream()
-                            .anyMatch(attendee -> users.contains(attendee.getUsername())))
-                    .collect(Collectors.toList());
+        return eventsInRange.stream()
+                .filter(event -> users.contains(event.getCreator().getUsername()) || event.getAttendees().stream()
+                        .anyMatch(attendee -> users.contains(attendee.getUsername())))
+                .collect(Collectors.toList());
         } catch (ParseException e) {
             throw new IllegalArgumentException("Invalid date format. Expected format: yyyy-MM-dd'T'HH:mm:ssX");
         }
