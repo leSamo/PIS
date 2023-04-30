@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from 'react';
 import { Form, FormGroup, TextInput, TextArea, Modal, ModalVariant, Button, TimePicker, DatePicker, Split, SplitItem, Select, SelectVariant, SelectOption, Tile } from '@patternfly/react-core';
-import axios from 'axios';
 import { COLORS } from './../helpers/Constants';
 import { capitalize, isSubstring } from './../helpers/Utils';
 

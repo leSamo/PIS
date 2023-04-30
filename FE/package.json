@@ -19,9 +19,8 @@
     "react-scripts": "^5.0.1"
   },
   "scripts": {
-    "start": "node src/server.js",
     "build": "react-scripts build",
-    "start:app": "react-scripts start",
+    "start": "react-scripts start",
     "lint": "npx eslint src/components/**/*.js",
     "lint:fix": "npx eslint src/components/**/*.js --fix"
   },

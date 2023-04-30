@@ -151,3 +151,19 @@ export const addDays = (dateString, days) => {
 
     return isoLongToShort(date);
 }
+
+export const daysApart = (date1, date2) => {
+    const timeDiff = Math.abs((new Date(date2)).getTime() - (new Date(date1)).getTime());
+    const daysDiff = Math.ceil(timeDiff / (1000 * 3600 * 24));
+
+    return daysDiff;
+}
+
+export const prettyTime = date => {
+    date = new Date(date);
+
+    const hours = date.getHours().toString().padStart(2, "0")
+    const minutes = date.getMinutes().toString().padStart(2, "0")
+
+    return `${hours}:${minutes}`;
+}

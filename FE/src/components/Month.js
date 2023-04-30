@@ -5,7 +5,7 @@ import { getMonthCalendarTitle, goBackYear } from './../helpers/CalendarHelper';
 import { COLORS } from './../helpers/Constants';
 import { playFadeInAnimation } from './../helpers/Utils';
 
-const Month = ({ doubleLeftButtonClickCount, leftButtonClickCount, rightButtonClickCount, doubleRightButtonClickCount }) => {
+const Month = ({ userInfo, doubleLeftButtonClickCount, leftButtonClickCount, rightButtonClickCount, doubleRightButtonClickCount }) => {
     const [firstDayOfMonth, setFirstDayOfMonth] = useState(getFirstDayOfMonth(new Date()));
 
     const refreshDays = () => {
@@ -109,7 +109,6 @@ const Month = ({ doubleLeftButtonClickCount, leftButtonClickCount, rightButtonCl
                                                         <b>Event name</b>
                                                     </div>
                                                 </Popover>
-
                                             }
                                         </td>
                                     )

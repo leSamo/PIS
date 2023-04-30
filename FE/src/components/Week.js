@@ -1,14 +1,19 @@
 import React, { Fragment, useEffect, useState } from 'react';
 import '@patternfly/react-core/dist/styles/base.css';
 import { Popover, Split, SplitItem, Button } from '@patternfly/react-core';
-import { getMostRecentMonday, getWeekCalendarTitle, getWeekNumber, goBackMonth, goBackWeek, goForwardMonth, goForwardWeek, WEEKDAYS } from '../helpers/CalendarHelper';
+import { getMostRecentMonday, getWeekCalendarTitle, getWeekNumber, goBackMonth, goBackWeek, goForwardMonth, goForwardWeek, WEEKDAYS, isoLongToShort, daysApart } from '../helpers/CalendarHelper';
 import { COLORS } from './../helpers/Constants';
 import { playFadeInAnimation } from './../helpers/Utils';
+import { useFetch } from './../helpers/Hooks';
+import { prettyTime } from './../helpers/CalendarHelper';
 
-const Week = ({ doubleLeftButtonClickCount, leftButtonClickCount, rightButtonClickCount, doubleRightButtonClickCount }) => {
+const Week = ({ userInfo, doubleLeftButtonClickCount, leftButtonClickCount, rightButtonClickCount, doubleRightButtonClickCount }) => {
     const [splitWidth, setSplitWidth] = useState(0);
     const [currentMonday, setCurrentMonday] = useState(getMostRecentMonday(new Date()));
     const [weekDays, setWeekDays] = useState([]);
+    const [fetchedEvents, areEventsLoading, refreshEvents] = useFetch('/events', userInfo, { users: "samoo", start_date: (new Date(currentMonday)).toISOString().replace(/\.[0-9]{3}/, ''), end_date: (new Date(goForwardWeek(currentMonday))).toISOString().replace(/\.[0-9]{3}/, '') });
+
+    console.log(fetchedEvents);
 
     const refreshDays = () => {
         const weekDays = [];
@@ -19,7 +24,8 @@ const Week = ({ doubleLeftButtonClickCount, leftButtonClickCount, rightButtonCli
             weekDays.push(day);
         }
 
-        setWeekDays(weekDays)
+        setWeekDays(weekDays);
+        refreshEvents();
     }
 
     useEffect(() => {
@@ -64,6 +70,27 @@ const Week = ({ doubleLeftButtonClickCount, leftButtonClickCount, rightButtonCli
         playFadeInAnimation("#week-split");
     }, [currentMonday])
 
+    const eventsToElements = events => {
+        events = events.map(event => ({ ...event, start: event.start.split("[")[0], end: event.end.split("[")[0] }))
+        // handle single day events
+        const elements = [[], [], [], [], [], [], []];
+
+        const singleDayEvents = events.filter(event => isoLongToShort(event.start) === isoLongToShort(event.end));
+
+        singleDayEvents.forEach(event => {
+            const index = daysApart(currentMonday, isoLongToShort(event.start));
+            event.marginTop = ((new Date(event.start)).getHours() + (new Date(event.start)).getMinutes() / 60.0) * 48
+            event.height = ((new Date(event.end)).getHours() + (new Date(event.end)).getMinutes() / 60.0) * 48 - event.marginTop
+
+            if (index >= 0 && index <= 6) {
+                elements[index].push(event);
+            }
+        });
+
+        // return array of 7 elements
+        return elements;
+    }
+
     return (
         <Split id="week-split" style={{ width: "100%", display: "flex", marginTop: "32px" }}>
             <SplitItem style={{ flex: 1, height: 1200 }}>
@@ -102,39 +129,45 @@ const Week = ({ doubleLeftButtonClickCount, leftButtonClickCount, rightButtonCli
                         <div style={{ textAlign: "center", height: 24 }}>{weekday}</div>
                         <div style={{ textAlign: "center", height: 24 }}>{weekDays?.[index]?.getDate()}</div>
                     </b>
-                    {index === 3 &&
-                        <Popover
-                            headerContent={<div>Event name</div>}
-                            bodyContent={
-                                <Fragment>
-                                    <div>🕒 06:00 – 08:00</div>
-                                    <div>📝 Event description</div>
-                                    <div>✏️ Author: Samuel Olekšák (soleksak@ahoj.cau)</div>
-                                    <div>🙋‍♀️ Attendees:</div>
-                                    <div style={{ marginLeft: 32 }}>- Michal Findra (mfindra@cau.ahoj)</div>
-                                    <div style={{ marginLeft: 32 }}>- Findra Michal (mfindra@ahoj.ahoj)</div>
-                                </Fragment>
-                            }
-                            footerContent={
-                                <Button variant="primary" style={{ width: "100%" }}>
-                                    Edit
-                                </Button>
-                            }
-                            minWidth="400px"
-                        >
-                            <div style={{
-                                backgroundColor: COLORS.red,
-                                height: 48 * 2,
-                                width: "100%",
-                                padding: 2,
-                                marginTop: 48 * 6,
-                                cursor: "pointer",
-                                border: "1px solid black",
-                                borderRadius: 4
-                            }}>
-                                <b>Event name</b>
-                            </div>
-                        </Popover>
+                    {/* get day (index), convert start time to margin top, convert end time to height */
+                        eventsToElements(fetchedEvents)[index].map(event => (
+                            <Popover
+                                key={event.id}
+                                headerContent={<div>{event.description}</div>}
+                                bodyContent={
+                                    <Fragment>
+                                        <div>🕒 {prettyTime(event.start)} – {prettyTime(event.end)}</div>
+                                        <div>📝 {event.description}</div>
+                                        <div>✏️ Author: {event.creator.name} ({event.creator.email})</div>
+                                        <div>🙋‍♀️ Attendees:</div>
+                                        {
+                                            event.attendees.map(attendee => (
+                                                <div key={attendee.username} style={{ marginLeft: 32 }}>- {attendee.name} ({attendee.email})</div>
+                                            ))
+                                        }
+                                    </Fragment>
+                                }
+                                footerContent={
+                                    <Button variant="primary" style={{ width: "100%" }}>
+                                        Edit
+                                    </Button>
+                                }
+                                minWidth="400px"
+                            >
+                                <div style={{
+                                    backgroundColor: COLORS[event.color.toLowerCase()],
+                                    height: event.height,
+                                    width: "100%",
+                                    padding: 2,
+                                    marginTop: event.marginTop,
+                                    cursor: "pointer",
+                                    border: "1px solid black",
+                                    borderRadius: 4
+                                }}>
+                                    <b>Event name</b>
+                                </div>
+                            </Popover>
+                        ))
                     }
                 </SplitItem>
             ))}

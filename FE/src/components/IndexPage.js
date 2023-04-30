@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { Card, CardBody, Dropdown, DropdownToggle, DropdownItem, Flex, FlexItem, Button, ButtonVariant, Select, SelectVariant, SelectOption, Toolbar, Switch } from '@patternfly/react-core';
 import NewEventModal from './NewEventModal';
-import axios from 'axios';
 import Week from './Week';
 import { AngleDoubleLeftIcon, AngleDoubleRightIcon, AngleLeftIcon, AngleRightIcon } from '@patternfly/react-icons';
 import { MONTH_VIEW, WEEK_VIEW } from '../helpers/Constants';
@@ -161,12 +160,14 @@ const IndexPage = ({ userInfo }) => {
                 </Toolbar>
                 {selectedView === WEEK_VIEW
                     ? <Week
+                        userInfo={userInfo}
                         doubleLeftButtonClickCount={doubleLeftButtonClickCount}
                         leftButtonClickCount={leftButtonClickCount}
                         rightButtonClickCount={rightButtonClickCount}
                         doubleRightButtonClickCount={doubleRightButtonClickCount}
-                    />
+                        />
                     : <Month
+                        userInfo={userInfo}
                         doubleLeftButtonClickCount={doubleLeftButtonClickCount}
                         leftButtonClickCount={leftButtonClickCount}
                         rightButtonClickCount={rightButtonClickCount}

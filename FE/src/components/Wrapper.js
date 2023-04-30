@@ -50,6 +50,7 @@ const Wrapper = ({ children, userInfo, setUserInfo }) => {
 
 			const decodedToken = jwt_decode(receivedUserInfo.data.token);
 			decodedToken.raw = receivedUserInfo.data.token;
+			decodedToken.loaded = true;
 
 			setUserInfo(decodedToken);
 			localStorage.setItem('login', JSON.stringify(decodedToken));
