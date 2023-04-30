@@ -144,7 +144,13 @@ const NewEventModal = ({ isOpen, setOpen, createCallback }) => {
                 <FormGroup label="Display color">
                     {
                         Object.entries(COLORS).map(([colorName, colorValue]) => 
-                            <Tile key={colorName} title={capitalize(colorName)} style={{ backgroundColor: colorValue }} isSelected={selectedColor === colorName} onClick={() => setSelectedColor(colorName)}/>
+                            <Tile
+                                key={colorName}
+                                title={capitalize(colorName)}
+                                style={{ backgroundColor: colorValue, width: 100 }}
+                                isSelected={selectedColor === colorName}
+                                onClick={() => setSelectedColor(colorName)}
+                            />
                         )
                     }
                 </FormGroup>

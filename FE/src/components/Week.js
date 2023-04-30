@@ -65,29 +65,39 @@ const Week = ({ doubleLeftButtonClickCount, leftButtonClickCount, rightButtonCli
     }, [currentMonday])
 
     return (
-        <Split id="week-split" hasGutter style={{ width: "100%", display: "flex", marginTop: "32px" }}>
+        <Split id="week-split" style={{ width: "100%", display: "flex", marginTop: "32px" }}>
             <SplitItem style={{ flex: 1, height: 1200 }}>
                 <b>
                     <div style={{ textAlign: "center", height: 24 }}>Week {getWeekNumber(currentMonday)}</div>
                     <div style={{ textAlign: "center", height: 24 }}>{getWeekCalendarTitle(currentMonday)}</div>
                 </b>
                 {
-                    [...Array(24).keys()].map(hour =>
+                    [...Array(24).keys()].map((hour, index) =>
                         <Fragment key={hour}>
                             <div style={{ position: "relative", height: 0 }}>
-                                <div style={{ width: splitWidth, position: "absolute", height: 0, border: "2px solid rgba(150, 150, 150, 0.3)" }} />
+                                <div style={{
+                                    width: splitWidth,
+                                    position: "absolute",
+                                    height: 0,
+                                    borderBottom: index === 0 ? "1px solid black" : "1px solid rgba(150, 150, 150, 0.3)",
+                                    pointerEvents: "none"
+                                }} />
                             </div>
                             <div style={{ height: 48, color: "gray" }}>
                                 {String(hour).padStart(2, '0')}:00
                             </div>
-                            {/*<div style={{ height: 48, position: "absolute", width: "100%", padding: 0, margin: 0, border: "2px solid gray" }} />*/}
                         </Fragment>
                     )
                 }
 
             </SplitItem>
             {WEEKDAYS.map((weekday, index) => (
-                <SplitItem key={weekday} style={{ flex: 1, height: 1200, border: "1px solid black" }}>
+                <SplitItem key={weekday} style={{
+                    flex: 1,
+                    height: 1200,
+                    border: "1px solid black",
+                    borderLeft: index === 0 ? "1px solid black" : 0
+                }}>
                     <b>
                         <div style={{ textAlign: "center", height: 24 }}>{weekday}</div>
                         <div style={{ textAlign: "center", height: 24 }}>{weekDays?.[index]?.getDate()}</div>
@@ -112,7 +122,16 @@ const Week = ({ doubleLeftButtonClickCount, leftButtonClickCount, rightButtonCli
                             }
                             minWidth="400px"
                         >
-                            <div style={{ backgroundColor: COLORS.red, height: 48 * 2, width: "100%", padding: 2, marginTop: 48 * 6, cursor: "pointer", border: "1px solid black", borderRadius: 4 }}>
+                            <div style={{
+                                backgroundColor: COLORS.red,
+                                height: 48 * 2,
+                                width: "100%",
+                                padding: 2,
+                                marginTop: 48 * 6,
+                                cursor: "pointer",
+                                border: "1px solid black",
+                                borderRadius: 4
+                            }}>
                                 <b>Event name</b>
                             </div>
                         </Popover>

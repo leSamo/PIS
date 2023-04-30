@@ -94,7 +94,18 @@ const Month = ({ doubleLeftButtonClickCount, leftButtonClickCount, rightButtonCl
                                                     }
                                                     minWidth="400px"
                                                 >
-                                                    <div style={{ width: "calc(100% - 16px)", backgroundColor: COLORS.red, marginLeft: 8, marginRight: 8, cursor: "pointer", border: "1px solid black", borderRadius: 4, textAlign: "left", paddingLeft: 8, paddingRight: 8 }}>
+                                                    <div style={{
+                                                        width: "calc(100% - 16px)",
+                                                        backgroundColor: COLORS.red,
+                                                        marginLeft: 8,
+                                                        marginRight: 8,
+                                                        cursor: "pointer",
+                                                        border: "1px solid black",
+                                                        borderRadius: 4,
+                                                        textAlign: "left",
+                                                        paddingLeft: 8,
+                                                        paddingRight: 8
+                                                    }}>
                                                         <b>Event name</b>
                                                     </div>
                                                 </Popover>
