@@ -140,6 +140,7 @@ public class Events {
             Notification notification = new Notification();
             notification.setEvent(savedEvent);
             notification.setAttendee(attendee);
+            notification.setCreator(loggedInUser);
             notification.setAck(false);
             ntfMgr.save(notification); 
         }

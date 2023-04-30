@@ -3,8 +3,12 @@ package cz.xoleks00.pis.api;
 
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 import cz.xoleks00.pis.data.Notification;
+import cz.xoleks00.pis.data.NotificationDTO;
+import cz.xoleks00.pis.data.PISUser;
+import cz.xoleks00.pis.data.UserDTO;
 import cz.xoleks00.pis.service.NotificationManager;
 import cz.xoleks00.pis.service.UserManager;
 import jakarta.inject.Inject;
@@ -32,14 +36,22 @@ public class Notifications {
     @Path("/{username}")
     @Produces(MediaType.APPLICATION_JSON)
     public Response getNotificationsByUsername(@PathParam("username") String username) {
-        if (userMgr.findByUsername(username) == null) {
+        PISUser user = userMgr.findByUsername(username);
+        if (user == null) {
             return Response.status(Status.BAD_REQUEST)
                     .entity("User not found: " + username)
                     .type(MediaType.APPLICATION_JSON)
                     .build();
         }
         List<Notification> notifications = ntfMgr.findByUsername(username);
-        return Response.ok(notifications).build();
+        List<NotificationDTO> notificationDTOs = notifications.stream()
+                .map(notification -> {
+                    PISUser creator = notification.getCreator();
+                    UserDTO creatorDTO = new UserDTO(creator.getUsername(), creator.getName(), creator.getEmail(), creator.getUserCreated(), creator.isAdmin(), creator.getUserRole(), creator.getId(), creator.getManagedUsers());
+                    return new NotificationDTO(notification.getId(), notification.getEvent().getName(), notification.getEvent().getStart(), notification.getEvent().getEnd(), notification.getEvent().getId(), creatorDTO, notification.isAck());
+                })
+                .collect(Collectors.toList());
+        return Response.ok(notificationDTOs).build();
     }
 
     @PUT

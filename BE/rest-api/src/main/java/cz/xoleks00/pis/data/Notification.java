@@ -18,6 +18,10 @@ public class Notification {
     @JoinColumn(name = "attendee_id", nullable = false)
     private PISUser attendee;
 
+    @OneToOne
+    @JoinColumn(name = "creator_id", nullable = false)
+    private PISUser creator;
+
     @Column(name = "ack", nullable = false)
     private boolean ack;
 
@@ -43,6 +47,14 @@ public class Notification {
 
     public void setAttendee(PISUser attendee) {
         this.attendee = attendee;
+    }
+
+    public PISUser getCreator() {
+        return creator;
+    }
+
+    public void setCreator(PISUser creator) {
+        this.creator = creator;
     }
 
     public boolean isAck() {
