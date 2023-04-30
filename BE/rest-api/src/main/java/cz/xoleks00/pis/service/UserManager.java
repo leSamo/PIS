@@ -15,7 +15,6 @@ import jakarta.persistence.criteria.CriteriaQuery;
 import jakarta.persistence.criteria.Predicate;
 import jakarta.persistence.criteria.Root;
 import jakarta.transaction.Transactional;
-import cz.xoleks00.pis.data.Car;
 import cz.xoleks00.pis.data.PISUser;
 
 
@@ -45,13 +44,6 @@ public class UserManager
     	em.remove(em.merge(p));
     }
     
-    @Transactional
-    public void addCar(PISUser p, Car c)
-    {
-    	p.getCars().add(c);
-    	c.setOwner(p);
-    	save(p);
-    }
     
     public PISUser findByUsername(String username) {
         try {

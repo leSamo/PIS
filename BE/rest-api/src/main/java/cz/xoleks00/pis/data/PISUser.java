@@ -49,16 +49,12 @@ public class PISUser
     @Temporal(TemporalType.DATE)
     //@JsonbDateFormat("yyyy-MM-dd z")
     private Date userCreated;
-    @OneToMany(cascade = { CascadeType.ALL }, fetch = FetchType.EAGER, mappedBy = "owner", orphanRemoval = true)
-    @JsonbTransient
-	private Collection<Car> cars;
     @OneToMany(cascade = { CascadeType.ALL }, fetch = FetchType.EAGER, mappedBy = "creator", orphanRemoval = false)
     @JsonbTransient
 	private Collection<Event> events;
     
     public PISUser()
     {
-        cars = new ArrayList<>();
         events = new ArrayList<>();
     }
     
@@ -67,15 +63,6 @@ public class PISUser
         return events;
     }
 
-    public Collection<Car> getCars()
-    {
-        return cars;
-    }
-
-    public void setCars(Collection<Car> cars)
-    {
-        this.cars = cars;
-    }
 
     /**
      * @return the name
@@ -136,7 +123,7 @@ public class PISUser
     @Override
     public String toString()
     {
-        return "PISUser: " + name + "(" + cars.size() + " cars)";
+        return "PISUser: " + name;
     }
 
     public String getEmail() {

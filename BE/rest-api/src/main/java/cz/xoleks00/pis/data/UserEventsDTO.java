@@ -1,7 +1,6 @@
 package cz.xoleks00.pis.data;
 
 import java.util.Collection;
-import cz.xoleks00.pis.data.Event;
 
 public class UserEventsDTO {
     private Collection<Event> events;

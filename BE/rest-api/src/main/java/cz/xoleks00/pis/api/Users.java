@@ -27,7 +27,6 @@ import jakarta.ws.rs.core.Response.Status;
 import jakarta.ws.rs.core.SecurityContext;
 import jakarta.ws.rs.core.UriBuilder;
 import jakarta.ws.rs.core.UriInfo;
-import cz.xoleks00.pis.data.Car;
 import cz.xoleks00.pis.data.ErrorDTO;
 import cz.xoleks00.pis.data.Event;
 import cz.xoleks00.pis.data.UserEventsDTO;
@@ -225,36 +224,6 @@ public class Users
     }
     
     
-    
-    @Path("/{id}/cars")
-    @GET
-    @Produces(MediaType.APPLICATION_JSON)
-    @RolesAllowed({ "admin", "employee" })
-    public Response getCarsForUser(@PathParam("id") Long id) 
-    {
-    	PISUser p = userMgr.find(id);
-    	if (p != null)
-    		return Response.ok(p.getCars()).build();
-    	else
-    		return Response.status(Status.NOT_FOUND).entity(new ErrorDTO("not found")).type(MediaType.APPLICATION_JSON).build();
-    }
-   
-    @Path("/{id}/cars")
-    @POST
-    @Consumes(MediaType.APPLICATION_JSON)
-    @Produces(MediaType.APPLICATION_JSON)
-    @RolesAllowed({ "admin", "employee" })
-    public Response addCarToUser(@PathParam("id") Long userId, Car car) 
-    {
-    	PISUser p = userMgr.find(userId);
-    	if (p != null)
-    	{
-    		userMgr.addCar(p, car);
-    		return Response.ok(p.getCars()).build();
-    	}
-    	else
-    		return Response.status(Status.NOT_FOUND).entity(new ErrorDTO("not found")).type(MediaType.APPLICATION_JSON).build();
-    }
 
     @Path("/{id}/events")
     @GET
