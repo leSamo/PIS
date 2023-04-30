@@ -74,7 +74,7 @@ public class Events {
             List<EventDTO> eventDTOs = events.stream()
                     .map(event -> new EventDTO(
                             event.getId(),
-                            event.getTitle(),
+                            event.getName(),
                             event.getDescription(),
                             event.getStart(),
                             event.getEnd(),

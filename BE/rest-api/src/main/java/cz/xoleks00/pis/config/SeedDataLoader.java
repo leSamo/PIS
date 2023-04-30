@@ -99,6 +99,7 @@ public class SeedDataLoader implements ServletContextListener {
                 Event event1 = new Event();
                 event1.setCreator(user1);
                 event1.setDescription("Event 1");
+                event1.setName("name1");
                 calendar1.setTime(new Date());
                 event1.setStart(calendar1.getTime());
                 calendar1.add(Calendar.HOUR_OF_DAY, 1);
@@ -110,6 +111,7 @@ public class SeedDataLoader implements ServletContextListener {
                 Event event2 = new Event();
                 event2.setCreator(user2);
                 event2.setDescription("Event 2");
+                event2.setName("name2");
                 calendar1.setTime(new Date());
                 event2.setStart(calendar1.getTime());
                 calendar1.add(Calendar.HOUR_OF_DAY, 1);
@@ -121,6 +123,7 @@ public class SeedDataLoader implements ServletContextListener {
                 Event event3 = new Event();
                 event3.setCreator(user2);
                 event3.setDescription("Event 3");
+                event3.setName("name3");
                 calendar1.setTime(new Date());
                 event3.setStart(calendar1.getTime());
                 calendar1.add(Calendar.HOUR_OF_DAY, 1);
@@ -132,6 +135,7 @@ public class SeedDataLoader implements ServletContextListener {
                 Event event4 = new Event();
                 event4.setCreator(user2);
                 event4.setDescription("Event 4");
+                event4.setName("name4");
                 calendar1.setTime(new Date());
                 event4.setStart(calendar1.getTime());
                 calendar1.add(Calendar.HOUR_OF_DAY, 1);
@@ -156,6 +160,7 @@ public class SeedDataLoader implements ServletContextListener {
                     event.setCreator(people[i]);
                     event.setDescription("Event " + (i + 1));
                     event.setStart(calendar.getTime());
+                    event.setName("name" + i);
                     calendar.add(Calendar.HOUR_OF_DAY, 2);
                     event.setEnd(calendar.getTime());
                     event.setAttendees(Arrays.asList(people[i], people[i + 1], people[i + 2]));

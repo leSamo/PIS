@@ -5,7 +5,7 @@ import java.util.List;
 
 public class EventDTO {
     private long id;
-    private String title;
+    private String name;
     private String description;
     private Date start;
     private Date end;
@@ -13,9 +13,9 @@ public class EventDTO {
     private UserDTO creator;
     private List<UserDTO> attendees;
 
-    public EventDTO(long id, String title, String description, Date start, Date end, EventColor color, UserDTO creator, List<UserDTO> attendees) {
+    public EventDTO(long id, String name, String description, Date start, Date end, EventColor color, UserDTO creator, List<UserDTO> attendees) {
         this.id = id;
-        this.title = title;
+        this.name = name;
         this.description = description;
         this.start = start;
         this.end = end;
@@ -32,12 +32,12 @@ public class EventDTO {
         this.id = id;
     }
 
-    public String getTitle() {
-        return title;
+    public String getName() {
+        return name;
     }
 
-    public void setTitle(String title) {
-        this.title = title;
+    public void setName(String title) {
+        this.name = title;
     }
 
     public String getDescription() {

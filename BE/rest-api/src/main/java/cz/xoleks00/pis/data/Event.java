@@ -33,7 +33,6 @@ public class Event {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
-    private String title;
     @Temporal(TemporalType.TIMESTAMP)
     private Date start;
     @Temporal(TemporalType.TIMESTAMP)
@@ -58,14 +57,6 @@ public class Event {
 
     public void setId(long id) {
         this.id = id;
-    }
-
-    public String getTitle() {
-        return title;
-    }
-
-    public void setTitle(String title) {
-        this.title = title;
     }
 
     public Date getStart() {
@@ -134,7 +125,7 @@ public class Event {
 
     @Override
     public String toString() {
-        return "Event [id=" + id + ", title=" + title + ", start=" + start + ", end=" + eventEnd + ", creator=" + creator
+        return "Event [id=" + id  + ", start=" + start + ", end=" + eventEnd + ", creator=" + creator
                 + ", name=" + name + ", place=" + place + ", description=" + description + "attendees" + attendees +"]";
     }
 }
