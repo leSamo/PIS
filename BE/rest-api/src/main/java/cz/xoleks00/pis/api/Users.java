@@ -34,7 +34,6 @@ import jakarta.ws.rs.core.UriInfo;
 import cz.xoleks00.pis.data.AddManagedUsersRequest;
 import cz.xoleks00.pis.data.ErrorDTO;
 import cz.xoleks00.pis.data.Event;
-import cz.xoleks00.pis.data.UserEventsDTO;
 import cz.xoleks00.pis.data.PISUser;
 import cz.xoleks00.pis.data.UserDTO;
 import cz.xoleks00.pis.service.EventManager;
@@ -268,24 +267,7 @@ public class Users
         }
     }
     
-    
 
-    @Path("/{id}/events")
-    @GET
-    @Produces(MediaType.APPLICATION_JSON)
-    @RolesAllowed({ "admin", "employee" })
-    public Response getEventsForUser(@PathParam("id") Long id) {
-        PISUser p = userMgr.find(id);
-    
-        if (p != null) {
-            // Get the events where the user is a creator or an attendee
-            List<Event> userEvents = eventMgr.findEventsByUserId(id);
-            UserEventsDTO userEventsDTO = new UserEventsDTO(userEvents);
-            return Response.ok(userEventsDTO).build();
-        } else {
-            return Response.status(Status.NOT_FOUND).entity(new ErrorDTO("not found")).type(MediaType.APPLICATION_JSON).build();
-        }
-    }
 
     /**
      * Get all users managed by a given user.

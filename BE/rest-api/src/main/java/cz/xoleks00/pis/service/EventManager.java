@@ -32,13 +32,6 @@ public class EventManager {
      */
     @Transactional
     public Event save(Event e) {
-        PISUser creator = em.find(PISUser.class, e.getCreator().getId());
-        if (creator != null) {
-            creator.getEvents().add(e);
-            e.setCreator(creator);
-        } else {
-            throw new IllegalArgumentException("Invalid creator ID");
-        }
         return em.merge(e);
     }
     
