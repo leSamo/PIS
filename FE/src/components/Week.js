@@ -146,52 +146,53 @@ const Week = ({ userInfo, addToastAlert, doubleLeftButtonClickCount, leftButtonC
                     </b>
                     {/* get day (index), convert start time to margin top, convert end time to height */
                         eventsToElements(fetchedEvents)[index].map(event => (
-                            <Popover
-                                key={event.id}
-                                headerContent={<div>{event.name}</div>}
-                                bodyContent={
-                                    <Fragment>
-                                        <div>🕒 {prettyTime(event.start)} – {prettyTime(event.end)}</div>
-                                        <div>📝 {event.description}</div>
-                                        <div>✏️ Author: {event.creator.name} ({event.creator.email})</div>
-                                        <div>🙋‍♀️ Attendees:</div>
-                                        {
-                                            event.attendees.map(attendee => (
-                                                <div key={attendee.username} style={{ marginLeft: 32 }}>- {attendee.name} ({attendee.email})</div>
-                                            ))
-                                        }
-                                    </Fragment>
-                                }
-                                footerContent={event.creator.username === userInfo.upn &&
-                                    <Stack hasGutter>
-                                        <StackItem>
-                                            <Button variant="primary" style={{ width: "100%" }}>
-                                                Edit
-                                            </Button>
-                                        </StackItem>
-                                        <StackItem>
-                                            <Button variant="danger" style={{ width: "100%" }} onClick={() => deleteEventAction(event.id)}>
-                                                Delete
-                                            </Button>
-                                        </StackItem>
-                                    </Stack>
-                                }
-                                minWidth="400px"
-                            >
-                                <div style={{
-                                    backgroundColor: COLORS[event.color.toLowerCase()],
-                                    height: event.height,
-                                    width: document.querySelectorAll(".weekday-split")[index].offsetWidth - 2,
-                                    padding: 2,
-                                    marginTop: event.marginTop,
-                                    cursor: "pointer",
-                                    border: "1px solid black",
-                                    borderRadius: 4,
-                                    position: "absolute"
-                                }}>
-                                    <b>{event.name}</b>
-                                </div>
-                            </Popover>
+                            <div key={event.id} style={{ position: "relative" }}>
+                                <Popover
+                                    headerContent={<div>{event.name}</div>}
+                                    bodyContent={
+                                        <Fragment>
+                                            <div>🕒 {prettyTime(event.start)} – {prettyTime(event.end)}</div>
+                                            <div>📝 {event.description}</div>
+                                            <div>✏️ Author: {event.creator.name} ({event.creator.email})</div>
+                                            <div>🙋‍♀️ Attendees:</div>
+                                            {
+                                                event.attendees.map(attendee => (
+                                                    <div key={attendee.username} style={{ marginLeft: 32 }}>- {attendee.name} ({attendee.email})</div>
+                                                ))
+                                            }
+                                        </Fragment>
+                                    }
+                                    footerContent={event.creator.username === userInfo.upn &&
+                                        <Stack hasGutter>
+                                            <StackItem>
+                                                <Button variant="primary" style={{ width: "100%" }}>
+                                                    Edit
+                                                </Button>
+                                            </StackItem>
+                                            <StackItem>
+                                                <Button variant="danger" style={{ width: "100%" }} onClick={() => deleteEventAction(event.id)}>
+                                                    Delete
+                                                </Button>
+                                            </StackItem>
+                                        </Stack>
+                                    }
+                                    minWidth="400px"
+                                >
+                                    <div style={{
+                                        backgroundColor: COLORS[event.color.toLowerCase()],
+                                        height: event.height,
+                                        width: document.querySelectorAll(".weekday-split")[index].offsetWidth - 2,
+                                        padding: 2,
+                                        marginTop: event.marginTop,
+                                        cursor: "pointer",
+                                        border: "1px solid black",
+                                        borderRadius: 4,
+                                        position: "absolute"
+                                    }}>
+                                        <b>{event.name}</b>
+                                    </div>
+                                </Popover>
+                            </div>
                         ))
                     }
                 </SplitItem>

@@ -42,6 +42,15 @@ export const useAction = (verb, endpoint, userInfo = {}) => {
 				.then(response => successCallback?.(response))
 				.catch(error => errorCallback?.(error?.response?.data?.message));
 		}
+		else if (verb === "PUT") {
+			axios.put(
+				id ? `/rest-api/rest${endpoint}/${id}` : `/rest-api/rest${endpoint}`,
+				{ ...data },
+				userInfo.raw && { headers: { 'Authorization': `Bearer ${userInfo.raw}` } }
+			)
+				.then(response => successCallback?.(response))
+				.catch(error => errorCallback?.(error?.response?.data?.message));
+		}
 		else if (verb === "DELETE") {
 			axios.delete(
 				id ? `/rest-api/rest${endpoint}/${id}` : `/rest-api/rest${endpoint}`,

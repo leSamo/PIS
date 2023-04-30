@@ -167,3 +167,20 @@ export const prettyTime = date => {
 
     return `${hours}:${minutes}`;
 }
+
+export const formatDateTimeRange = (dateTimeStr1, dateTimeStr2) => {
+    const date1 = new Date(dateTimeStr1.split("[")[0]);
+    const date2 = new Date(dateTimeStr2.split("[")[0]);
+
+    const dateString1 = date1.toISOString().substring(0, 10);
+    const dateString2 = date2.toISOString().substring(0, 10);
+
+    const timeString1 = date1.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', hour12: false });
+    const timeString2 = date2.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', hour12: false });
+
+    if (dateString1 === dateString2) {
+        return `${dateString1} ${timeString1} – ${timeString2}`;
+    } else {
+        return `${dateString1} ${timeString1} – ${dateString2} ${timeString2}`;
+    }
+}

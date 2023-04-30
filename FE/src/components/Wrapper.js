@@ -1,7 +1,7 @@
-import React, { useEffect, useState } from 'react';
+import React, { Fragment, useEffect, useState } from 'react';
 import {
 	Page, PageHeader, Dropdown, DropdownToggle, Avatar, DropdownGroup, DropdownItem,
-	PageHeaderTools, Button, Alert, AlertGroup, AlertVariant, AlertActionCloseButton, Split, SplitItem, Brand
+	PageHeaderTools, Button, Alert, AlertGroup, AlertVariant, AlertActionCloseButton, Split, SplitItem, Brand, NotificationBadge, Popover, NotificationDrawer, NotificationDrawerHeader, NotificationDrawerBody, NotificationDrawerList, NotificationDrawerListItem, NotificationDrawerListItemHeader, NotificationDrawerListItemBody
 } from '@patternfly/react-core';
 import avatarImg from './avatar.svg';
 import LoginModal from './LoginModal'
@@ -10,11 +10,20 @@ import { useAction } from '../helpers/Hooks';
 import { KeyIcon } from '@patternfly/react-icons';
 import { Link } from 'react-router-dom/cjs/react-router-dom';
 import jwt_decode from 'jwt-decode';
+import { useFetch } from './../helpers/Hooks';
+import { formatDateTimeRange } from '../helpers/CalendarHelper';
 
+// TODO: Handle JWT expiration
 const Wrapper = ({ children, userInfo, setUserInfo }) => {
 	const [isDropdownOpen, setDropdownOpen] = useState(false);
 	const [isLoginModalOpen, setLoginModalOpen] = useState(false);
 	const [toastAlerts, setToastAlerts] = useState([]);
+
+	const [notifications, areNotificationsLoading, notificationsRefresh] = useFetch(`/notifications/${userInfo.upn}`, userInfo);
+
+	const acknowledgeNotifications = useAction('PUT', `/notifications/${userInfo.upn}/ack`, userInfo);
+
+	console.log("notifs", notifications);
 
 	const sendLoginRequest = useAction('POST', '/login');
 
@@ -95,18 +104,50 @@ const Wrapper = ({ children, userInfo, setUserInfo }) => {
 
 				{userInfo.upn
 					? (
-						<SplitItem>
-							<Dropdown
-								onSelect={() => setDropdownOpen(!isDropdownOpen)}
-								isOpen={isDropdownOpen}
-								toggle={
-									<DropdownToggle icon={<Avatar src={avatarImg} alt="Avatar" size="sm" />} onToggle={() => setDropdownOpen(!isDropdownOpen)}>
-										{userInfo.upn}
-									</DropdownToggle>
-								}
-								dropdownItems={userDropdownItems}
-							/>
-						</SplitItem>
+						<Fragment>
+							<SplitItem>
+								<Popover
+									style={{ maxHeight: 600, minWidth: 400, overflow: "auto" }}
+									onHide={() => notifications.filter(notif => !notif.ack).length > 0 && acknowledgeNotifications(null, {}, notificationsRefresh)}
+									bodyContent={
+										<NotificationDrawer>
+											<NotificationDrawerHeader count={notifications.filter(notif => !notif.ack).length} />
+											<NotificationDrawerBody>
+												<NotificationDrawerList>
+													{notifications.map(notification => (
+														<NotificationDrawerListItem key={notification.id} isRead={notification.ack} variant="info">
+															<NotificationDrawerListItemHeader
+																variant="info"
+																title="You have been invited to an event"
+															></NotificationDrawerListItemHeader>
+															<NotificationDrawerListItemBody timestamp={formatDateTimeRange(notification.eventStart, notification.eventEnd)}>
+																{notification.eventName}
+															</NotificationDrawerListItemBody>
+														</NotificationDrawerListItem>
+													))}
+												</NotificationDrawerList>
+											</NotificationDrawerBody>
+										</NotificationDrawer>
+									}>
+									<NotificationBadge
+										variant={notifications.filter(notif => !notif.ack).length === 0 ? "read" : "attention"}
+										count={notifications.filter(notif => !notif.ack).length}
+									/>
+								</Popover>
+							</SplitItem>
+							<SplitItem>
+								<Dropdown
+									onSelect={() => setDropdownOpen(!isDropdownOpen)}
+									isOpen={isDropdownOpen}
+									toggle={
+										<DropdownToggle icon={<Avatar src={avatarImg} alt="Avatar" size="sm" />} onToggle={() => setDropdownOpen(!isDropdownOpen)}>
+											{userInfo.upn}
+										</DropdownToggle>
+									}
+									dropdownItems={userDropdownItems}
+								/>
+							</SplitItem>
+						</Fragment>
 					) : <SplitItem>
 						<Button variant="tertiary" onClick={() => setLoginModalOpen(true)}>Log in</Button>
 					</SplitItem>
