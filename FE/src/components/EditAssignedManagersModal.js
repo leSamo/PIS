@@ -19,8 +19,6 @@ const EditAssignedManagersModal = ({ isOpen, setOpen, callback, selectedUser }) 
         setOpen(false)
     }
 
-    console.log(availableOptions)
-
     return (
         <Modal
             variant={ModalVariant.small}

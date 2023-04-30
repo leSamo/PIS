@@ -20,9 +20,11 @@ const NewEventModal = ({ isOpen, setOpen, createCallback }) => {
     const [timeTo, setTimeTo] = useState('');
 
     useEffect(() => {
+        /*
         axios.get("/allUsers").then(response => {
             setAllUsers(response.data);
         })
+        */
     }, []);
 
     const onTypeaheadSelect = (event, selection) => {

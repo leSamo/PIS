@@ -11,7 +11,7 @@ import UserManagementPage from './UserManagementPage';
 import './index.css';
 
 const App = () => {
-  const [userInfo, setUserInfo] = useState({});
+  const [userInfo, setUserInfo] = useState({ loaded: false });
 
   return (
     <Router>

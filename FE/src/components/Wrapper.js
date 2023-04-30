@@ -9,13 +9,14 @@ import logo from './logo.png';
 import { useAction } from '../helpers/Hooks';
 import { KeyIcon } from '@patternfly/react-icons';
 import { Link } from 'react-router-dom/cjs/react-router-dom';
+import jwt_decode from 'jwt-decode';
 
 const Wrapper = ({ children, userInfo, setUserInfo }) => {
 	const [isDropdownOpen, setDropdownOpen] = useState(false);
 	const [isLoginModalOpen, setLoginModalOpen] = useState(false);
 	const [toastAlerts, setToastAlerts] = useState([]);
 
-	const sendLoginRequest = useAction('/login');
+	const sendLoginRequest = useAction('POST', '/login');
 
 	useEffect(() => {
 		const savedInfo = localStorage.getItem('login');
@@ -46,9 +47,12 @@ const Wrapper = ({ children, userInfo, setUserInfo }) => {
 	const loginUser = async (login, password, closeModal) => {
 		const successCallback = receivedUserInfo => {
 			addToastAlert(AlertVariant.success, 'Login successful');
-			setUserInfo(receivedUserInfo);
 
-			localStorage.setItem('login', JSON.stringify(receivedUserInfo));
+			const decodedToken = jwt_decode(receivedUserInfo.data.token);
+			decodedToken.raw = receivedUserInfo.data.token;
+
+			setUserInfo(decodedToken);
+			localStorage.setItem('login', JSON.stringify(decodedToken));
 			closeModal();
 		}
 
@@ -56,8 +60,8 @@ const Wrapper = ({ children, userInfo, setUserInfo }) => {
 			addToastAlert(AlertVariant.danger, 'Login failed', error.response.data);
 		}
 
-		sendLoginRequest({
-			username: login,
+		sendLoginRequest(null, {
+			login,
 			password
 		}, successCallback, errorCallback);
 	}
@@ -79,28 +83,34 @@ const Wrapper = ({ children, userInfo, setUserInfo }) => {
 
 	const headerRightPanel = (
 		<PageHeaderTools>
-			{userInfo.username
-				? <Dropdown
-					onSelect={() => setDropdownOpen(!isDropdownOpen)}
-					isOpen={isDropdownOpen}
-					toggle={
-						<DropdownToggle icon={<Avatar src={avatarImg} alt="Avatar" />} onToggle={() => setDropdownOpen(!isDropdownOpen)}>
-							{userInfo.username}
-						</DropdownToggle>
-					}
-					dropdownItems={userDropdownItems}
-				/>
-				: <Split hasGutter>
-					<SplitItem>
-						<Button variant="tertiary" onClick={() => setLoginModalOpen(true)}>Log in</Button>
-					</SplitItem>
+			<Split hasGutter>
+				{userInfo.upn && userInfo.groups.includes("admin") &&
 					<SplitItem>
 						<Link to="/userManagement">
 							<Button variant="tertiary" onClick={() => { }}>User management <KeyIcon style={{ marginLeft: 4, verticalAlign: -2 }} /></Button>
 						</Link>
 					</SplitItem>
-				</Split>
-			}
+				}
+
+				{userInfo.upn
+					? (
+						<SplitItem>
+							<Dropdown
+								onSelect={() => setDropdownOpen(!isDropdownOpen)}
+								isOpen={isDropdownOpen}
+								toggle={
+									<DropdownToggle icon={<Avatar src={avatarImg} alt="Avatar" size="sm" />} onToggle={() => setDropdownOpen(!isDropdownOpen)}>
+										{userInfo.upn}
+									</DropdownToggle>
+								}
+								dropdownItems={userDropdownItems}
+							/>
+						</SplitItem>
+					) : <SplitItem>
+						<Button variant="tertiary" onClick={() => setLoginModalOpen(true)}>Log in</Button>
+					</SplitItem>
+				}
+			</Split>
 		</PageHeaderTools>
 	);
 

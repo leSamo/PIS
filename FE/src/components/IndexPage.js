@@ -8,7 +8,7 @@ import { MONTH_VIEW, WEEK_VIEW } from '../helpers/Constants';
 import Month from './Month';
 import { isSubstring } from '../helpers/Utils';
 
-const IndexPage = () => {
+const IndexPage = ({ userInfo }) => {
     const [isNewEventModalOpen, setNewEventModalOpen] = useState(false);
     const [allUsers, setAllUsers] = React.useState([]);
     const [isDropdownOpen, setIsDropdownOpen] = React.useState(false);
@@ -23,9 +23,11 @@ const IndexPage = () => {
 
     useEffect(() => {
         // TODO: Remove own self
+        /*
         axios.get("/allUsers").then(response => {
             setAllUsers(response.data);
         })
+        */
     }, []);
 
     const onDropdownToggle = isOpen => {
