@@ -20,6 +20,7 @@ import { useAction, useFetch } from './../helpers/Hooks';
 import EventPopover from './EventPopover';
 
 // component which renders the calendar when month view is selected
+// TODO: sort events in each cell
 const Month = ({ userInfo, addToastAlert, doubleLeftButtonClickCount, leftButtonClickCount, rightButtonClickCount, doubleRightButtonClickCount, refreshCounter, navigateTodayCounter, editEvent }) => {
     const [firstDayOfMonth, setFirstDayOfMonth] = useState(getFirstDayOfMonth(new Date()));
     const [fetchedEvents, , refreshEvents] = useFetch('/events', userInfo, { users: userInfo.upn, start_date: (new Date(getMostRecentMonday(firstDayOfMonth))).toISOString().replace(/\.[0-9]{3}/, ''), end_date: (new Date(getFirstFollowingSunday(goForwardMonth(firstDayOfMonth)))).toISOString().replace(/\.[0-9]{3}/, '') });
@@ -85,27 +86,33 @@ const Month = ({ userInfo, addToastAlert, doubleLeftButtonClickCount, leftButton
         events = events.map(event => ({ ...event, start: event.start.split("[")[0], end: event.end.split("[")[0] }))
         
         // array where one element represents one day
-        const elements = [...Array(getWeekCountInMonth(firstDayOfMonth) * 7).keys()].map(() => []);
-
+        let elements = [...Array(getWeekCountInMonth(firstDayOfMonth) * 7).keys()].map(() => []);
+        
         events.forEach(event => {
             // get the index of start and end dates of an event
             // if the event is single-day it only occupies one slot
             const startIndex = daysApart(getMostRecentMonday(firstDayOfMonth), isoLongToShort(event.start));
             const endIndex = daysApart(getMostRecentMonday(firstDayOfMonth), isoLongToShort(event.end));
-
+            
             // this has to be array to account for multi-day events
             const indices = [];
-
+            
             for (let i = startIndex; i <= endIndex; i++) {
                 indices.push(i);
             }
-
+            
             indices.forEach(index => {
                 if (index >= 0 && index < getWeekCountInMonth(firstDayOfMonth) * 7) {
                     elements[index].push(event);
                 }
             });
         });
+        
+        console.log("aaa", elements);
+        // sort events on each day by start time
+        elements = elements.map(element =>
+            element.sort((a, b) => new Date(a.start) - new Date(b.start))
+        );
 
         // return array of 7 elements
         return elements;

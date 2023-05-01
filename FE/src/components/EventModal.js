@@ -134,7 +134,7 @@ const EventModal = ({ userInfo, isOpen, setOpen, createCallback, initialEventDat
                         }, initialEventData?.id);
                         closeModal();
                     }}
-                    isDisabled={!eventTitle || !eventDescription || !validateDate(dateFrom) || !validateDate(dateTo) || !validateTime(timeFrom) || !validateTime(timeTo) || getTimeAlertTitle()}
+                    isDisabled={!eventTitle || !validateDate(dateFrom) || !validateDate(dateTo) || !validateTime(timeFrom) || !validateTime(timeTo) || getTimeAlertTitle()}
                 >
                     {initialEventData ? "Edit" : "Create"}
                 </Button>,
@@ -150,7 +150,7 @@ const EventModal = ({ userInfo, isOpen, setOpen, createCallback, initialEventDat
                         onChange={value => setEventTitle(value)}
                     />
                 </FormGroup>
-                <FormGroup label="Event description" isRequired>
+                <FormGroup label="Event description">
                     <TextArea
                         isRequired
                         id="event-description"
