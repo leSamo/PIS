@@ -20,7 +20,6 @@ import java.time.LocalTime;
 import java.time.temporal.TemporalAdjusters;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 
@@ -61,7 +60,7 @@ public class SeedDataLoader implements ServletContextListener {
                     PISUser PISUser = new PISUser();
                     PISUser.setName(names[i]);
                     PISUser.setEmail("email" + (i + 1) + "@example.com");
-                    PISUser.setPassword("pswd" + (i + 1));
+                    PISUser.setPassword("secretpswd");
                     PISUser.setUserCreated(new Date());
                     PISUser.setAdmin(false);
                     
@@ -91,29 +90,38 @@ public class SeedDataLoader implements ServletContextListener {
                 LocalDate currentDate = LocalDate.now();
                 LocalDate firstDayOfMonth = currentDate.withDayOfMonth(1);
                 LocalDate lastDayOfMonth = firstDayOfMonth.with(TemporalAdjusters.lastDayOfMonth());
-
                 List<LocalDate> managerStandupDays = new ArrayList<>();
                 List<LocalDate> assistantStandupDays = new ArrayList<>();
                 List<LocalDate> companyMeetingDays = new ArrayList<>();
                 List<LocalDate> sprintPlanningDays = new ArrayList<>();
                 List<LocalDate> oneOnOneDays = new ArrayList<>();
-
+                List<LocalDate> codeFreezeDays = new ArrayList<>();
+                List<LocalDate> spaDays = new ArrayList<>();
+                
                 LocalDate iteratorDate = firstDayOfMonth;
                 while (!iteratorDate.isAfter(lastDayOfMonth)) {
                     if (iteratorDate.getDayOfWeek() != DayOfWeek.SATURDAY && iteratorDate.getDayOfWeek() != DayOfWeek.SUNDAY) {
                         managerStandupDays.add(iteratorDate);
                         assistantStandupDays.add(iteratorDate);
-
+                
                         if (iteratorDate.getDayOfWeek() == DayOfWeek.FRIDAY) {
                             companyMeetingDays.add(iteratorDate);
+                            codeFreezeDays.add(iteratorDate);
                         }
-
+                
                         if (iteratorDate.getDayOfWeek() == DayOfWeek.MONDAY && iteratorDate.getDayOfMonth() % 14 == 1) {
                             sprintPlanningDays.add(iteratorDate);
                         }
-
+                
                         if (iteratorDate.getDayOfWeek() != DayOfWeek.FRIDAY) {
                             oneOnOneDays.add(iteratorDate);
+                        }
+                    } else {
+                        if (iteratorDate.getDayOfWeek() == DayOfWeek.SATURDAY) {
+                            spaDays.add(iteratorDate);
+                        }
+                        if (iteratorDate.getDayOfWeek() == DayOfWeek.SUNDAY) {
+                            spaDays.add(iteratorDate);
                         }
                     }
                     iteratorDate = iteratorDate.plusDays(1);
@@ -155,6 +163,20 @@ public class SeedDataLoader implements ServletContextListener {
                     LocalDateTime startTime = LocalDateTime.of(day, LocalTime.of(9, 0));
                     LocalDateTime endTime = LocalDateTime.of(day, LocalTime.of(10, 0));
                     createEvent("1 on 1 with " + manager.getName(), startTime, endTime, people[0], Arrays.asList(manager), EventColor.RED);
+                }
+
+                // Add code freeze events
+                for (LocalDate day : codeFreezeDays) {
+                    LocalDateTime startTime = LocalDateTime.of(day, LocalTime.of(0, 0));
+                    LocalDateTime endTime = LocalDateTime.of(day, LocalTime.of(23, 59));
+                    createEvent("Code Freeze", startTime, endTime, people[0], Arrays.asList(people), EventColor.GREEN);
+                }
+
+                // Add two-day spa events for managers and director
+                for (LocalDate day : spaDays) {
+                    LocalDateTime startTime = LocalDateTime.of(day, LocalTime.of(0, 0));
+                    LocalDateTime endTime = LocalDateTime.of(day.plusDays(1), LocalTime.of(23, 59));
+                    createEvent("Two-day Spa", startTime, endTime, people[0], Arrays.asList(people[0], people[1], people[2], people[3], people[4]), EventColor.BLUE);
                 }
 
             }
