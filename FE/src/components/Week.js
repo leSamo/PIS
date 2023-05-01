@@ -9,7 +9,7 @@ import { prettyTime } from './../helpers/CalendarHelper';
 
 // TODO: Handle overlapping events
 // TODO: Handle multiday events
-const Week = ({ userInfo, addToastAlert, doubleLeftButtonClickCount, leftButtonClickCount, rightButtonClickCount, doubleRightButtonClickCount, refreshCounter }) => {
+const Week = ({ userInfo, addToastAlert, doubleLeftButtonClickCount, leftButtonClickCount, rightButtonClickCount, doubleRightButtonClickCount, refreshCounter, editEvent }) => {
     const [splitWidth, setSplitWidth] = useState(0);
     const [currentMonday, setCurrentMonday] = useState(getMostRecentMonday(new Date()));
     const [weekDays, setWeekDays] = useState([]);
@@ -148,6 +148,7 @@ const Week = ({ userInfo, addToastAlert, doubleLeftButtonClickCount, leftButtonC
                         eventsToElements(fetchedEvents)[index].map(event => (
                             <div key={event.id} style={{ position: "relative" }}>
                                 <Popover
+                                    zIndex={100}
                                     headerContent={<div>{event.name}</div>}
                                     bodyContent={
                                         <Fragment>
@@ -165,7 +166,7 @@ const Week = ({ userInfo, addToastAlert, doubleLeftButtonClickCount, leftButtonC
                                     footerContent={event.creator.username === userInfo.upn &&
                                         <Stack hasGutter>
                                             <StackItem>
-                                                <Button variant="primary" style={{ width: "100%" }}>
+                                                <Button variant="primary" style={{ width: "100%" }} onClick={() => editEvent(event)}>
                                                     Edit
                                                 </Button>
                                             </StackItem>

@@ -21,6 +21,7 @@ const IndexPage = ({ userInfo, addToastAlert }) => {
     const [selectedUsers, setSelectedUsers] = useState([]);
     const [selectedView, setSelectedView] = useState(WEEK_VIEW);
     const [showMyOwnCalendar, setShowMyOwnCalendar] = useState(true);
+    const [selectedEvent, setSelectedEvent] = useState(null);
 
     const createEvent = useAction('POST', '/events', userInfo);
 
@@ -81,8 +82,19 @@ const IndexPage = ({ userInfo, addToastAlert }) => {
     }
 
     const createCallback = event => {
+        // TODO: patch if editing
         createEvent(null, event, () => setRefreshCounter(refreshCounter + 1));
     };
+
+    const editEvent = event => {
+        setNewEventModalOpen(true);
+        setSelectedEvent(event);
+    }
+    
+    const openCreateEventModal = () => {
+        setSelectedEvent(null);
+        setNewEventModalOpen(true);
+    }
 
     return (
         <Card>
@@ -91,6 +103,7 @@ const IndexPage = ({ userInfo, addToastAlert }) => {
                 isOpen={isNewEventModalOpen}
                 setOpen={setNewEventModalOpen}
                 createCallback={createCallback}
+                initialEventData={selectedEvent}
             />
             <CardBody style={{ paddingTop: 0 }}>
                 <Toolbar isSticky style={{ paddingLeft: 16, paddingRight: 16 }}>
@@ -129,7 +142,7 @@ const IndexPage = ({ userInfo, addToastAlert }) => {
                             />
                         </FlexItem>
                         <FlexItem>
-                            <Button variant={ButtonVariant.primary} onClick={() => setNewEventModalOpen(true)}>Create event</Button>
+                            <Button variant={ButtonVariant.primary} onClick={openCreateEventModal}>Create event</Button>
                         </FlexItem>
                         <FlexItem>
                             <Button variant="secondary" onClick={() => setDoubleLeftButtonClickCount(doubleLeftButtonClickCount + 1)}>
@@ -172,6 +185,7 @@ const IndexPage = ({ userInfo, addToastAlert }) => {
                         rightButtonClickCount={rightButtonClickCount}
                         doubleRightButtonClickCount={doubleRightButtonClickCount}
                         refreshCounter={refreshCounter}
+                        editEvent={editEvent}
                     />
                     : <Month
                         userInfo={userInfo}
@@ -181,6 +195,7 @@ const IndexPage = ({ userInfo, addToastAlert }) => {
                         rightButtonClickCount={rightButtonClickCount}
                         doubleRightButtonClickCount={doubleRightButtonClickCount}
                         refreshCounter={refreshCounter}
+                        editEvent={editEvent}
                     />
                 }
             </CardBody>

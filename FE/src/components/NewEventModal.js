@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Form, FormGroup, TextInput, TextArea, Modal, ModalVariant, Button, TimePicker, DatePicker, Split, SplitItem, Select, SelectVariant, SelectOption, Tile } from '@patternfly/react-core';
 import { COLORS } from './../helpers/Constants';
 import { capitalize, isSubstring } from './../helpers/Utils';
@@ -7,10 +7,9 @@ import { validateDate } from '../helpers/Validators';
 import { validateTime } from './../helpers/Validators';
 
 // TODO: Automatically select event organizer in typeahead
-// TODO: Disable "Create" button until all fields are valid
 // TODO: Start day must be before end day
 // TODO: Event has to last at least 10 minutes
-const NewEventModal = ({ userInfo, isOpen, setOpen, createCallback }) => {
+const NewEventModal = ({ userInfo, isOpen, setOpen, createCallback, initialEventData }) => {
     const [eventTitle, setEventTitle] = useState('');
     const [eventDescription, setEventDescription] = useState('');
     const [isTypeaheadOpen, setTypeaheadOpen] = useState(false);
@@ -23,6 +22,24 @@ const NewEventModal = ({ userInfo, isOpen, setOpen, createCallback }) => {
     const [timeTo, setTimeTo] = useState('');
 
     const [allUsers, areUsersLoading, refreshUsers] = useFetch('/users', userInfo);
+
+    useEffect(() => {
+        if (isOpen && initialEventData) {
+            console.log("hhh", initialEventData);
+            setEventTitle(initialEventData.name);
+            setEventDescription(initialEventData.description);
+            setSelectedUsers(initialEventData.attendees.map(attendee => attendee.username));
+            setSelectedColor(initialEventData.color.toLowerCase());
+
+            const [startDate, startTime] = initialEventData.start.split(/[TZ]/);
+            const [endDate, endTime] = initialEventData.end.split(/[TZ]/);
+
+            setDateFrom(startDate);
+            setTimeFrom(startTime.substring(0, 5));
+            setDateTo(endDate);
+            setTimeTo(endTime.substring(0, 5));
+        }
+    }, [isOpen]);
 
     console.log(allUsers, selectedUsers);
 
@@ -64,6 +81,11 @@ const NewEventModal = ({ userInfo, isOpen, setOpen, createCallback }) => {
         setEventDescription('');
         clearTypeaheadSelection();
         setSelectedColor("blue");
+
+        setDateFrom('');
+        setDateTo('');
+        setTimeFrom('');
+        setTimeTo('');
     }
 
     console.log(dateFrom, timeFrom);
@@ -71,7 +93,7 @@ const NewEventModal = ({ userInfo, isOpen, setOpen, createCallback }) => {
     return (
         <Modal
             variant={ModalVariant.small}
-            title="Create a new event"
+            title={initialEventData ? "Edit event" : "Create a new event"}
             isOpen={isOpen}
             onClose={closeModal}
             actions={[
@@ -91,7 +113,7 @@ const NewEventModal = ({ userInfo, isOpen, setOpen, createCallback }) => {
                     }}
                     isDisabled={!eventTitle || !eventDescription || !validateDate(dateFrom) || !validateDate(dateTo) || !validateTime(timeFrom) || !validateTime(timeTo)}
                 >
-                    Create
+                    {initialEventData ? "Edit" : "Create"}
                 </Button>,
                 <Button key="cancel" variant="link" onClick={closeModal}>Cancel</Button>
             ]}>
@@ -121,10 +143,15 @@ const NewEventModal = ({ userInfo, isOpen, setOpen, createCallback }) => {
                             <DatePicker
                                 onChange={(_event, str) => setDateFrom(str)}
                                 appendTo={document.querySelector("body")}
+                                value={dateFrom}
                             />
                         </SplitItem>
                         <SplitItem>
-                            <TimePicker onChange={(e, time) => setTimeFrom(time)} is24Hour />
+                            <TimePicker
+                                onChange={(e, time) => setTimeFrom(time)}
+                                is24Hour
+                                time={timeFrom}
+                            />
                         </SplitItem>
                     </Split>
                 </FormGroup>
@@ -134,10 +161,15 @@ const NewEventModal = ({ userInfo, isOpen, setOpen, createCallback }) => {
                             <DatePicker
                                 onChange={(_event, str) => setDateTo(str)}
                                 appendTo={document.querySelector("body")}
+                                value={dateTo}
                             />
                         </SplitItem>
                         <SplitItem>
-                            <TimePicker onChange={(e, time) => setTimeTo(time)} is24Hour />
+                            <TimePicker
+                                onChange={(e, time) => setTimeTo(time)}
+                                is24Hour
+                                time={timeTo}
+                            />
                         </SplitItem>
                     </Split>
                 </FormGroup>
