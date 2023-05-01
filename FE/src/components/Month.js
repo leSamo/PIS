@@ -20,7 +20,6 @@ import { useAction, useFetch } from './../helpers/Hooks';
 import EventPopover from './EventPopover';
 
 // component which renders the calendar when month view is selected
-// TODO: sort events in each cell
 const Month = ({ userInfo, addToastAlert, doubleLeftButtonClickCount, leftButtonClickCount, rightButtonClickCount, doubleRightButtonClickCount, refreshCounter, navigateTodayCounter, editEvent }) => {
     const [firstDayOfMonth, setFirstDayOfMonth] = useState(getFirstDayOfMonth(new Date()));
     const [fetchedEvents, , refreshEvents] = useFetch('/events', userInfo, { users: userInfo.upn, start_date: (new Date(getMostRecentMonday(firstDayOfMonth))).toISOString().replace(/\.[0-9]{3}/, ''), end_date: (new Date(getFirstFollowingSunday(goForwardMonth(firstDayOfMonth)))).toISOString().replace(/\.[0-9]{3}/, '') });
@@ -107,8 +106,7 @@ const Month = ({ userInfo, addToastAlert, doubleLeftButtonClickCount, leftButton
                 }
             });
         });
-        
-        console.log("aaa", elements);
+
         // sort events on each day by start time
         elements = elements.map(element =>
             element.sort((a, b) => new Date(a.start) - new Date(b.start))

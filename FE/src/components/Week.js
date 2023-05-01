@@ -101,7 +101,7 @@ const Week = ({ userInfo, addToastAlert, doubleLeftButtonClickCount, leftButtonC
         events = events.map(event => ({ ...event, start: event.start.split("[")[0], end: event.end.split("[")[0] }))
 
         // handle single day events
-        const elements = [[], [], [], [], [], [], []];
+        let elements = [[], [], [], [], [], [], []];
 
         const singleDayEvents = events.filter(event => isoLongToShort(event.start) === isoLongToShort(event.end));
 
@@ -117,7 +117,7 @@ const Week = ({ userInfo, addToastAlert, doubleLeftButtonClickCount, leftButtonC
                 // overlapping events are shortened so each one can be clicked
                 elements[index].forEach(element => {
                     if (doDateRangesOverlap(event.start, event.end, element.start, element.end)) {
-                        offset += 24;
+                        offset += 12;
                     }
                 })
 
@@ -126,6 +126,11 @@ const Week = ({ userInfo, addToastAlert, doubleLeftButtonClickCount, leftButtonC
                 elements[index].push(event);
             }
         });
+
+        // sort events, so the shorter will be rendered on top of longer
+        elements = elements.map(element => 
+            element.sort((a, b) => b.height - a.height)    
+        );
 
         // return array of 7 elements
         return elements;
