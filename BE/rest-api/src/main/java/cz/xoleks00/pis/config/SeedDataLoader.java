@@ -62,17 +62,19 @@ public class SeedDataLoader implements ServletContextListener {
                     PISUser.setEmail("email" + (i + 1) + "@example.com");
                     PISUser.setPassword("secretpswd");
                     PISUser.setUserCreated(new Date());
-                    PISUser.setAdmin(false);
                     
                     if (i == 0) {
                         PISUser.setUserRole(UserRole.DIRECTOR);
                         PISUser.setUsername("director");
+                        PISUser.setAdmin(true);
                     } else if (i >= 1 && i <= 4) {
                         PISUser.setUserRole(UserRole.MANAGER);
                         PISUser.setUsername("manager" + i);
+                        PISUser.setAdmin(false);
                     } else {
                         PISUser.setUserRole(UserRole.ASSISTANT);
                         PISUser.setUsername("assistant" + (i - 4));
+                        PISUser.setAdmin(false);
                     }
 
                     em.persist(PISUser);
@@ -97,6 +99,8 @@ public class SeedDataLoader implements ServletContextListener {
                 List<LocalDate> oneOnOneDays = new ArrayList<>();
                 List<LocalDate> codeFreezeDays = new ArrayList<>();
                 List<LocalDate> spaDays = new ArrayList<>();
+                List<LocalDate> homeOfficeDays = new ArrayList<>();
+                List<LocalDate> checkServersDays = new ArrayList<>();
                 
                 LocalDate iteratorDate = firstDayOfMonth;
                 while (!iteratorDate.isAfter(lastDayOfMonth)) {
@@ -116,6 +120,12 @@ public class SeedDataLoader implements ServletContextListener {
                         if (iteratorDate.getDayOfWeek() != DayOfWeek.FRIDAY) {
                             oneOnOneDays.add(iteratorDate);
                         }
+                
+                        if (iteratorDate.getDayOfWeek() == DayOfWeek.WEDNESDAY) {
+                            homeOfficeDays.add(iteratorDate);
+                        }
+                
+                        checkServersDays.add(iteratorDate);
                     } else {
                         if (iteratorDate.getDayOfWeek() == DayOfWeek.SATURDAY) {
                             spaDays.add(iteratorDate);
@@ -177,6 +187,20 @@ public class SeedDataLoader implements ServletContextListener {
                     LocalDateTime startTime = LocalDateTime.of(day, LocalTime.of(0, 0));
                     LocalDateTime endTime = LocalDateTime.of(day.plusDays(1), LocalTime.of(23, 59));
                     createEvent("Two-day Spa", startTime, endTime, people[0], Arrays.asList(people[0], people[1], people[2], people[3], people[4]), EventColor.BLUE);
+                }
+
+                // Home-office events
+                for (LocalDate day : homeOfficeDays) {
+                    LocalDateTime startTime = LocalDateTime.of(day, LocalTime.of(12, 0));
+                    LocalDateTime endTime = startTime.plusDays(2);
+                    createEvent("Home-office", startTime, endTime, people[0], Arrays.asList(people[0]), EventColor.RED);
+                }
+
+                // Check-servers events
+                for (LocalDate day : checkServersDays) {
+                    LocalDateTime startTime = LocalDateTime.of(day, LocalTime.of(16, 0));
+                    LocalDateTime endTime = startTime.plusMinutes(10);
+                    createEvent("Check-servers", startTime, endTime, people[0], Arrays.asList(people[0]), EventColor.RED);
                 }
 
             }
