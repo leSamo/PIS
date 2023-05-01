@@ -2,6 +2,7 @@ package cz.xoleks00.pis.api;
 
 import java.net.URI;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -77,10 +78,10 @@ public class Events {
                               @Parameter(description = "List of usernames") @QueryParam("users") List<String> users) {
         PISUser loggedUser = userMgr.findByUsername(sc.getUserPrincipal().getName());
                                 
-            // Return an empty list if no users are specified
-            if (users == null || users.isEmpty()) {
-                return Response.ok().build();
-            }
+        // Return an empty list if no users are specified
+        if (users == null || users.isEmpty()) {
+            return Response.ok(Collections.emptyList()).build();
+        }
 
         // Check if all usernames exist in the database
         if (users != null && !users.isEmpty()) {
