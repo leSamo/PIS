@@ -3,11 +3,13 @@ package cz.xoleks00.pis.service;
 import java.util.List;
 
 import cz.xoleks00.pis.data.Notification;
+import jakarta.enterprise.context.RequestScoped;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
 import jakarta.persistence.TypedQuery;
 import jakarta.transaction.Transactional;
 
+@RequestScoped
 public class NotificationManager {
 
     @PersistenceContext

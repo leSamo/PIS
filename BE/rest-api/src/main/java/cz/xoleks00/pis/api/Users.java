@@ -32,7 +32,6 @@ import jakarta.ws.rs.core.SecurityContext;
 import jakarta.ws.rs.core.UriBuilder;
 import jakarta.ws.rs.core.UriInfo;
 import cz.xoleks00.pis.data.AddManagedUsersRequest;
-import cz.xoleks00.pis.data.ErrorDTO;
 import cz.xoleks00.pis.data.Event;
 import cz.xoleks00.pis.data.PISUser;
 import cz.xoleks00.pis.data.UserDTO;
@@ -106,7 +105,7 @@ public class Users
         if (p != null) {
             return Response.ok(p).build();
         } else {
-            return Response.status(Status.NOT_FOUND).entity(new ErrorDTO("User not found for username: " + username)).type(MediaType.APPLICATION_JSON).build();
+            return Response.status(Status.NOT_FOUND).entity("User not found for username: " + username).type(MediaType.APPLICATION_JSON).build();
         }
     }
 
@@ -131,7 +130,7 @@ public class Users
     		return Response.ok(p).build();
     	}
     	else
-    		return Response.status(Status.NOT_FOUND).entity(new ErrorDTO("not found")).type(MediaType.APPLICATION_JSON).build();
+    		return Response.status(Status.NOT_FOUND).entity("not found").type(MediaType.APPLICATION_JSON).build();
     }
     
 
@@ -176,10 +175,10 @@ public class Users
                 userMgr.save(p);
                 return Response.ok(p).build();
             } else {
-                return Response.status(Status.BAD_REQUEST).entity(new ErrorDTO("No valid updates provided")).type(MediaType.APPLICATION_JSON).build();
+                return Response.status(Status.BAD_REQUEST).entity("No valid updates provided").type(MediaType.APPLICATION_JSON).build();
             }
         } else {
-            return Response.status(Status.NOT_FOUND).entity(new ErrorDTO("User not found for username: " + username)).type(MediaType.APPLICATION_JSON).build();
+            return Response.status(Status.NOT_FOUND).entity("User not found for username: " + username).type(MediaType.APPLICATION_JSON).build();
         }
     }
 
@@ -194,25 +193,25 @@ public class Users
     @RolesAllowed("admin")
     public Response addUser(PISUser PISUser) {
         if (!USERNAME_PATTERN.matcher(PISUser.getUsername()).matches()) {
-            return Response.status(Status.BAD_REQUEST).entity(new ErrorDTO("Invalid username")).type(MediaType.APPLICATION_JSON).build();
+            return Response.status(Status.BAD_REQUEST).entity("Invalid username").type(MediaType.APPLICATION_JSON).build();
         }
     
         if (!PASSWORD_PATTERN.matcher(PISUser.getPassword()).matches()) {
-            return Response.status(Status.BAD_REQUEST).entity(new ErrorDTO("Invalid password")).type(MediaType.APPLICATION_JSON).build();
+            return Response.status(Status.BAD_REQUEST).entity("Invalid password").type(MediaType.APPLICATION_JSON).build();
         }
     
         if (!EMAIL_PATTERN.matcher(PISUser.getEmail()).matches()) {
-            return Response.status(Status.BAD_REQUEST).entity(new ErrorDTO("Invalid email")).type(MediaType.APPLICATION_JSON).build();
+            return Response.status(Status.BAD_REQUEST).entity("Invalid email").type(MediaType.APPLICATION_JSON).build();
         }
     
         PISUser existingByUsername = userMgr.findByUsername(PISUser.getUsername());
         if (existingByUsername != null) {
-            return Response.status(Status.BAD_REQUEST).entity(new ErrorDTO("Username is taken")).type(MediaType.APPLICATION_JSON).build();
+            return Response.status(Status.BAD_REQUEST).entity("Username is taken").type(MediaType.APPLICATION_JSON).build();
         }
     
         PISUser existingByEmail = userMgr.findByEmail(PISUser.getEmail());
         if (existingByEmail != null) {
-            return Response.status(Status.BAD_REQUEST).entity(new ErrorDTO("Email is taken")).type(MediaType.APPLICATION_JSON).build();
+            return Response.status(Status.BAD_REQUEST).entity("Email is taken").type(MediaType.APPLICATION_JSON).build();
         }
     
         PISUser.setUserCreated(new Date()); // Set the current date as userCreated
@@ -241,7 +240,7 @@ public class Users
         PISUser o = userMgr.findByUsername(loggedInUsername);
     
         if (username.equals(o.getUsername())) {
-            return Response.status(Status.BAD_REQUEST).entity(new ErrorDTO("User cannot delete themselves")).type(MediaType.APPLICATION_JSON).build();
+            return Response.status(Status.BAD_REQUEST).entity("User cannot delete themselves").type(MediaType.APPLICATION_JSON).build();
         }
     
         if (p != null) {
@@ -263,7 +262,7 @@ public class Users
             userMgr.remove(p);
             return Response.ok().build();
         } else {
-            return Response.status(Status.NOT_FOUND).entity(new ErrorDTO("not found")).type(MediaType.APPLICATION_JSON).build();
+            return Response.status(Status.NOT_FOUND).entity("not found").type(MediaType.APPLICATION_JSON).build();
         }
     }
     
@@ -281,7 +280,7 @@ public class Users
     public Response getManagedUsers(@PathParam("username") String username) {
         PISUser user = userMgr.findByUsername(username);
         if (user == null) {
-            return Response.status(Status.NOT_FOUND).entity(new ErrorDTO("User not found")).type(MediaType.APPLICATION_JSON).build();
+            return Response.status(Status.NOT_FOUND).entity("User not found").type(MediaType.APPLICATION_JSON).build();
         }
         Set<String> managedUsernames = user.getManagedUsers();
         List<UserDTO> managedUsers = managedUsernames.stream()
@@ -315,7 +314,7 @@ public class Users
     public Response addManagedUsers(@PathParam("username") String username, AddManagedUsersRequest requestBody) {
         PISUser user = userMgr.findByUsername(username);
         if (user == null) {
-            return Response.status(Status.NOT_FOUND).entity(new ErrorDTO("User not found")).type(MediaType.APPLICATION_JSON).build();
+            return Response.status(Status.NOT_FOUND).entity("User not found").type(MediaType.APPLICATION_JSON).build();
         }
 
         user.getManagedUsers().clear();
@@ -324,7 +323,7 @@ public class Users
         for (String managedUsername : managedUsernames) {
             PISUser managedUser = userMgr.findByUsername(managedUsername);
             if (managedUser == null) {
-                return Response.status(Status.BAD_REQUEST).entity(new ErrorDTO("Managed user not found: " + managedUsername)).type(MediaType.APPLICATION_JSON).build();
+                return Response.status(Status.BAD_REQUEST).entity("Managed user not found: " + managedUsername).type(MediaType.APPLICATION_JSON).build();
             }
         }
 

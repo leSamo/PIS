@@ -38,7 +38,7 @@ public class JwtTokenGenerator {
 
     // create the claim set
     JWTClaimsSet claimsSet = new JWTClaimsSet.Builder()
-             .issuer("fitdemo")
+             .issuer("piscalendar")
              .issueTime(new Date(currentTimeMillis))
              .expirationTime(new Date(expirationTimeMillis))
              .subject(PISUser.getUsername())

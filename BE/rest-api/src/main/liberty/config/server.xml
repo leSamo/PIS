@@ -47,9 +47,9 @@
     </library>
 
     <!-- Datasource Configuration -->
-    <dataSource id="derbyjpadatasource" jndiName="jdbc/demo">
+    <dataSource id="derbyjpadatasource" jndiName="jdbc/piscalendar">
         <jdbcDriver libraryRef="derbyJDBCLib" />
-        <properties.derby.embedded databaseName="DemoDB" createDatabase="create" />
+        <properties.derby.embedded databaseName="PISDB" createDatabase="create" />
     </dataSource>
     
 </server>

@@ -27,7 +27,6 @@ import jakarta.ws.rs.core.UriBuilder;
 import jakarta.ws.rs.core.UriInfo;
 import jakarta.ws.rs.core.Response.Status;
 import cz.xoleks00.pis.data.CreateEventRequest;
-import cz.xoleks00.pis.data.ErrorDTO;
 import cz.xoleks00.pis.data.Event;
 import cz.xoleks00.pis.data.EventDTO;
 import cz.xoleks00.pis.data.Notification;
@@ -66,9 +65,8 @@ public class Events {
         if (users != null && !users.isEmpty()) {
             for (String username : users) {
                 if (userMgr.findByUsername(username) == null) {
-                    ErrorDTO errorDTO = new ErrorDTO("Username not found: " + username);
                     return Response.status(Response.Status.BAD_REQUEST)
-                            .entity(errorDTO)
+                            .entity("Username not found: " + username)
                             .type(MediaType.APPLICATION_JSON)
                             .build();
                 }
@@ -94,9 +92,8 @@ public class Events {
             return Response.ok(eventDTOs).build();
         } catch (IllegalArgumentException e) {
             // Invalid date format
-            ErrorDTO errorDTO = new ErrorDTO(e.getMessage());
             return Response.status(Response.Status.BAD_REQUEST)
-                    .entity(errorDTO)
+                    .entity(e.getMessage())
                     .type(MediaType.APPLICATION_JSON)
                     .build();
         }
@@ -118,7 +115,7 @@ public class Events {
             if (attendee == null) {
                 // Return 400 Bad Request if the username does not exist
                 return Response.status(Status.BAD_REQUEST)
-                        .entity(new ErrorDTO("Username not found: " + attendeeUsername))
+                        .entity("Username not found: " + attendeeUsername)
                         .type(MediaType.APPLICATION_JSON)
                         .build();
             }
@@ -132,7 +129,7 @@ public class Events {
         long durationInMinutes = (end.getTime() - start.getTime()) / (1000 * 60);
         if (end.before(start) || durationInMinutes < 10) {
             return Response.status(Status.BAD_REQUEST)
-                    .entity(new ErrorDTO("Event duration must be at least 10 minutes and end date must be after start date"))
+                    .entity("Event duration must be at least 10 minutes and end date must be after start date")
                     .type(MediaType.APPLICATION_JSON)
                     .build();
         }
