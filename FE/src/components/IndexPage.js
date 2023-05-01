@@ -69,22 +69,26 @@ const IndexPage = ({ userInfo, addToastAlert }) => {
         setTypeaheadOpen(false);
     };
 
-    const typeaheadFilter = (_, value) => {
+    const getAllowedUsers = () => {
         const thisUser = allUsers.find(user => user.username === userInfo.upn);
         let allowedUsers;        
-
-        if (thisUser.userRole === "ASSISTANT") {
+    
+        if (thisUser?.userRole === "ASSISTANT") {
             const allowedUserIds = thisUser.managedUsers;
             allowedUsers = allUsers.filter(user => allowedUserIds.includes(user.username));
         }
-        else if (thisUser.userRole === "DIRECTOR") {
+        else if (thisUser?.userRole === "DIRECTOR") {
             allowedUsers = allUsers;
         }
         else {
             allowedUsers = [];
         }
 
-        const filteredUsers = allowedUsers.filter(user => isSubstring(value, user.email) || isSubstring(value, user.username) || isSubstring(value, user.name));
+        return allowedUsers;
+    }
+
+    const typeaheadFilter = (_, value) => {
+        const filteredUsers = getAllowedUsers().filter(user => isSubstring(value, user.email) || isSubstring(value, user.username) || isSubstring(value, user.name));
 
         return filteredUsers.map((option, index) => (
             <SelectOption
@@ -151,7 +155,7 @@ const IndexPage = ({ userInfo, addToastAlert }) => {
                                     onFilter={typeaheadFilter}
                                     placeholderText="Show calendar of"
                                 >
-                                    {allUsers.map((option, index) => (
+                                    {getAllowedUsers().map((option, index) => (
                                         <SelectOption
                                             key={index}
                                             value={option.username}
