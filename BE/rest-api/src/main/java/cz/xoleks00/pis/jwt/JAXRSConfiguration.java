@@ -7,9 +7,7 @@ import jakarta.ws.rs.ApplicationPath;
 import jakarta.ws.rs.core.Application;
 
 /**
- * Configures a JAX-RS endpoint with authorization.
- *
- * @author burgetr
+ * JAXRS config.
  */
 @ApplicationPath("resources")
 @LoginConfig(authMethod = "MP-JWT")

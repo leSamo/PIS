@@ -3,6 +3,9 @@ package cz.xoleks00.pis.data;
 import java.util.Date;
 import java.util.Set;
 
+/**
+ * User DTO.
+ */
 public class UserDTO {
     private String username;
     private String name;

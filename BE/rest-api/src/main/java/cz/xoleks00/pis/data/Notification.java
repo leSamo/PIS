@@ -2,6 +2,9 @@ package cz.xoleks00.pis.data;
 
 import jakarta.persistence.*;
 
+/**
+ * Notification class.
+ */
 @Entity
 @Table(name = "Notifications")
 public class Notification {

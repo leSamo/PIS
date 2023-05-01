@@ -18,7 +18,9 @@ import jakarta.persistence.Table;
 import jakarta.persistence.Temporal;
 import jakarta.persistence.TemporalType;
 
-
+/**
+ * Event class.
+ */
 @Entity
 @Table(name = "Event")
 @NamedQueries({

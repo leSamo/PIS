@@ -15,13 +15,14 @@ import cz.xoleks00.pis.data.PISUser;
 import jakarta.persistence.TypedQuery;
 
 /**
- * Event manager EJB
+ * Event manager class.
  */
 @RequestScoped
 public class EventManager {
+
     @PersistenceContext
     private EntityManager em;
-
+    
     public EventManager() {
     }
     
@@ -61,13 +62,21 @@ public class EventManager {
         return em.createNamedQuery("Event.findAll", Event.class).getResultList();
     }
 
+    /**
+     * Find Events by user id.
+     * @param userId
+     * @return List of events.
+     */
     public List<Event> findEventsByUserId(long userId) {
         TypedQuery<Event> query = em.createQuery("SELECT DISTINCT e FROM Event e LEFT JOIN FETCH e.attendees a WHERE e.creator.id = :userId OR a.id = :userId", Event.class);
         query.setParameter("userId", userId);
         return query.getResultList();
     }
     
-
+    /**
+     * Remove event by id.
+     * @param id
+     */
     @Transactional
     public void removeById(long id) {
         Event event = em.find(Event.class, id);
@@ -76,20 +85,24 @@ public class EventManager {
         }
     }
     
-
+    /**
+     * Find event by id.
+     * @param id
+     * @return Event
+     */
     @Transactional
     public Event findById(long id) {
         return em.find(Event.class, id);
     }
 
-    @Transactional
-    public List<Event> findEventsByDateRange(Date startDate, Date endDate) {
-        TypedQuery<Event> query = em.createQuery("SELECT e FROM Event e WHERE e.date >= :startDate AND e.date <= :endDate", Event.class);
-        query.setParameter("startDate", startDate);
-        query.setParameter("endDate", endDate);
-        return query.getResultList();
-    }
 
+    /**
+     * Find events in date range.
+     * @param startDateStr
+     * @param endDateStr
+     * @param users
+     * @return List of events in dates range.
+     */
     @Transactional
     public List<Event> findEventsInRange(String startDateStr, String endDateStr, List<String> users) {
         try {
@@ -115,6 +128,11 @@ public class EventManager {
         }
     }
 
+    /**
+     * Find events by attendee.
+     * @param user
+     * @return List of events that user attends.
+     */
     @Transactional
     public List<Event> findEventsByAttendee(PISUser user) {
         return em.createQuery("SELECT e FROM Event e JOIN e.attendees a WHERE a = :user", Event.class)
@@ -122,6 +140,11 @@ public class EventManager {
                  .getResultList();
     }
 
+    /**
+     * Find events by creator.
+     * @param creator
+     * @return List of users with creator.
+     */
     @Transactional
     public List<Event> findEventsByCreator(PISUser creator) {
         return em.createQuery("SELECT e FROM Event e WHERE e.creator = :creator", Event.class)
@@ -129,7 +152,10 @@ public class EventManager {
                  .getResultList();
     }
     
-
+    /**
+     * Update Event.
+     * @param event
+     */
     @Transactional
     public void update(Event event) {
         em.merge(event);

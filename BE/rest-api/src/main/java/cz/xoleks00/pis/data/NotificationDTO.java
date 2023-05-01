@@ -2,6 +2,9 @@ package cz.xoleks00.pis.data;
 
 import java.util.Date;
 
+/**
+ * Notification DTO.
+ */
 public class NotificationDTO {
     private Long id;
     private String eventName;
