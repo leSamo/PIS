@@ -11,6 +11,7 @@ import { validateTime } from '../helpers/Validators';
 const EventModal = ({ userInfo, isOpen, setOpen, createCallback, initialEventData }) => {
     const [eventTitle, setEventTitle] = useState('');
     const [eventDescription, setEventDescription] = useState('');
+    const [eventPlace, setEventPlace] = useState('');
     const [isTypeaheadOpen, setTypeaheadOpen] = useState(false);
     const [selectedUsers, setSelectedUsers] = useState([]);
     const [selectedColor, setSelectedColor] = useState("blue");
@@ -28,6 +29,7 @@ const EventModal = ({ userInfo, isOpen, setOpen, createCallback, initialEventDat
             if (initialEventData) {
                 setEventTitle(initialEventData.name);
                 setEventDescription(initialEventData.description);
+                setEventPlace(initialEventData.place);
                 setSelectedUsers(initialEventData.attendees.map(attendee => attendee.username));
                 setSelectedColor(initialEventData.color.toLowerCase());
     
@@ -84,6 +86,7 @@ const EventModal = ({ userInfo, isOpen, setOpen, createCallback, initialEventDat
         setOpen(false);
         setEventTitle('');
         setEventDescription('');
+        setEventPlace('');
         clearTypeaheadSelection();
         setSelectedColor("blue");
 
@@ -128,6 +131,7 @@ const EventModal = ({ userInfo, isOpen, setOpen, createCallback, initialEventDat
                         createCallback({
                             name: eventTitle,
                             description: eventDescription,
+                            place: eventPlace,
                             color: selectedColor.toUpperCase(),
                             attendees: selectedUsers,
                             start: (new Date(dateFrom + "T" + timeFrom)).toISOString(),
@@ -159,6 +163,15 @@ const EventModal = ({ userInfo, isOpen, setOpen, createCallback, initialEventDat
                         resizeOrientation='vertical'
                         value={eventDescription}
                         onChange={value => setEventDescription(value)}
+                    />
+                </FormGroup>
+                <FormGroup label="Event place">
+                <TextInput
+                        isRequired
+                        id="event-place"
+                        name="event-place"
+                        value={eventPlace}
+                        onChange={value => setEventPlace(value)}
                     />
                 </FormGroup>
                 <FormGroup label="From" isRequired>
