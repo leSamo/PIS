@@ -9,10 +9,6 @@
     "@patternfly/react-styles": "^4.92.6",
     "@patternfly/react-table": "^4.112.39",
     "axios": "^1.4.0",
-    "bcrypt": "^5.0.1",
-    "bcryptjs": "^2.4.3",
-    "express": "^4.17.1",
-    "jsonwebtoken": "^9.0.0",
     "jwt-decode": "^3.1.2",
     "react": "^17.0.2",
     "react-dom": "^17.0.2",
@@ -20,11 +16,11 @@
     "react-scripts": "^5.0.1"
   },
   "scripts": {
-    "build": "react-scripts build",
     "start": "react-scripts start",
     "lint": "npx eslint src/components/**/*.js",
     "lint:fix": "npx eslint src/components/**/*.js --fix",
-    "e2e": "cypress open"
+    "e2e": "cypress open",
+    "test": "cypress run"
   },
   "eslintConfig": {
     "extends": [
