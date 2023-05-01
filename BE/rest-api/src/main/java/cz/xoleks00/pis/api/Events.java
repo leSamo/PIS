@@ -70,9 +70,46 @@ public class Events {
     @Operation(summary = "Get events")
     @APIResponse(responseCode = "200", description = "List of events", content = @Content(schema = @Schema(implementation = EventDTO.class)))
     @APIResponse(responseCode = "400", description = "Invalid request")
-    public Response getEvents(@Parameter(description = "Start date of the events") @QueryParam("start_date") String startDate,
+    @APIResponse(responseCode = "403", description = "Forbidden")
+    public Response getEvents(@Context SecurityContext sc,
+                              @Parameter(description = "Start date of the events") @QueryParam("start_date") String startDate,
                               @Parameter(description = "End date of the events") @QueryParam("end_date") String endDate,
                               @Parameter(description = "List of usernames") @QueryParam("users") List<String> users) {
+        PISUser loggedUser = userMgr.findByUsername(sc.getUserPrincipal().getName());
+                                
+            // Return an empty list if no users are specified
+            if (users == null || users.isEmpty()) {
+                return Response.ok().build();
+            }
+
+        // Check if all usernames exist in the database
+        if (users != null && !users.isEmpty()) {
+            for (String username : users) {
+                PISUser queriedUser = userMgr.findByUsername(username);
+                if (queriedUser == null) {
+                    return Response.status(Response.Status.BAD_REQUEST)
+                            .entity("Username not found: " + username)
+                            .type(MediaType.APPLICATION_JSON)
+                            .build();
+                }
+                
+                // Check if the logged user has access to the queried user's calendar
+                boolean hasAccess = false;
+                if (loggedUser.equals(queriedUser) || loggedUser.getUserRole().toString().equals("DIRECTOR")) {
+                    hasAccess = true;
+                } else if (loggedUser.getUserRole().toString().equals("ASSISTANT") && loggedUser.getManagedUsers().contains(queriedUser.getUsername())) {
+                    hasAccess = true;
+                }
+    
+                if (!hasAccess) {
+                    return Response.status(Response.Status.FORBIDDEN)
+                            .entity("You don't have access to this user's calendar: " + username)
+                            .type(MediaType.APPLICATION_JSON)
+                            .build();
+                }
+            }
+        }
+
         // Check if all usernames exist in the database
         if (users != null && !users.isEmpty()) {
             for (String username : users) {
