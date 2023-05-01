@@ -42,4 +42,21 @@ public class NotificationManager {
         query.setParameter("username", username);
         return query.executeUpdate();
     }
+
+    @Transactional
+    public void remove(Notification notification) {
+        Notification managedNotification = em.find(Notification.class, notification.getId());
+        if (managedNotification != null) {
+            em.remove(managedNotification);
+        }
+    }
+
+    @Transactional
+    public List<Notification> findByEventId(long eventId) {
+        TypedQuery<Notification> query = em.createQuery(
+                "SELECT n FROM Notification n WHERE n.event.id = :eventId", Notification.class);
+        query.setParameter("eventId", eventId);
+        return query.getResultList();
+    }
+
 }

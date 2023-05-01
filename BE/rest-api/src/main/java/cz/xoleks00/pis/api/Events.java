@@ -148,7 +148,7 @@ public class Events {
                     .type(MediaType.APPLICATION_JSON)
                     .build();
         }
-
+    
         Event event = new Event();
         event.setCreator(loggedInUser);
         event.setStart(createEventRequest.getStart());
@@ -160,14 +160,16 @@ public class Events {
     
         Event savedEvent = evntMgr.save(event);
     
-        // Create notifications for each attendee
+        // Create notifications for each attendee (excluding the event creator)
         for (PISUser attendee : attendees) {
-            Notification notification = new Notification();
-            notification.setEvent(savedEvent);
-            notification.setAttendee(attendee);
-            notification.setCreator(loggedInUser);
-            notification.setAck(false);
-            ntfMgr.save(notification); 
+            if (!attendee.getUsername().equals(loggedInUsername)) {
+                Notification notification = new Notification();
+                notification.setEvent(savedEvent);
+                notification.setAttendee(attendee);
+                notification.setCreator(loggedInUser);
+                notification.setAck(false);
+                ntfMgr.save(notification); 
+            }
         }
     
         final URI uri = UriBuilder.fromPath("/events/{resourceServerId}").build(savedEvent.getId());
@@ -238,7 +240,7 @@ public class Events {
     @APIResponse(responseCode = "401", description = "Unauthorized")
     public Response deleteEvent(@Parameter(description = "Event ID") @PathParam("id") long id) {
         Event event = evntMgr.findById(id);
-
+    
         JsonWebToken token = (JsonWebToken) securityContext.getUserPrincipal();
         String loggedInUsername = token.getClaim("sub");
         PISUser loggedInUser = userMgr.findByUsername(loggedInUsername);
@@ -249,9 +251,15 @@ public class Events {
         if (event.getCreator().getId() != loggedInUser.getId()) {
             return Response.status(Response.Status.UNAUTHORIZED).entity("Logged user is not event creator ID: " + id).type(MediaType.APPLICATION_JSON).build();
         }
+    
+        // Delete all associated notifications of the event
+        List<Notification> notifications = ntfMgr.findByEventId(id);
+        for (Notification notification : notifications) {
+            ntfMgr.remove(notification);
+        }
+    
         evntMgr.removeById(id);
         return Response.noContent().build();
     }
-
 
 }

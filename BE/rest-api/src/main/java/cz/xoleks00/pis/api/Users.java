@@ -39,9 +39,11 @@ import jakarta.ws.rs.core.UriBuilder;
 import jakarta.ws.rs.core.UriInfo;
 import cz.xoleks00.pis.data.AddManagedUsersRequest;
 import cz.xoleks00.pis.data.Event;
+import cz.xoleks00.pis.data.Notification;
 import cz.xoleks00.pis.data.PISUser;
 import cz.xoleks00.pis.data.UserDTO;
 import cz.xoleks00.pis.service.EventManager;
+import cz.xoleks00.pis.service.NotificationManager;
 import cz.xoleks00.pis.service.UserManager;
 
 
@@ -58,6 +60,9 @@ public class Users
 
     @Inject
     private EventManager eventMgr;
+
+    @Inject
+    private NotificationManager ntfMgr;
 
 
     @Context
@@ -270,6 +275,7 @@ public class Users
     @DELETE
     @RolesAllowed({ "admin" })
     public Response deleteUser(@Parameter(description = "Username of the user to delete") @PathParam("username") String username) {
+
         PISUser p = userMgr.findByUsername(username);
     
         // Get the logged-in user's ID
@@ -282,11 +288,10 @@ public class Users
         }
     
         if (p != null) {
-
-            // Remove the events where the user is the creator
-            List<Event> userEvents = eventMgr.findEventsByCreator(p);
-            for (Event event : userEvents) {
-                eventMgr.remove(event);
+            // Remove all notifications for the user
+            List<Notification> userNotifications = ntfMgr.findByUsername(p.getUsername());
+            for (Notification notification : userNotifications) {
+                ntfMgr.remove(notification);
             }
     
             // Remove the user from all associated events
@@ -295,8 +300,13 @@ public class Users
                 event.getAttendees().removeIf(attendee -> attendee.getUsername().equals(username));
                 eventMgr.update(event);
             }
-
-
+    
+            // Remove the events where the user is the creator
+            List<Event> userEvents = eventMgr.findEventsByCreator(p);
+            for (Event event : userEvents) {
+                eventMgr.remove(event);
+            }
+    
             userMgr.remove(p);
             return Response.ok().build();
         } else {
