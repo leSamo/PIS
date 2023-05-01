@@ -99,7 +99,7 @@ const Month = ({ userInfo, addToastAlert, doubleLeftButtonClickCount, leftButton
     }
 
     return (
-        <div id="month-container" style={{ height: "calc(100vh - 170px)" }}>
+        <div id="month-container">
             <div style={{ padding: 16 }}>
                 <TextContent>
                     <Text component="h2" style={{ textAlign: "center" }}>
@@ -165,18 +165,21 @@ const Month = ({ userInfo, addToastAlert, doubleLeftButtonClickCount, leftButton
                                                         }
                                                         minWidth="400px"
                                                     >
-                                                        <div style={{
-                                                            width: "calc(100% - 16px)",
-                                                            backgroundColor: COLORS[event.color.toLowerCase()],
-                                                            marginLeft: 8,
-                                                            marginRight: 8,
-                                                            cursor: "pointer",
-                                                            border: "1px solid black",
-                                                            borderRadius: 4,
-                                                            textAlign: "left",
-                                                            paddingLeft: 8,
-                                                            paddingRight: 8
-                                                        }}>
+                                                        <div
+                                                            className="event"
+                                                            style={{
+                                                                width: "calc(100% - 16px)",
+                                                                backgroundColor: COLORS[event.color.toLowerCase()],
+                                                                marginLeft: 8,
+                                                                marginRight: 8,
+                                                                cursor: "pointer",
+                                                                border: "1px solid black",
+                                                                borderRadius: 4,
+                                                                textAlign: "left",
+                                                                paddingLeft: 8,
+                                                                paddingRight: 8
+                                                            }}
+                                                        >
                                                             <b>{event.name}</b>
                                                         </div>
                                                     </Popover>

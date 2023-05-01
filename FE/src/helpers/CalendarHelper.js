@@ -226,3 +226,17 @@ export const daysApart = (date1, date2) => {
 
     return daysDiff;
 }
+
+// returns true if two date ranges overlap
+export const doDateRangesOverlap = (start1, end1, start2, end2) => {
+    let startDate1 = new Date(start1);
+    let endDate1 = new Date(end1);
+    let startDate2 = new Date(start2);
+    let endDate2 = new Date(end2);
+
+    if (startDate1 <= endDate2 && endDate1 >= startDate2) {
+        return true;
+    } else {
+        return false;
+    }
+}

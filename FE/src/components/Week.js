@@ -5,9 +5,8 @@ import { getMostRecentMonday, getWeekCalendarTitle, getWeekNumber, goBackMonth, 
 import { COLORS } from './../helpers/Constants';
 import { playFadeInAnimation } from './../helpers/Utils';
 import { useAction, useFetch } from './../helpers/Hooks';
-import { prettyTime } from './../helpers/CalendarHelper';
+import { prettyTime, doDateRangesOverlap } from './../helpers/CalendarHelper';
 
-// TODO: Handle overlapping events
 // TODO: Handle multiday events
 const Week = ({ userInfo, addToastAlert, doubleLeftButtonClickCount, leftButtonClickCount, rightButtonClickCount, doubleRightButtonClickCount, refreshCounter, navigateTodayCounter, editEvent }) => {
     const [splitWidth, setSplitWidth] = useState(0);
@@ -93,6 +92,7 @@ const Week = ({ userInfo, addToastAlert, doubleLeftButtonClickCount, leftButtonC
 
     const eventsToElements = events => {
         events = events.map(event => ({ ...event, start: event.start.split("[")[0], end: event.end.split("[")[0] }))
+
         // handle single day events
         const elements = [[], [], [], [], [], [], []];
 
@@ -104,6 +104,16 @@ const Week = ({ userInfo, addToastAlert, doubleLeftButtonClickCount, leftButtonC
             event.height = ((new Date(event.end)).getHours() + (new Date(event.end)).getMinutes() / 60.0) * 48 - event.marginTop
 
             if (index >= 0 && index <= 6) {
+                let offset = 0;
+
+                elements[index].forEach(element => {
+                    if (doDateRangesOverlap(event.start, event.end, element.start, element.end)) {
+                        offset += 24;
+                    }
+                })
+
+                event.offset = offset;
+
                 elements[index].push(event);
             }
         });
@@ -185,17 +195,21 @@ const Week = ({ userInfo, addToastAlert, doubleLeftButtonClickCount, leftButtonC
                                     }
                                     minWidth="400px"
                                 >
-                                    <div style={{
-                                        backgroundColor: COLORS[event.color.toLowerCase()],
-                                        height: event.height,
-                                        width: document.querySelectorAll(".weekday-split")[index].offsetWidth - 2,
-                                        padding: 2,
-                                        marginTop: event.marginTop,
-                                        cursor: "pointer",
-                                        border: "1px solid black",
-                                        borderRadius: 4,
-                                        position: "absolute"
-                                    }}>
+                                    <div
+                                        className="event"
+                                        style={{
+                                            backgroundColor: COLORS[event.color.toLowerCase()],
+                                            height: event.height,
+                                            width: document.querySelectorAll(".weekday-split")[index].offsetWidth - 2 - event.offset,
+                                            padding: 2,
+                                            marginTop: event.marginTop,
+                                            cursor: "pointer",
+                                            border: "1px solid black",
+                                            borderRadius: 4,
+                                            position: "absolute",
+                                            marginLeft: event.offset
+                                        }}
+                                    >
                                         <b>{event.name}</b>
                                     </div>
                                 </Popover>
