@@ -7,6 +7,7 @@ import { validateDate } from '../helpers/Validators';
 import { validateTime } from '../helpers/Validators';
 
 // modal used for creating new events and editing existing events
+// TODO: Add place
 const EventModal = ({ userInfo, isOpen, setOpen, createCallback, initialEventData }) => {
     const [eventTitle, setEventTitle] = useState('');
     const [eventDescription, setEventDescription] = useState('');

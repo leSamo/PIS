@@ -46,7 +46,6 @@ const Wrapper = ({ children, userInfo, setUserInfo }) => {
 
 			}
 			catch (e) {
-				console.log("No info");
 				setUserInfo({ loaded: true });
 			}
 		}
