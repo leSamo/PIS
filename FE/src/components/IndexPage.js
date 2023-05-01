@@ -102,13 +102,17 @@ const IndexPage = ({ userInfo, addToastAlert }) => {
             editEvent(id, event, () => {
                 setRefreshCounter(refreshCounter + 1)
                 addToastAlert(AlertVariant.success, "Event was successfully edited")
-            });
+            },
+            reason => addToastAlert(AlertVariant.danger, "Failed to edit event", reason)
+            );
         }
         else {
             createEvent(null, event, () => {
                 setRefreshCounter(refreshCounter + 1)
                 addToastAlert(AlertVariant.success, "Event was successfully created")
-            });
+            },
+            reason => addToastAlert(AlertVariant.danger, "Failed to create event", reason)
+            );
         }
     };
 

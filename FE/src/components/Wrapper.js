@@ -76,13 +76,17 @@ const Wrapper = ({ children, userInfo, setUserInfo }) => {
 		}
 
 		const errorCallback = error => {
-			addToastAlert(AlertVariant.danger, 'Login failed', error.response.data);
+			addToastAlert(AlertVariant.danger, 'Login failed', error);
 		}
 
-		sendLoginRequest(null, {
-			login,
-			password
-		}, successCallback, errorCallback);
+		sendLoginRequest(
+			null, {
+				login,
+				password
+			},
+			successCallback,
+			errorCallback
+		);
 	}
 
 	const userDropdownItems = [

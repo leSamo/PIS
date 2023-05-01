@@ -1,11 +1,10 @@
 import React, { useEffect, useState } from 'react';
-import { Form, Button, Modal, ModalVariant, DualListSelector } from '@patternfly/react-core';
+import { Form, Button, Modal, ModalVariant, DualListSelector, AlertVariant } from '@patternfly/react-core';
 import { useAction, useFetch } from './../helpers/Hooks';
 
 // modal used to assign and unassign managers to/from an assistant
 // this functionality is available in the user management page
-// TODO: Add toast notifications everywhere
-const EditAssignedManagersModal = ({ userInfo, isOpen, setOpen, selectedUser }) => {
+const EditAssignedManagersModal = ({ userInfo, addToastAlert, isOpen, setOpen, selectedUser }) => {
     const [availableOptions, setAvailableOptions] = useState([]);
     const [chosenOptions, setChosenOptions] = useState([]);
 
@@ -44,7 +43,20 @@ const EditAssignedManagersModal = ({ userInfo, isOpen, setOpen, selectedUser }) 
     }
 
     const onSubmit = () => {
-        selectManagedUsers(null, { usernames: chosenOptions });
+        const successCallback = () => {
+			addToastAlert(AlertVariant.success, 'Assigned managers were updated successfully');
+		}
+
+		const errorCallback = error => {
+			addToastAlert(AlertVariant.danger, 'Assigned managers update failed', error);
+		}
+
+        selectManagedUsers(
+            null,
+            { usernames: chosenOptions },
+            successCallback,
+            errorCallback
+        );
         closeModal();
     }
 

@@ -63,7 +63,7 @@ const UserManagementPage = ({ addToastAlert, userInfo }) => {
                     addToastAlert(AlertVariant.success, `User was successfully created`);
                 }}
                 failureCallback={reason => {
-                    addToastAlert(AlertVariant.danger, `Failed to create user: ${reason}`);
+                    addToastAlert(AlertVariant.danger, `Failed to create user`, reason);
                 }}
             />
             <EditUserModal
@@ -79,6 +79,7 @@ const UserManagementPage = ({ addToastAlert, userInfo }) => {
             />
             <EditAssignedManagersModal
                 userInfo={userInfo}
+                addToastAlert={addToastAlert}
                 isOpen={isEditAssignedManagersModalOpen}
                 setOpen={setEditAssignedManagersModalOpen}
                 callback={() => { }}

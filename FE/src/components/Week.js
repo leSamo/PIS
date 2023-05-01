@@ -25,12 +25,16 @@ const Week = ({ userInfo, addToastAlert, doubleLeftButtonClickCount, leftButtonC
 
     const deleteEventAction = eventId => {
         if (confirm(`Are you sure you want to remove this event?`)) {
-            const callback = () => {
+            const successCallback = () => {
                 addToastAlert(AlertVariant.success, `Event was successfully deleted`);
                 refreshEvents();
             }
 
-            deleteEvent(eventId, {}, callback);
+            const errorCallback = reason => {
+                addToastAlert(AlertVariant.danger, `Event deletion failed`, reason);
+            }
+
+            deleteEvent(eventId, {}, successCallback, errorCallback);
         }
     }
 
