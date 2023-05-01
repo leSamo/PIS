@@ -164,17 +164,19 @@ const EventModal = ({ userInfo, isOpen, setOpen, createCallback, initialEventDat
                     <Split hasGutter>
                         <SplitItem>
                             <DatePicker
+                                className="event-date-from"
                                 onChange={(_event, str) => setDateFrom(str)}
                                 appendTo={document.querySelector("body")}
                                 value={dateFrom}
-                            />
+                                />
                         </SplitItem>
                         <SplitItem>
                             <TimePicker
+                                className="event-time-from"
                                 onChange={(e, time) => setTimeFrom(time)}
                                 is24Hour
                                 time={timeFrom}
-                            />
+                                />
                         </SplitItem>
                     </Split>
                 </FormGroup>
@@ -182,13 +184,15 @@ const EventModal = ({ userInfo, isOpen, setOpen, createCallback, initialEventDat
                     <Split hasGutter>
                         <SplitItem>
                             <DatePicker
+                                className="event-date-to"
                                 onChange={(_event, str) => setDateTo(str)}
                                 appendTo={document.querySelector("body")}
                                 value={dateTo}
-                            />
+                                />
                         </SplitItem>
                         <SplitItem>
                             <TimePicker
+                                className="event-time-to"
                                 onChange={(e, time) => setTimeTo(time)}
                                 is24Hour
                                 time={timeTo}
