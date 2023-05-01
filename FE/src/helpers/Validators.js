@@ -21,7 +21,7 @@ export const validatePassword = password => {
 
 // validates date string in YYYY-MM-DD format
 export const validateDate = dateString => {
-    const dateRegex = /^(\d{4})-(0[1-9]|1[0-2])-([0-2][1-9]|3[01])$/;
+    const dateRegex = /^(\d{4})-(0[1-9]|1[0-2])-([0-2][0-9]|3[01])$/;
     const match = dateString.match(dateRegex);
 
     if (!match) {
