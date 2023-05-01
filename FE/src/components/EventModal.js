@@ -1,4 +1,4 @@
-import React, { useEffect, useId, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Form, FormGroup, TextInput, TextArea, Modal, ModalVariant, Button, TimePicker, DatePicker, Split, SplitItem, Select, SelectVariant, SelectOption, Tile, Alert } from '@patternfly/react-core';
 import { COLORS } from '../helpers/Constants';
 import { capitalize, isSubstring } from '../helpers/Utils';
@@ -18,7 +18,7 @@ const EventModal = ({ userInfo, isOpen, setOpen, createCallback, initialEventDat
     const [dateTo, setDateTo] = useState('');
     const [timeTo, setTimeTo] = useState('');
 
-    const [allUsers, areUsersLoading, refreshUsers] = useFetch('/users', userInfo);
+    const [allUsers] = useFetch('/users', userInfo);
 
     useEffect(() => {
         if (isOpen) {

@@ -1,18 +1,20 @@
 import React, { Fragment, useEffect, useState } from 'react';
 import '@patternfly/react-core/dist/styles/base.css';
-import { Popover, Split, SplitItem, Button, Stack, StackItem, AlertVariant } from '@patternfly/react-core';
+import { Split, SplitItem, AlertVariant } from '@patternfly/react-core';
 import { getMostRecentMonday, getWeekCalendarTitle, getWeekNumber, goBackMonth, goBackWeek, goForwardMonth, goForwardWeek, WEEKDAYS, isoLongToShort, daysApart } from '../helpers/CalendarHelper';
 import { COLORS } from './../helpers/Constants';
 import { playFadeInAnimation } from './../helpers/Utils';
 import { useAction, useFetch } from './../helpers/Hooks';
-import { prettyTime, doDateRangesOverlap } from './../helpers/CalendarHelper';
+import {  doDateRangesOverlap } from './../helpers/CalendarHelper';
+import EventPopover from './EventPopover';
 
 // TODO: Handle multiday events
+// TODO: Fix timezones
 const Week = ({ userInfo, addToastAlert, doubleLeftButtonClickCount, leftButtonClickCount, rightButtonClickCount, doubleRightButtonClickCount, refreshCounter, navigateTodayCounter, editEvent }) => {
     const [splitWidth, setSplitWidth] = useState(0);
     const [currentMonday, setCurrentMonday] = useState(getMostRecentMonday(new Date()));
     const [weekDays, setWeekDays] = useState([]);
-    const [fetchedEvents, areEventsLoading, refreshEvents] = useFetch('/events', userInfo, { users: userInfo.upn, start_date: (new Date(currentMonday)).toISOString().replace(/\.[0-9]{3}/, ''), end_date: (new Date(goForwardWeek(currentMonday))).toISOString().replace(/\.[0-9]{3}/, '') });
+    const [fetchedEvents, , refreshEvents] = useFetch('/events', userInfo, { users: userInfo.upn, start_date: (new Date(currentMonday)).toISOString().replace(/\.[0-9]{3}/, ''), end_date: (new Date(goForwardWeek(currentMonday))).toISOString().replace(/\.[0-9]{3}/, '') });
 
     console.log(fetchedEvents);
 
@@ -163,38 +165,7 @@ const Week = ({ userInfo, addToastAlert, doubleLeftButtonClickCount, leftButtonC
                     {/* get day (index), convert start time to margin top, convert end time to height */
                         eventsToElements(fetchedEvents)[index].map(event => (
                             <div key={event.id} style={{ position: "relative" }}>
-                                <Popover
-                                    zIndex={100}
-                                    headerContent={<div>{event.name}</div>}
-                                    bodyContent={
-                                        <Fragment>
-                                            <div>🕒 {prettyTime(event.start)} – {prettyTime(event.end)}</div>
-                                            <div>📝 {event.description}</div>
-                                            <div>✏️ Author: {event.creator.name} ({event.creator.email})</div>
-                                            <div>🙋‍♀️ Attendees:</div>
-                                            {
-                                                event.attendees.map(attendee => (
-                                                    <div key={attendee.username} style={{ marginLeft: 32 }}>- {attendee.name} ({attendee.email})</div>
-                                                ))
-                                            }
-                                        </Fragment>
-                                    }
-                                    footerContent={event.creator.username === userInfo.upn &&
-                                        <Stack hasGutter>
-                                            <StackItem>
-                                                <Button variant="primary" style={{ width: "100%" }} onClick={() => editEvent(event)} className="edit-event">
-                                                    Edit
-                                                </Button>
-                                            </StackItem>
-                                            <StackItem>
-                                                <Button variant="danger" style={{ width: "100%" }} onClick={() => deleteEventAction(event.id)} className="delete-event">
-                                                    Delete
-                                                </Button>
-                                            </StackItem>
-                                        </Stack>
-                                    }
-                                    minWidth="400px"
-                                >
+                                <EventPopover userInfo={userInfo} event={event} editEvent={editEvent} deleteEventAction={deleteEventAction}>
                                     <div
                                         className="event"
                                         style={{
@@ -212,7 +183,7 @@ const Week = ({ userInfo, addToastAlert, doubleLeftButtonClickCount, leftButtonC
                                     >
                                         <b>{event.name}</b>
                                     </div>
-                                </Popover>
+                                    </EventPopover>
                             </div>
                         ))
                     }

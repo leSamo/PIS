@@ -2,12 +2,12 @@ import React, { useEffect, useState } from 'react';
 import { Form, Button, Modal, ModalVariant, DualListSelector } from '@patternfly/react-core';
 import { useAction, useFetch } from './../helpers/Hooks';
 
-const EditAssignedManagersModal = ({ userInfo, isOpen, setOpen, callback, selectedUser }) => {
+const EditAssignedManagersModal = ({ userInfo, isOpen, setOpen, selectedUser }) => {
     const [availableOptions, setAvailableOptions] = useState([]);
     const [chosenOptions, setChosenOptions] = useState([]);
 
-    const [allUsers, areAllUsersLoading, refreshUsers] = useFetch('/users', userInfo);
-    const [managedUsers, areManagedUsersLoading, refreshManagedUsers] = useFetch(`/users/${selectedUser.username ?? userInfo.upn}/managed_users`, userInfo);
+    const [allUsers, , refreshUsers] = useFetch('/users', userInfo);
+    const [managedUsers, , refreshManagedUsers] = useFetch(`/users/${selectedUser.username ?? userInfo.upn}/managed_users`, userInfo);
 
     const selectManagedUsers = useAction('POST', `/users/${selectedUser.username}/managed_users`, userInfo);
 

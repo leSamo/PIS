@@ -18,7 +18,7 @@ const Wrapper = ({ children, userInfo, setUserInfo }) => {
 	const [isLoginModalOpen, setLoginModalOpen] = useState(false);
 	const [toastAlerts, setToastAlerts] = useState([]);
 
-	const [notifications, areNotificationsLoading, notificationsRefresh] = useFetch(`/notifications/${userInfo.upn}`, userInfo);
+	const [notifications, , notificationsRefresh] = useFetch(`/notifications/${userInfo.upn}`, userInfo);
 
 	const acknowledgeNotifications = useAction('PUT', `/notifications/${userInfo.upn}/ack`, userInfo);
 
