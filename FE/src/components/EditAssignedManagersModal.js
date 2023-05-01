@@ -2,6 +2,8 @@ import React, { useEffect, useState } from 'react';
 import { Form, Button, Modal, ModalVariant, DualListSelector } from '@patternfly/react-core';
 import { useAction, useFetch } from './../helpers/Hooks';
 
+// modal used to assign and unassign managers to/from an assistant
+// this functionality is available in the user management page
 const EditAssignedManagersModal = ({ userInfo, isOpen, setOpen, selectedUser }) => {
     const [availableOptions, setAvailableOptions] = useState([]);
     const [chosenOptions, setChosenOptions] = useState([]);
@@ -11,8 +13,6 @@ const EditAssignedManagersModal = ({ userInfo, isOpen, setOpen, selectedUser }) 
 
     const selectManagedUsers = useAction('POST', `/users/${selectedUser.username}/managed_users`, userInfo);
 
-    console.log("ccc", managedUsers);
-
     useEffect(() => {
         if (isOpen) {
             refreshUsers();
@@ -20,6 +20,7 @@ const EditAssignedManagersModal = ({ userInfo, isOpen, setOpen, selectedUser }) 
         }
     }, [isOpen]);
 
+    // available options consist of all managers and directors which are already not assigned
     useEffect(() => {
         setAvailableOptions(allUsers
             .filter(user => user.userRole === "MANAGER" || user.userRole === "DIRECTOR")
@@ -27,6 +28,7 @@ const EditAssignedManagersModal = ({ userInfo, isOpen, setOpen, selectedUser }) 
             .map(user => user.username));
     }, [allUsers, managedUsers]);
 
+    // if assistant has some users assigned already, show them as selected
     useEffect(() => {
         setChosenOptions(managedUsers.map(user => user.username));
     }, [managedUsers]);    

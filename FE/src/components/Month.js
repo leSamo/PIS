@@ -19,6 +19,7 @@ import { playFadeInAnimation } from './../helpers/Utils';
 import { useAction, useFetch } from './../helpers/Hooks';
 import EventPopover from './EventPopover';
 
+// component which renders the calendar when month view is selected
 const Month = ({ userInfo, addToastAlert, doubleLeftButtonClickCount, leftButtonClickCount, rightButtonClickCount, doubleRightButtonClickCount, refreshCounter, navigateTodayCounter, editEvent }) => {
     const [firstDayOfMonth, setFirstDayOfMonth] = useState(getFirstDayOfMonth(new Date()));
     const [fetchedEvents, , refreshEvents] = useFetch('/events', userInfo, { users: userInfo.upn, start_date: (new Date(getMostRecentMonday(firstDayOfMonth))).toISOString().replace(/\.[0-9]{3}/, ''), end_date: (new Date(getFirstFollowingSunday(goForwardMonth(firstDayOfMonth)))).toISOString().replace(/\.[0-9]{3}/, '') });
@@ -42,6 +43,7 @@ const Month = ({ userInfo, addToastAlert, doubleLeftButtonClickCount, leftButton
         refreshEvents();
     }
 
+    // handle button click in the navigation above the calendar
     useEffect(() => {
         if (doubleLeftButtonClickCount > 0) {
             setFirstDayOfMonth(goBackYear(firstDayOfMonth));
@@ -78,6 +80,7 @@ const Month = ({ userInfo, addToastAlert, doubleLeftButtonClickCount, leftButton
         playFadeInAnimation("#month-container");
     }, [firstDayOfMonth, refreshCounter])
 
+    // convert each event into divs, which will be displayed in the calendar
     const eventsToElements = events => {
         events = events.map(event => ({ ...event, start: event.start.split("[")[0], end: event.end.split("[")[0] }))
         // handle single day events
@@ -91,8 +94,6 @@ const Month = ({ userInfo, addToastAlert, doubleLeftButtonClickCount, leftButton
             if (index >= 0 && index < getWeekCountInMonth(firstDayOfMonth) * 7)
                 elements[index].push(event);
         });
-
-        console.log("aaa", elements);
 
         // return array of 7 elements
         return elements;

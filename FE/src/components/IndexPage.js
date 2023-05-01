@@ -8,6 +8,8 @@ import Month from './Month';
 import { isSubstring } from '../helpers/Utils';
 import { useAction } from '../helpers/Hooks';
 
+// calendar views wrapper implementing the toolbar above the calendar with navigation and create event modal
+// responsible for showing week or month view depending on the selected setting
 const IndexPage = ({ userInfo, addToastAlert }) => {
     const [isEventModalOpen, setEventModalOpen] = useState(false);
     const [allUsers, setAllUsers] = React.useState([]);
@@ -45,7 +47,7 @@ const IndexPage = ({ userInfo, addToastAlert }) => {
         document.getElementById('view-dropdown-toggle').focus();
     };
 
-    const dropdownItems = [
+    const viewDropdownItems = [
         <DropdownItem key="week" onClick={() => setSelectedView(WEEK_VIEW)}>
             Week
         </DropdownItem>,
@@ -54,6 +56,7 @@ const IndexPage = ({ userInfo, addToastAlert }) => {
         </DropdownItem>
     ];
 
+    // typeahead is implementing the "Show calendar of" functionality
     const onTypeaheadSelect = (_, selection) => {
         const index = selectedUsers.indexOf(selection);
 
@@ -83,7 +86,7 @@ const IndexPage = ({ userInfo, addToastAlert }) => {
         ));
     }
 
-    const createCallback = (event, id) => {
+    const onEventCreate = (event, id) => {
         if (selectedEvent) {
             editEvent(id, event, () => {
                 setRefreshCounter(refreshCounter + 1)
@@ -114,7 +117,7 @@ const IndexPage = ({ userInfo, addToastAlert }) => {
                 userInfo={userInfo}
                 isOpen={isEventModalOpen}
                 setOpen={setEventModalOpen}
-                createCallback={createCallback}
+                createCallback={onEventCreate}
                 initialEventData={selectedEvent}
             />
             {userInfo.upn ? (
@@ -151,7 +154,7 @@ const IndexPage = ({ userInfo, addToastAlert }) => {
                                         </DropdownToggle>
                                     }
                                     isOpen={isDropdownOpen}
-                                    dropdownItems={dropdownItems}
+                                    dropdownItems={viewDropdownItems}
                                 />
                             </FlexItem>
                             <FlexItem>

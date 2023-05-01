@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { Form, FormGroup, TextInput, Button, Modal, ModalVariant, TextInputTypes } from '@patternfly/react-core';
 
+// modal shown after clicking the "Log in" button in the top navigation bar
 const LoginModal = ({ isOpen, setOpen, loginCallback }) => {
     const [usernameValue, setUsernameValue] = useState('');
     const [passwordValue, setPasswordValue] = useState('');

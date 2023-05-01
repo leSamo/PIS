@@ -113,7 +113,8 @@ const Week = ({ userInfo, addToastAlert, doubleLeftButtonClickCount, leftButtonC
 
             if (index >= 0 && index <= 6) {
                 let offset = 0;
-
+                
+                // overlapping events are shortened so each one can be clicked
                 elements[index].forEach(element => {
                     if (doDateRangesOverlap(event.start, event.end, element.start, element.end)) {
                         offset += 24;

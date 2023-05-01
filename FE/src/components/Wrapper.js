@@ -13,7 +13,7 @@ import jwt_decode from 'jwt-decode';
 import { useFetch } from './../helpers/Hooks';
 import { formatDateTimeRange } from '../helpers/CalendarHelper';
 
-// component which wraps every route and renders the top navigation including login/logout functionality,
+// component which wraps every route and renders the top navigation bar including login/logout functionality,
 // notifications and link to user management page
 const Wrapper = ({ children, userInfo, setUserInfo }) => {
 	const [isDropdownOpen, setDropdownOpen] = useState(false);
