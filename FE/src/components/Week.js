@@ -8,14 +8,16 @@ import { useAction, useFetch } from './../helpers/Hooks';
 import { doDateRangesOverlap } from './../helpers/CalendarHelper';
 import EventPopover from './EventPopover';
 
-// TODO: Handle multiday events
-// TODO: Fix timezones
-// component which renders the calendar when week view is selected
-const Week = ({ userInfo, addToastAlert, doubleLeftButtonClickCount, leftButtonClickCount, rightButtonClickCount, doubleRightButtonClickCount, refreshCounter, navigateTodayCounter, editEvent }) => {
+// component which implements calendar when week view is selected
+const Week = ({ userInfo, addToastAlert, doubleLeftButtonClickCount, leftButtonClickCount, rightButtonClickCount, doubleRightButtonClickCount, refreshCounter, navigateTodayCounter, editEvent, selectedUsers }) => {
     const [splitWidth, setSplitWidth] = useState(0);
     const [currentMonday, setCurrentMonday] = useState(getMostRecentMonday(new Date()));
     const [weekDays, setWeekDays] = useState([]);
-    const [fetchedEvents, , refreshEvents] = useFetch('/events', userInfo, { users: userInfo.upn, start_date: (new Date(currentMonday)).toISOString().replace(/\.[0-9]{3}/, ''), end_date: (new Date(goForwardWeek(currentMonday))).toISOString().replace(/\.[0-9]{3}/, '') });
+    const [fetchedEvents, , refreshEvents] = useFetch('/events', userInfo, {
+        users: selectedUsers,
+        start_date: (new Date(currentMonday)).toISOString().replace(/\.[0-9]{3}/, ''),
+        end_date: (new Date(goForwardWeek(currentMonday))).toISOString().replace(/\.[0-9]{3}/, '')
+    });
 
     console.log(fetchedEvents);
 
@@ -94,7 +96,7 @@ const Week = ({ userInfo, addToastAlert, doubleLeftButtonClickCount, leftButtonC
         refreshDays();
 
         playFadeInAnimation("#week-split");
-    }, [currentMonday, refreshCounter])
+    }, [currentMonday, refreshCounter, selectedUsers])
 
     // convert each event into divs, which will be displayed in the calendar
     const eventsToElements = events => {
@@ -235,6 +237,7 @@ const Week = ({ userInfo, addToastAlert, doubleLeftButtonClickCount, leftButtonC
                                         borderRadius: 4,
                                         position: "absolute",
                                         marginLeft: event.offset,
+                                        overflow: "hidden",
                                         ...event.height < 24 ? {
                                             fontSize: 10,
                                             padding: 0,

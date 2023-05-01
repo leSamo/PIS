@@ -20,9 +20,13 @@ import { useAction, useFetch } from './../helpers/Hooks';
 import EventPopover from './EventPopover';
 
 // component which renders the calendar when month view is selected
-const Month = ({ userInfo, addToastAlert, doubleLeftButtonClickCount, leftButtonClickCount, rightButtonClickCount, doubleRightButtonClickCount, refreshCounter, navigateTodayCounter, editEvent }) => {
+const Month = ({ userInfo, addToastAlert, doubleLeftButtonClickCount, leftButtonClickCount, rightButtonClickCount, doubleRightButtonClickCount, refreshCounter, navigateTodayCounter, editEvent, selectedUsers }) => {
     const [firstDayOfMonth, setFirstDayOfMonth] = useState(getFirstDayOfMonth(new Date()));
-    const [fetchedEvents, , refreshEvents] = useFetch('/events', userInfo, { users: userInfo.upn, start_date: (new Date(getMostRecentMonday(firstDayOfMonth))).toISOString().replace(/\.[0-9]{3}/, ''), end_date: (new Date(getFirstFollowingSunday(goForwardMonth(firstDayOfMonth)))).toISOString().replace(/\.[0-9]{3}/, '') });
+    const [fetchedEvents, , refreshEvents] = useFetch('/events', userInfo, {
+        users: selectedUsers,
+        start_date: (new Date(getMostRecentMonday(firstDayOfMonth))).toISOString().replace(/\.[0-9]{3}/, ''),
+        end_date: (new Date(getFirstFollowingSunday(goForwardMonth(firstDayOfMonth)))).toISOString().replace(/\.[0-9]{3}/, '')
+    });
 
     console.log(fetchedEvents);
 
@@ -78,7 +82,7 @@ const Month = ({ userInfo, addToastAlert, doubleLeftButtonClickCount, leftButton
         refreshDays();
 
         playFadeInAnimation("#month-container");
-    }, [firstDayOfMonth, refreshCounter])
+    }, [firstDayOfMonth, refreshCounter, selectedUsers])
 
     // convert each event into divs, which will be displayed in the calendar
     const eventsToElements = events => {
@@ -163,7 +167,8 @@ const Month = ({ userInfo, addToastAlert, doubleLeftButtonClickCount, leftButton
                                                                 borderRadius: 4,
                                                                 textAlign: "left",
                                                                 paddingLeft: 8,
-                                                                paddingRight: 8
+                                                                paddingRight: 8,
+                                                                overflow: "hidden"
                                                             }}
                                                         >
                                                             <b>{event.name}</b>

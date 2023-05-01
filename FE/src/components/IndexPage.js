@@ -1,5 +1,5 @@
-import React, { useEffect, useState } from 'react';
-import { Card, CardBody, Dropdown, DropdownToggle, DropdownItem, Flex, FlexItem, Button, ButtonVariant, Select, SelectVariant, SelectOption, Toolbar, Switch, AlertVariant, TextContent, Text, Bullseye } from '@patternfly/react-core';
+import React, { useState, useMemo } from 'react';
+import { Card, CardBody, Dropdown, DropdownToggle, DropdownItem, Flex, FlexItem, Button, ButtonVariant, Select, SelectVariant, SelectOption, Toolbar, Switch, AlertVariant, TextContent, Text, Bullseye, Alert } from '@patternfly/react-core';
 import EventModal from './EventModal';
 import Week from './Week';
 import { AngleDoubleLeftIcon, AngleDoubleRightIcon, AngleLeftIcon, AngleRightIcon } from '@patternfly/react-icons';
@@ -7,12 +7,12 @@ import { MONTH_VIEW, WEEK_VIEW } from '../helpers/Constants';
 import Month from './Month';
 import { isSubstring } from '../helpers/Utils';
 import { useAction } from '../helpers/Hooks';
+import { useFetch } from './../helpers/Hooks';
 
 // calendar views wrapper implementing the toolbar above the calendar with navigation and create event modal
 // responsible for showing week or month view depending on the selected setting
 const IndexPage = ({ userInfo, addToastAlert }) => {
     const [isEventModalOpen, setEventModalOpen] = useState(false);
-    const [allUsers, setAllUsers] = React.useState([]);
     const [isDropdownOpen, setIsDropdownOpen] = React.useState(false);
     const [isTypeaheadOpen, setTypeaheadOpen] = useState(false);
     const [doubleLeftButtonClickCount, setDoubleLeftButtonClickCount] = useState(0);
@@ -26,17 +26,12 @@ const IndexPage = ({ userInfo, addToastAlert }) => {
     const [showMyOwnCalendar, setShowMyOwnCalendar] = useState(true);
     const [selectedEvent, setSelectedEvent] = useState(null);
 
+    const [allUsers] = useFetch("/users", userInfo);
+
     const createEvent = useAction('POST', '/events', userInfo);
     const editEvent = useAction('PATCH', '/events', userInfo);
 
-    useEffect(() => {
-        // TODO: Remove own self
-        /*
-        axios.get("/allUsers").then(response => {
-            setAllUsers(response.data);
-        })
-        */
-    }, []);
+    const selectedUsersIncludingMe = useMemo(() => [...selectedUsers, ...showMyOwnCalendar ? [userInfo.upn] : []], [selectedUsers, showMyOwnCalendar, userInfo]);
 
     const onDropdownToggle = isOpen => {
         setIsDropdownOpen(isOpen);
@@ -61,28 +56,44 @@ const IndexPage = ({ userInfo, addToastAlert }) => {
         const index = selectedUsers.indexOf(selection);
 
         if (index === -1) {
-            const user = allUsers.find(user => user.email === selection);
-            setSelectedUsers([...selectedUsers, user.email]);
+            const user = allUsers.find(user => user.username === selection);
+            setSelectedUsers([...selectedUsers, user.username]);
         }
         else {
             setSelectedUsers([...selectedUsers.slice(0, index), ...selectedUsers.slice(index + 1)])
         }
     };
-
+    
     const clearTypeaheadSelection = () => {
         setSelectedUsers([]);
         setTypeaheadOpen(false);
     };
 
     const typeaheadFilter = (_, value) => {
-        const filteredUsers = allUsers.filter(user => isSubstring(value, user.email) || isSubstring(value, user.username) || isSubstring(value, user.fullname));
+        const thisUser = allUsers.find(user => user.username === userInfo.upn);
+        let allowedUsers;        
+
+        if (thisUser.userRole === "ASSISTANT") {
+            const allowedUserIds = thisUser.managedUsers;
+            allowedUsers = allUsers.filter(user => allowedUserIds.includes(user.username));
+        }
+        else if (thisUser.userRole === "DIRECTOR") {
+            allowedUsers = allUsers;
+        }
+        else {
+            allowedUsers = [];
+        }
+
+        const filteredUsers = allowedUsers.filter(user => isSubstring(value, user.email) || isSubstring(value, user.username) || isSubstring(value, user.name));
 
         return filteredUsers.map((option, index) => (
             <SelectOption
                 key={index}
-                value={option.email}
+                value={option.username}
                 description={option.fullname}
-            />
+            >
+                {`${option.name} (${option.email})`}
+            </SelectOption>
         ));
     }
 
@@ -139,9 +150,11 @@ const IndexPage = ({ userInfo, addToastAlert }) => {
                                     {allUsers.map((option, index) => (
                                         <SelectOption
                                             key={index}
-                                            value={option.email}
+                                            value={option.username}
                                             description={option.fullname}
-                                        />
+                                        >
+                                            {`${option.name} (${option.email})`}
+                                        </SelectOption>
                                     ))}
                                 </Select>
                             </FlexItem>
@@ -197,6 +210,9 @@ const IndexPage = ({ userInfo, addToastAlert }) => {
                             </FlexItem>
                         </Flex>
                     </Toolbar>
+                    {
+                        selectedUsersIncludingMe.length === 0 && <Alert variant="info" title="Your calendar is empty because you currently have no users selected" isInline/>
+                    }
                     {selectedView === WEEK_VIEW
                         ? <Week
                             userInfo={userInfo}
@@ -208,6 +224,7 @@ const IndexPage = ({ userInfo, addToastAlert }) => {
                             refreshCounter={refreshCounter}
                             navigateTodayCounter={navigateTodayCounter}
                             editEvent={openEditEventModal}
+                            selectedUsers={selectedUsersIncludingMe}
                         />
                         : <Month
                             userInfo={userInfo}
@@ -219,6 +236,7 @@ const IndexPage = ({ userInfo, addToastAlert }) => {
                             refreshCounter={refreshCounter}
                             navigateTodayCounter={navigateTodayCounter}
                             editEvent={openEditEventModal}
+                            selectedUsers={selectedUsersIncludingMe}
                         />
                     }
                 </CardBody>
