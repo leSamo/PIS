@@ -17,7 +17,8 @@ public class EventDTO {
     private String place;
     private List<UserDTO> attendees;
 
-    public EventDTO(long id, String name, String description, Date start, Date end, EventColor color, UserDTO creator, String place, List<UserDTO> attendees) {
+    public EventDTO(long id, String name, String description, Date start, Date end, EventColor color, UserDTO creator,
+            String place, List<UserDTO> attendees) {
         this.id = id;
         this.name = name;
         this.description = description;

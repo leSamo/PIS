@@ -17,7 +17,8 @@ public class CreateEventRequest {
     public CreateEventRequest() {
     }
 
-    public CreateEventRequest(Date start, Date end, String name, String description, EventColor color, List<String> attendees) {
+    public CreateEventRequest(Date start, Date end, String name, String description, EventColor color,
+            List<String> attendees) {
         this.start = start;
         this.end = end;
         this.name = name;

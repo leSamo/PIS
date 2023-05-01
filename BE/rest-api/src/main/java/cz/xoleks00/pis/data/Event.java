@@ -24,9 +24,8 @@ import jakarta.persistence.TemporalType;
 @Entity
 @Table(name = "Event")
 @NamedQueries({
-    @NamedQuery(name="Event.findAll", query="SELECT e FROM Event e"),
-    @NamedQuery(name="Event.findByName",
-                query="SELECT e FROM Event e WHERE e.name = :name")
+        @NamedQuery(name = "Event.findAll", query = "SELECT e FROM Event e"),
+        @NamedQuery(name = "Event.findByName", query = "SELECT e FROM Event e WHERE e.name = :name")
 })
 public class Event {
     @Id
@@ -116,11 +115,5 @@ public class Event {
 
     public void setColor(EventColor color) {
         this.color = color;
-    }
-
-    @Override
-    public String toString() {
-        return "Event [id=" + id  + ", start=" + start + ", end=" + eventEnd + ", creator=" + creator
-                + ", name=" + name + ", place=" + place + ", description=" + description + "attendees" + attendees +"]";
     }
 }

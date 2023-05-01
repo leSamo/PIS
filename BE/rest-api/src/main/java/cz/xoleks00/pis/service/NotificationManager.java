@@ -20,6 +20,7 @@ public class NotificationManager {
 
     /**
      * Save notification.
+     * 
      * @param notification
      * @return Notification.
      */
@@ -37,6 +38,7 @@ public class NotificationManager {
 
     /**
      * Find notification by username.
+     * 
      * @param username
      * @return List of notifications.
      */
@@ -50,6 +52,7 @@ public class NotificationManager {
 
     /**
      * Ack notifications by username.
+     * 
      * @param username
      * @return List of notifications.
      */
@@ -63,6 +66,7 @@ public class NotificationManager {
 
     /**
      * Remove notification.
+     * 
      * @param notification
      */
     @Transactional
@@ -74,7 +78,8 @@ public class NotificationManager {
     }
 
     /**
-     * Find notification by event id. 
+     * Find notification by event id.
+     * 
      * @param eventId
      * @return List of notifications.
      */

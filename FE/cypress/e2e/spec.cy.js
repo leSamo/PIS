@@ -11,6 +11,7 @@ describe('Sanity check', () => {
 
 
 describe('Director (admin) functionality', function () {
+
   it('Login as admin', function () {
     cy.viewport(1419, 1206)
     cy.visit('http://localhost:3000/')
@@ -79,6 +80,49 @@ describe('Director (admin) functionality', function () {
     cy.get('.pf-c-table > tbody > tr:nth-child(11) > td > .pf-m-danger').click()
     cy.contains('test@test.com').should('not.exist')
   })
+
+  it('Create event to test notifications', function () {
+    cy.viewport(1419, 1206)
+    cy.visit('http://localhost:3000/')
+    cy.get('.pf-c-page__header > .pf-c-page__header-tools > .pf-l-split > .pf-l-split__item > .pf-c-button').click()
+    cy.get('#pf-modal-part-3 > .pf-c-form > .pf-c-form__group > .pf-c-form__group-control > #login-username').click()
+    cy.get('#pf-modal-part-3 > .pf-c-form > .pf-c-form__group > .pf-c-form__group-control > #login-username').type('director')
+    cy.get('#pf-modal-part-3 > .pf-c-form > .pf-c-form__group > .pf-c-form__group-control > #login-password').type('secretpswd')
+    cy.get('.pf-c-backdrop > .pf-l-bullseye > #pf-modal-part-1 > .pf-c-modal-box__footer > .pf-m-primary').click()
+    cy.get('li > .pf-c-alert > .pf-c-alert__action > .pf-c-button > svg').click()
+    cy.get('.pf-c-card__body > #pf-random-id-5 > .pf-l-flex > div > .toolbar-create-event').click()
+    cy.get('#pf-modal-part-5 > .pf-c-form > .pf-c-form__group > .pf-c-form__group-control > #event-name').click()
+    cy.get('#pf-modal-part-5 > .pf-c-form > .pf-c-form__group > .pf-c-form__group-control > #event-name').type('aabbccdd')
+    cy.get('.pf-l-split__item > .event-date-from > .pf-c-date-picker__input > .pf-c-input-group > .pf-c-form-control').click()
+    cy.get('.event-date-from > .pf-c-date-picker__input > .pf-c-input-group > .pf-c-button > svg > path').click()
+    cy.get('.pf-c-calendar-month__calendar > tbody > .pf-c-calendar-month__dates-row:nth-child(1) > .pf-c-calendar-month__dates-cell:nth-child(3) > .pf-c-calendar-month__date').click()
+    cy.get('.event-date-to > .pf-c-date-picker__input > .pf-c-input-group > .pf-c-button > svg > path').click()
+    cy.get('.pf-c-calendar-month__calendar > tbody > .pf-c-calendar-month__dates-row:nth-child(1) > .pf-c-calendar-month__dates-cell:nth-child(3) > .pf-c-calendar-month__date').click()
+    cy.get('.event-time-to').click()
+    cy.get('.event-time-to ').type('05:30')
+    cy.get('.event-time-from').click()
+    cy.get('.event-time-from ').type('04:30')
+    cy.get('#event-place').click()
+    cy.get('.pf-c-modal-box .pf-c-form-control.pf-c-select__toggle-typeahead').click()
+    cy.get('.pf-c-select__menu-item').first().click()
+    cy.get('.pf-c-backdrop > .pf-l-bullseye > #pf-modal-part-3 > .pf-c-modal-box__footer > .pf-m-primary').click()
+  })
+
+  it('Check notification for created event', function () {
+    cy.viewport(1419, 1206)
+    cy.visit('http://localhost:3000/')
+    cy.get('.pf-c-page__header > .pf-c-page__header-tools > .pf-l-split > .pf-l-split__item > .pf-c-button').click()
+    cy.get('#pf-modal-part-3 > .pf-c-form > .pf-c-form__group > .pf-c-form__group-control > #login-username').click()
+    cy.get('#pf-modal-part-3 > .pf-c-form > .pf-c-form__group > .pf-c-form__group-control > #login-username').type('assistant3')
+    cy.get('#pf-modal-part-3 > .pf-c-form > .pf-c-form__group > .pf-c-form__group-control > #login-password').click()
+    cy.get('#pf-modal-part-3 > .pf-c-form > .pf-c-form__group > .pf-c-form__group-control > #login-password').type('secretpswd')
+    cy.get('.pf-c-backdrop > .pf-l-bullseye > #pf-modal-part-1 > .pf-c-modal-box__footer > .pf-m-primary').click()
+    cy.get('.pf-c-alert > .pf-c-alert__action > .pf-c-button > svg > path').click()
+    cy.get('.pf-l-split__item > .pf-c-button > .pf-c-notification-badge > svg > path').click()
+    cy.contains('unread').should('exist')
+  })
+
+
 })
 
 

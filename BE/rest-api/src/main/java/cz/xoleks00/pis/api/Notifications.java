@@ -1,7 +1,5 @@
 package cz.xoleks00.pis.api;
 
-
-
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -41,9 +39,9 @@ public class Notifications {
     @Inject
     private UserManager userMgr;
 
-
     /**
      * Get notifications by username.
+     * 
      * @param username
      * @return List of notifications.
      */
@@ -53,7 +51,8 @@ public class Notifications {
     @Operation(summary = "Get notifications by username")
     @APIResponse(responseCode = "200", description = "List of notifications", content = @Content(schema = @Schema(implementation = NotificationDTO.class)))
     @APIResponse(responseCode = "400", description = "User not found")
-    public Response getNotificationsByUsername(@Parameter(description = "The username of the user") @PathParam("username") String username) {
+    public Response getNotificationsByUsername(
+            @Parameter(description = "The username of the user") @PathParam("username") String username) {
         // ...
         PISUser user = userMgr.findByUsername(username);
         if (user == null) {
@@ -66,8 +65,12 @@ public class Notifications {
         List<NotificationDTO> notificationDTOs = notifications.stream()
                 .map(notification -> {
                     PISUser creator = notification.getCreator();
-                    UserDTO creatorDTO = new UserDTO(creator.getUsername(), creator.getName(), creator.getEmail(), creator.getUserCreated(), creator.isAdmin(), creator.getUserRole(), creator.getId(), creator.getManagedUsers());
-                    return new NotificationDTO(notification.getId(), notification.getEvent().getName(), notification.getEvent().getStart(), notification.getEvent().getEnd(), notification.getEvent().getId(), creatorDTO, notification.isAck());
+                    UserDTO creatorDTO = new UserDTO(creator.getUsername(), creator.getName(), creator.getEmail(),
+                            creator.getUserCreated(), creator.isAdmin(), creator.getUserRole(), creator.getId(),
+                            creator.getManagedUsers());
+                    return new NotificationDTO(notification.getId(), notification.getEvent().getName(),
+                            notification.getEvent().getStart(), notification.getEvent().getEnd(),
+                            notification.getEvent().getId(), creatorDTO, notification.isAck());
                 })
                 .collect(Collectors.toList());
         return Response.ok(notificationDTOs).build();
@@ -75,6 +78,7 @@ public class Notifications {
 
     /**
      * Acknowledge all notifications by username.
+     * 
      * @param username
      * @return The result message.
      */
@@ -84,7 +88,8 @@ public class Notifications {
     @Operation(summary = "Acknowledge all notifications by username")
     @APIResponse(responseCode = "200", description = "The result message")
     @APIResponse(responseCode = "400", description = "User not found")
-    public Response ackAllNotificationsByUsername(@Parameter(description = "The username of the user") @PathParam("username") String username) {
+    public Response ackAllNotificationsByUsername(
+            @Parameter(description = "The username of the user") @PathParam("username") String username) {
         if (userMgr.findByUsername(username) == null) {
             return Response.status(Status.BAD_REQUEST)
                     .entity("User not found: " + username)
@@ -92,6 +97,7 @@ public class Notifications {
                     .build();
         }
         int updatedNotifications = ntfMgr.ackAllByUsername(username);
-        return Response.ok(username + " has " + updatedNotifications + " acknowledged notifications").type(MediaType.APPLICATION_JSON).build();
+        return Response.ok(username + " has " + updatedNotifications + " acknowledged notifications")
+                .type(MediaType.APPLICATION_JSON).build();
     }
 }

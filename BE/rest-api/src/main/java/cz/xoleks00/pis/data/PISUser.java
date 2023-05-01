@@ -25,23 +25,20 @@ import jakarta.persistence.TemporalType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 
-
 /**
- * User class. 
+ * User class.
  */
 @Entity
 @Table(name = "PISUser")
 @NamedQueries({
-    @NamedQuery(name="PISUser.findAll", query="SELECT p FROM PISUser p"),
-    @NamedQuery(name="PISUser.findByName",
-                query="SELECT p FROM PISUser p WHERE p.name = :name")
+        @NamedQuery(name = "PISUser.findAll", query = "SELECT p FROM PISUser p"),
+        @NamedQuery(name = "PISUser.findByName", query = "SELECT p FROM PISUser p WHERE p.name = :name")
 })
-public class PISUser
-{
+public class PISUser {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
-	private String name;
+    private String name;
     @Column(nullable = false)
     private String password;
     private String username;
@@ -52,56 +49,49 @@ public class PISUser
     @Enumerated(EnumType.STRING)
     private UserRole userRole;
     @Temporal(TemporalType.DATE)
-    //@JsonbDateFormat("yyyy-MM-dd z")
+    // @JsonbDateFormat("yyyy-MM-dd z")
     private Date userCreated;
     @OneToMany(cascade = { CascadeType.ALL }, fetch = FetchType.EAGER, mappedBy = "creator", orphanRemoval = false)
     @JsonbTransient
-	private Collection<Event> events;
-    
-    public PISUser()
-    {
+    private Collection<Event> events;
+
+    public PISUser() {
         events = new ArrayList<>();
         managedUsers = new HashSet<>();
     }
-    
-    public Collection<Event> getEvents()
-    {
+
+    public Collection<Event> getEvents() {
         return events;
     }
-
 
     /**
      * @return the name
      */
-    public String getName()
-    {
+    public String getName() {
         return name;
     }
-    
+
     /**
      * @param name the name to set
      */
-    public void setName(String name)
-    {
+    public void setName(String name) {
         this.name = name;
     }
-    
+
     /**
      * @return the rc
      */
-    public long getId()
-    {
+    public long getId() {
         return id;
     }
-    
+
     /**
      * @param rc the rc to set
      */
-    public void setId(long id)
-    {
+    public void setId(long id) {
         this.id = id;
     }
-    
+
     public Date getUserCreated() {
         return userCreated;
     }
@@ -125,10 +115,9 @@ public class PISUser
     public void setUsername(String username) {
         this.username = username;
     }
-    
+
     @Override
-    public String toString()
-    {
+    public String toString() {
         return "PISUser: " + name;
     }
 
@@ -143,7 +132,7 @@ public class PISUser
     public boolean isAdmin() {
         return isAdmin;
     }
-    
+
     public void setAdmin(boolean isAdmin) {
         this.isAdmin = isAdmin;
     }
@@ -163,5 +152,5 @@ public class PISUser
     public void setManagedUsers(Collection<String> managedUsers) {
         this.managedUsers = new HashSet<>(managedUsers); // Create a new HashSet from the input collection
     }
-    
+
 }

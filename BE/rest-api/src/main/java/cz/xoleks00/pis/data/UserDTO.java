@@ -16,7 +16,8 @@ public class UserDTO {
     private long id;
     private Set<String> managedUsers;
 
-    public UserDTO(String username, String name, String email, Date userCreated, boolean admin, UserRole userRole, long id, Set<String> managedUsers) {
+    public UserDTO(String username, String name, String email, Date userCreated, boolean admin, UserRole userRole,
+            long id, Set<String> managedUsers) {
         this.username = username;
         this.name = name;
         this.email = email;
@@ -90,5 +91,5 @@ public class UserDTO {
     public void setManagedUsers(Set<String> managedUsers) {
         this.managedUsers = managedUsers;
     }
-    
+
 }

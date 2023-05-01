@@ -4,7 +4,7 @@ import java.util.List;
 
 /**
  * Managed Request Users request class.
-*/
+ */
 public class AddManagedUsersRequest {
 
     private List<String> usernames;

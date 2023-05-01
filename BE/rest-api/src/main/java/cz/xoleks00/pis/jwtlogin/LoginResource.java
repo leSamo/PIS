@@ -26,6 +26,7 @@ public class LoginResource {
 
     /**
      * Login endpoint.
+     * 
      * @param credentials
      * @return JWT token for logged user.
      */
@@ -41,13 +42,16 @@ public class LoginResource {
                     TokenResponse resp = new TokenResponse(token);
                     return Response.ok(resp).build();
                 } catch (Exception e) {
-                    return Response.status(Status.INTERNAL_SERVER_ERROR).entity(e).type(MediaType.APPLICATION_JSON).build();
+                    return Response.status(Status.INTERNAL_SERVER_ERROR).entity(e).type(MediaType.APPLICATION_JSON)
+                            .build();
                 }
             } else {
-                return Response.status(Status.UNAUTHORIZED).entity("Invalid login credentials").type(MediaType.APPLICATION_JSON).build();
+                return Response.status(Status.UNAUTHORIZED).entity("Invalid login credentials")
+                        .type(MediaType.APPLICATION_JSON).build();
             }
         } else {
-            return Response.status(Status.UNAUTHORIZED).entity("Invalid login credentials").type(MediaType.APPLICATION_JSON).build();
+            return Response.status(Status.UNAUTHORIZED).entity("Invalid login credentials")
+                    .type(MediaType.APPLICATION_JSON).build();
         }
     }
 }

@@ -14,7 +14,8 @@ public class NotificationDTO {
     private UserDTO creator;
     private boolean ack;
 
-    public NotificationDTO(Long id, String eventName, Date eventStart, Date eventEnd, Long eventId, UserDTO creator, boolean ack) {
+    public NotificationDTO(Long id, String eventName, Date eventStart, Date eventEnd, Long eventId, UserDTO creator,
+            boolean ack) {
         this.id = id;
         this.eventName = eventName;
         this.eventStart = eventStart;
