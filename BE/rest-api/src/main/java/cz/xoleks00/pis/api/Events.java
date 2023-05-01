@@ -97,6 +97,7 @@ public class Events {
                             event.getEnd(),
                             event.getColor(),
                             new UserDTO(event.getCreator().getUsername(), event.getCreator().getName(), event.getCreator().getEmail(), event.getCreator().getUserCreated(), event.getCreator().isAdmin(), event.getCreator().getUserRole(), event.getCreator().getId(), event.getCreator().getManagedUsers()),
+                            event.getPlace(),
                             event.getAttendees().stream().map(attendee -> new UserDTO(attendee.getUsername(), attendee.getName(), attendee.getEmail(), attendee.getUserCreated(), attendee.isAdmin(), attendee.getUserRole(), attendee.getId(), attendee.getManagedUsers())).collect(Collectors.toList())
                     ))
                     .collect(Collectors.toList());

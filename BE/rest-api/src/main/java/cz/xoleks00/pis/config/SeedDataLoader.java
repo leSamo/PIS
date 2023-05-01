@@ -142,28 +142,28 @@ public class SeedDataLoader implements ServletContextListener {
                 for (LocalDate day : managerStandupDays) {
                     LocalDateTime startTime = LocalDateTime.of(day, LocalTime.of(10, 0));
                     LocalDateTime endTime = LocalDateTime.of(day, LocalTime.of(10, 30));
-                    createEvent("Manager Standup", startTime, endTime, people[0], Arrays.asList(people[1], people[2], people[3], people[4]), EventColor.BLUE);
+                    createEvent("Manager Standup", startTime, endTime, people[0], Arrays.asList(people[1], people[2], people[3], people[4]), EventColor.BLUE, "online");
                 }
 
                 // Create assistant standup events
                 for (LocalDate day : assistantStandupDays) {
                     LocalDateTime startTime = LocalDateTime.of(day, LocalTime.of(10, 30));
                     LocalDateTime endTime = LocalDateTime.of(day, LocalTime.of(11, 0));
-                    createEvent("Assistant Standup", startTime, endTime, people[5], Arrays.asList(people[6], people[7], people[8], people[9]), EventColor.GREEN);
+                    createEvent("Assistant Standup", startTime, endTime, people[5], Arrays.asList(people[6], people[7], people[8], people[9]), EventColor.GREEN,"room D206");
                 }
 
                 // Create company meeting events
                 for (LocalDate day : companyMeetingDays) {
                     LocalDateTime startTime = LocalDateTime.of(day, LocalTime.of(14, 0));
                     LocalDateTime endTime = LocalDateTime.of(day, LocalTime.of(15, 0));
-                    createEvent("Company Meeting", startTime, endTime, people[0], Arrays.asList(people), EventColor.YELLOW);
+                    createEvent("Company Meeting", startTime, endTime, people[0], Arrays.asList(people), EventColor.YELLOW, "online");
                 }
 
                 // Create sprint planning events
                 for (LocalDate day : sprintPlanningDays) {
                     LocalDateTime startTime = LocalDateTime.of(day, LocalTime.of(13, 0));
                     LocalDateTime endTime = LocalDateTime.of(day, LocalTime.of(14, 0));
-                    createEvent("Sprint Planning", startTime, endTime, people[0], Arrays.asList(people[1], people[2], people[3], people[4], people[5], people[6], people[7], people[8], people[9]), EventColor.RED);
+                    createEvent("Sprint Planning", startTime, endTime, people[0], Arrays.asList(people[1], people[2], people[3], people[4], people[5], people[6], people[7], people[8], people[9]), EventColor.RED, "room D105");
                 }
 
                 // Create 1 on 1 events
@@ -172,35 +172,35 @@ public class SeedDataLoader implements ServletContextListener {
                     PISUser manager = people[(i % 4) + 1]; // Cycle through managers only
                     LocalDateTime startTime = LocalDateTime.of(day, LocalTime.of(9, 0));
                     LocalDateTime endTime = LocalDateTime.of(day, LocalTime.of(10, 0));
-                    createEvent("1 on 1 with " + manager.getName(), startTime, endTime, people[0], Arrays.asList(manager), EventColor.RED);
+                    createEvent("1 on 1 with " + manager.getName(), startTime, endTime, people[0], Arrays.asList(manager), EventColor.RED, "online");
                 }
 
                 // Add code freeze events
                 for (LocalDate day : codeFreezeDays) {
                     LocalDateTime startTime = LocalDateTime.of(day, LocalTime.of(0, 0));
                     LocalDateTime endTime = LocalDateTime.of(day, LocalTime.of(23, 59));
-                    createEvent("Code Freeze", startTime, endTime, people[0], Arrays.asList(people), EventColor.GREEN);
+                    createEvent("Code Freeze", startTime, endTime, people[0], Arrays.asList(people), EventColor.GREEN, "everywhere");
                 }
 
                 // Add two-day spa events for managers and director
                 for (LocalDate day : spaDays) {
                     LocalDateTime startTime = LocalDateTime.of(day, LocalTime.of(0, 0));
                     LocalDateTime endTime = LocalDateTime.of(day.plusDays(1), LocalTime.of(23, 59));
-                    createEvent("Two-day Spa", startTime, endTime, people[0], Arrays.asList(people[0], people[1], people[2], people[3], people[4]), EventColor.BLUE);
+                    createEvent("Two-day Spa", startTime, endTime, people[0], Arrays.asList(people[0], people[1], people[2], people[3], people[4]), EventColor.BLUE, "SPA Vrbov");
                 }
 
                 // Home-office events
                 for (LocalDate day : homeOfficeDays) {
                     LocalDateTime startTime = LocalDateTime.of(day, LocalTime.of(12, 0));
                     LocalDateTime endTime = startTime.plusDays(2);
-                    createEvent("Home-office", startTime, endTime, people[0], Arrays.asList(people[0]), EventColor.RED);
+                    createEvent("Home-office", startTime, endTime, people[0], Arrays.asList(people[0]), EventColor.RED, "home");
                 }
 
                 // Check-servers events
                 for (LocalDate day : checkServersDays) {
                     LocalDateTime startTime = LocalDateTime.of(day, LocalTime.of(16, 0));
                     LocalDateTime endTime = startTime.plusMinutes(10);
-                    createEvent("Check-servers", startTime, endTime, people[0], Arrays.asList(people[0]), EventColor.RED);
+                    createEvent("Check-servers", startTime, endTime, people[0], Arrays.asList(people[0]), EventColor.RED, "office L5");
                 }
 
             }
@@ -216,7 +216,7 @@ public class SeedDataLoader implements ServletContextListener {
         }
     }
 
-    private void createEvent(String eventName, LocalDateTime start, LocalDateTime end, PISUser creator, List<PISUser> attendees, EventColor color) {
+    private void createEvent(String eventName, LocalDateTime start, LocalDateTime end, PISUser creator, List<PISUser> attendees, EventColor color, String place) {
         Event event = new Event();
         event.setName(eventName);
         event.setStart(java.sql.Timestamp.valueOf(start));
@@ -224,6 +224,7 @@ public class SeedDataLoader implements ServletContextListener {
         event.setCreator(creator);
         event.setAttendees(attendees);
         event.setColor(color);
+        event.setPlace(place);
         em.persist(event);
     
         // Add event to attendees

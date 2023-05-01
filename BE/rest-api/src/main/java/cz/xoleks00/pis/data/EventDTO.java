@@ -11,9 +11,10 @@ public class EventDTO {
     private Date end;
     private EventColor color;
     private UserDTO creator;
+    private String place;
     private List<UserDTO> attendees;
 
-    public EventDTO(long id, String name, String description, Date start, Date end, EventColor color, UserDTO creator, List<UserDTO> attendees) {
+    public EventDTO(long id, String name, String description, Date start, Date end, EventColor color, UserDTO creator, String place, List<UserDTO> attendees) {
         this.id = id;
         this.name = name;
         this.description = description;
@@ -21,6 +22,7 @@ public class EventDTO {
         this.end = end;
         this.color = color;
         this.creator = creator;
+        this.place = place;
         this.attendees = attendees;
     }
 
@@ -78,6 +80,14 @@ public class EventDTO {
 
     public void setCreator(UserDTO creator) {
         this.creator = creator;
+    }
+
+    public void setPlace(String place) {
+        this.place = place;
+    }
+
+    public String getPlace() {
+        return place;
     }
 
     public List<UserDTO> getAttendees() {
