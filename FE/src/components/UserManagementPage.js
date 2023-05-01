@@ -12,8 +12,9 @@ import EditAssignedManagersModal from './EditAssignedManagersModal';
 import { useFetch } from './../helpers/Hooks';
 import { capitalize } from './../helpers/Utils';
 
+// component responsible for rendering the page after user has clicked the "User management" button in the navigation
 const UserManagementPage = ({ addToastAlert, userInfo }) => {
-    const COLUMNS = [
+    const TABLE_COLUMNS = [
         { label: 'User name' },
         { label: 'Full name' },
         { label: 'Email address' },
@@ -109,7 +110,7 @@ const UserManagementPage = ({ addToastAlert, userInfo }) => {
                         </TextContent>
                     }
                     rows={fetchedUsers.map(user => [user.username, user.name, user.email, capitalize(user.userRole.toLowerCase()), user.admin, user.userCreated.split("[")[0]])}
-                    columns={COLUMNS}
+                    columns={TABLE_COLUMNS}
                     isLoading={areUsersLoading}
                     actions={[
                         {
@@ -136,13 +137,7 @@ const UserManagementPage = ({ addToastAlert, userInfo }) => {
                             },
                             resolver: ([username]) => username !== userInfo.upn
                         }]}
-                    sortBy={null}
-                    onSort={() => { }}
-                    page={1}
-                    perPage={10000}
                     itemCount={fetchedUsers?.length}
-                    onSetPage={() => { }}
-                    onPerPageSelect={() => { }}
                 />
             </CardBody>
         </Card>

@@ -1,5 +1,5 @@
-import { Text, TextContent, Popover, Button, Stack, StackItem, AlertVariant } from '@patternfly/react-core';
-import React, { Fragment, useEffect, useState } from 'react';
+import { Text, TextContent, AlertVariant } from '@patternfly/react-core';
+import React, { useEffect, useState } from 'react';
 import {
     daysApart,
     getFirstDayOfMonth,
@@ -12,16 +12,17 @@ import {
     WEEKDAYS_SHORT,
     getMonthCalendarTitle,
     goBackYear,
-    prettyTime,
     getFirstFollowingSunday
 } from '../helpers/CalendarHelper';
 import { COLORS } from './../helpers/Constants';
 import { playFadeInAnimation } from './../helpers/Utils';
 import { useAction, useFetch } from './../helpers/Hooks';
+import EventPopover from './EventPopover';
 
+// component which renders the calendar when month view is selected
 const Month = ({ userInfo, addToastAlert, doubleLeftButtonClickCount, leftButtonClickCount, rightButtonClickCount, doubleRightButtonClickCount, refreshCounter, navigateTodayCounter, editEvent }) => {
     const [firstDayOfMonth, setFirstDayOfMonth] = useState(getFirstDayOfMonth(new Date()));
-    const [fetchedEvents, areEventsLoading, refreshEvents] = useFetch('/events', userInfo, { users: userInfo.upn, start_date: (new Date(getMostRecentMonday(firstDayOfMonth))).toISOString().replace(/\.[0-9]{3}/, ''), end_date: (new Date(getFirstFollowingSunday(goForwardMonth(firstDayOfMonth)))).toISOString().replace(/\.[0-9]{3}/, '') });
+    const [fetchedEvents, , refreshEvents] = useFetch('/events', userInfo, { users: userInfo.upn, start_date: (new Date(getMostRecentMonday(firstDayOfMonth))).toISOString().replace(/\.[0-9]{3}/, ''), end_date: (new Date(getFirstFollowingSunday(goForwardMonth(firstDayOfMonth)))).toISOString().replace(/\.[0-9]{3}/, '') });
 
     console.log(fetchedEvents);
 
@@ -42,6 +43,7 @@ const Month = ({ userInfo, addToastAlert, doubleLeftButtonClickCount, leftButton
         refreshEvents();
     }
 
+    // handle button click in the navigation above the calendar
     useEffect(() => {
         if (doubleLeftButtonClickCount > 0) {
             setFirstDayOfMonth(goBackYear(firstDayOfMonth));
@@ -78,21 +80,32 @@ const Month = ({ userInfo, addToastAlert, doubleLeftButtonClickCount, leftButton
         playFadeInAnimation("#month-container");
     }, [firstDayOfMonth, refreshCounter])
 
+    // convert each event into divs, which will be displayed in the calendar
     const eventsToElements = events => {
         events = events.map(event => ({ ...event, start: event.start.split("[")[0], end: event.end.split("[")[0] }))
-        // handle single day events
+        
+        // array where one element represents one day
         const elements = [...Array(getWeekCountInMonth(firstDayOfMonth) * 7).keys()].map(() => []);
 
-        const singleDayEvents = events.filter(event => isoLongToShort(event.start) === isoLongToShort(event.end));
+        events.forEach(event => {
+            // get the index of start and end dates of an event
+            // if the event is single-day it only occupies one slot
+            const startIndex = daysApart(getMostRecentMonday(firstDayOfMonth), isoLongToShort(event.start));
+            const endIndex = daysApart(getMostRecentMonday(firstDayOfMonth), isoLongToShort(event.end));
 
-        singleDayEvents.forEach(event => {
-            const index = daysApart(getMostRecentMonday(firstDayOfMonth), isoLongToShort(event.start));
+            // this has to be array to account for multi-day events
+            const indices = [];
 
-            if (index >= 0 && index < getWeekCountInMonth(firstDayOfMonth) * 7)
-                elements[index].push(event);
+            for (let i = startIndex; i <= endIndex; i++) {
+                indices.push(i);
+            }
+
+            indices.forEach(index => {
+                if (index >= 0 && index < getWeekCountInMonth(firstDayOfMonth) * 7) {
+                    elements[index].push(event);
+                }
+            });
         });
-
-        console.log("aaa", elements);
 
         // return array of 7 elements
         return elements;
@@ -132,39 +145,7 @@ const Month = ({ userInfo, addToastAlert, doubleLeftButtonClickCount, leftButton
                                             <b>{dayNumber}</b>
                                             {
                                                 eventsToElements(fetchedEvents)[week * 7 + day].map(event => (
-                                                    <Popover
-                                                        zIndex={100}
-                                                        key={event.id}
-                                                        headerContent={<div>{event.description}</div>}
-                                                        bodyContent={
-                                                            <Fragment>
-                                                                <div>🕒 {prettyTime(event.start)} – {prettyTime(event.end)}</div>
-                                                                <div>📝 {event.description}</div>
-                                                                <div>✏️ Author: {event.creator.name} ({event.creator.email})</div>
-                                                                <div>🙋‍♀️ Attendees:</div>
-                                                                {
-                                                                    event.attendees.map(attendee => (
-                                                                        <div key={attendee.username} style={{ marginLeft: 32 }}>- {attendee.name} ({attendee.email})</div>
-                                                                    ))
-                                                                }
-                                                            </Fragment>
-                                                        }
-                                                        footerContent={event.creator.username === userInfo.upn &&
-                                                            <Stack hasGutter>
-                                                                <StackItem>
-                                                                    <Button className="edit-event" variant="primary" style={{ width: "100%" }} onClick={() => editEvent(event)}>
-                                                                        Edit
-                                                                    </Button>
-                                                                </StackItem>
-                                                                <StackItem>
-                                                                    <Button className="delete-event" variant="danger" style={{ width: "100%" }} onClick={() => deleteEventAction(event.id)}>
-                                                                        Delete
-                                                                    </Button>
-                                                                </StackItem>
-                                                            </Stack>
-                                                        }
-                                                        minWidth="400px"
-                                                    >
+                                                    <EventPopover key={event.id} userInfo={userInfo} event={event} editEvent={editEvent} deleteEventAction={deleteEventAction}>
                                                         <div
                                                             className="event"
                                                             style={{
@@ -182,7 +163,7 @@ const Month = ({ userInfo, addToastAlert, doubleLeftButtonClickCount, leftButton
                                                         >
                                                             <b>{event.name}</b>
                                                         </div>
-                                                    </Popover>
+                                                    </EventPopover>
                                                 ))
                                             }
                                         </td>

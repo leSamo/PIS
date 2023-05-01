@@ -1,8 +1,12 @@
 import { useState, useEffect } from 'react';
 import axios from 'axios';
 
+// hook for fetching data using HTTP GET requests
+// returns an array of 
+// - reponse data
+// - boolean whether the response is still loading
+// - function to refresh and refetch the data with new parameters
 export const useFetch = (endpoint, userInfo, params) => {
-	// FETCHING
 	endpoint ?? console.error('You are not passing endpoint into useFetch hook');
 
 	const [data, setData] = useState([]);
@@ -29,6 +33,13 @@ export const useFetch = (endpoint, userInfo, params) => {
 	return [data, isLoading, refresh];
 }
 
+// hook for executing HTTP POST/PUT/PATCH/DELETE requests
+// returns a function which will execute the request
+// the function contains the following parameters
+// - id - used for /resource/{id} endpoints, can be set to nullish to ignore
+// - data - request body data (this parameter is absent when verb is DELETE)
+// - successCallback - will be executed upon successful response
+// - errorCallback - will be executed upon unsuccessful response
 export const useAction = (verb, endpoint, userInfo = {}) => {
 	endpoint ?? console.error('You are not passing endpoint into useAction hook');
 
@@ -69,7 +80,6 @@ export const useAction = (verb, endpoint, userInfo = {}) => {
 				.catch(error => errorCallback?.(error?.response?.data?.message));
 		}
 	}
-
 
 	return action;
 }

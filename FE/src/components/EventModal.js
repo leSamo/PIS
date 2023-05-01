@@ -6,7 +6,7 @@ import { useFetch } from '../helpers/Hooks';
 import { validateDate } from '../helpers/Validators';
 import { validateTime } from '../helpers/Validators';
 
-// TODO: Automatically select event organizer in typeahead
+// modal used for creating new events and editing existing events
 const EventModal = ({ userInfo, isOpen, setOpen, createCallback, initialEventData }) => {
     const [eventTitle, setEventTitle] = useState('');
     const [eventDescription, setEventDescription] = useState('');
@@ -19,28 +19,34 @@ const EventModal = ({ userInfo, isOpen, setOpen, createCallback, initialEventDat
     const [dateTo, setDateTo] = useState('');
     const [timeTo, setTimeTo] = useState('');
 
-    const [allUsers, areUsersLoading, refreshUsers] = useFetch('/users', userInfo);
+    const [allUsers] = useFetch('/users', userInfo);
 
     useEffect(() => {
-        if (isOpen && initialEventData) {
-            console.log("hhh", initialEventData);
-            setEventTitle(initialEventData.name);
-            setEventDescription(initialEventData.description);
-            setSelectedUsers(initialEventData.attendees.map(attendee => attendee.username));
-            setSelectedColor(initialEventData.color.toLowerCase());
-
-            const [startDate, startTime] = initialEventData.start.split(/[TZ]/);
-            const [endDate, endTime] = initialEventData.end.split(/[TZ]/);
-
-            setDateFrom(startDate);
-            setTimeFrom(startTime.substring(0, 5));
-            setDateTo(endDate);
-            setTimeTo(endTime.substring(0, 5));
+        if (isOpen) {
+            // if initialEventData is provided, this means that modal is editing existing event
+            if (initialEventData) {
+                setEventTitle(initialEventData.name);
+                setEventDescription(initialEventData.description);
+                setSelectedUsers(initialEventData.attendees.map(attendee => attendee.username));
+                setSelectedColor(initialEventData.color.toLowerCase());
+    
+                const [startDate, startTime] = initialEventData.start.split(/[TZ]/);
+                const [endDate, endTime] = initialEventData.end.split(/[TZ]/);
+    
+                setDateFrom(startDate);
+                setTimeFrom(startTime.substring(0, 5));
+                setDateTo(endDate);
+                setTimeTo(endTime.substring(0, 5));
+            }
+            // modal is creating a new event
+            // logged in user is select as an attendee by default
+            else {
+                setSelectedUsers([userInfo.upn]);
+            }
         }
     }, [isOpen]);
 
-    console.log(allUsers, selectedUsers);
-
+    // typeahead is used to select the attendees
     const onTypeaheadSelect = (event, selection) => {
         const index = selectedUsers.indexOf(selection);
 
@@ -86,6 +92,7 @@ const EventModal = ({ userInfo, isOpen, setOpen, createCallback, initialEventDat
         setTimeTo('');
     }
 
+    // time alert is used to notify the user that selected relation of from/to date/time is invalid
     const getTimeAlertTitle = () => {
         const from = new Date(dateFrom + "T" + timeFrom)
         const to = new Date(dateTo + "T" + timeTo);

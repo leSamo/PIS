@@ -13,13 +13,14 @@ import jwt_decode from 'jwt-decode';
 import { useFetch } from './../helpers/Hooks';
 import { formatDateTimeRange } from '../helpers/CalendarHelper';
 
-// TODO: Handle JWT expiration
+// component which wraps every route and renders the top navigation bar including login/logout functionality,
+// notifications and link to user management page
 const Wrapper = ({ children, userInfo, setUserInfo }) => {
 	const [isDropdownOpen, setDropdownOpen] = useState(false);
 	const [isLoginModalOpen, setLoginModalOpen] = useState(false);
 	const [toastAlerts, setToastAlerts] = useState([]);
 
-	const [notifications, areNotificationsLoading, notificationsRefresh] = useFetch(`/notifications/${userInfo.upn}`, userInfo);
+	const [notifications, , notificationsRefresh] = useFetch(`/notifications/${userInfo.upn}`, userInfo);
 
 	const acknowledgeNotifications = useAction('PUT', `/notifications/${userInfo.upn}/ack`, userInfo);
 
@@ -27,13 +28,22 @@ const Wrapper = ({ children, userInfo, setUserInfo }) => {
 
 	const sendLoginRequest = useAction('POST', '/login');
 
+	// handle recovery of JWT from local storage
 	useEffect(() => {
 		const savedInfo = localStorage.getItem('login');
 
 		if (savedInfo != null) {
 			try {
 				const parsedInfo = JSON.parse(savedInfo);
-				setUserInfo({ ...parsedInfo, loaded: true });
+
+				// check if JWT is expired
+				if (parsedInfo.exp < Date.now() / 1000) {
+					setUserInfo({ loaded: true });
+				}
+				else {
+					setUserInfo({ ...parsedInfo, loaded: true });
+				}
+
 			}
 			catch (e) {
 				console.log("No info");

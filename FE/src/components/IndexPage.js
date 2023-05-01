@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Card, CardBody, Dropdown, DropdownToggle, DropdownItem, Flex, FlexItem, Button, ButtonVariant, Select, SelectVariant, SelectOption, Toolbar, Switch, AlertVariant } from '@patternfly/react-core';
+import { Card, CardBody, Dropdown, DropdownToggle, DropdownItem, Flex, FlexItem, Button, ButtonVariant, Select, SelectVariant, SelectOption, Toolbar, Switch, AlertVariant, TextContent, Text, Bullseye } from '@patternfly/react-core';
 import EventModal from './EventModal';
 import Week from './Week';
 import { AngleDoubleLeftIcon, AngleDoubleRightIcon, AngleLeftIcon, AngleRightIcon } from '@patternfly/react-icons';
@@ -8,6 +8,8 @@ import Month from './Month';
 import { isSubstring } from '../helpers/Utils';
 import { useAction } from '../helpers/Hooks';
 
+// calendar views wrapper implementing the toolbar above the calendar with navigation and create event modal
+// responsible for showing week or month view depending on the selected setting
 const IndexPage = ({ userInfo, addToastAlert }) => {
     const [isEventModalOpen, setEventModalOpen] = useState(false);
     const [allUsers, setAllUsers] = React.useState([]);
@@ -45,7 +47,7 @@ const IndexPage = ({ userInfo, addToastAlert }) => {
         document.getElementById('view-dropdown-toggle').focus();
     };
 
-    const dropdownItems = [
+    const viewDropdownItems = [
         <DropdownItem key="week" onClick={() => setSelectedView(WEEK_VIEW)}>
             Week
         </DropdownItem>,
@@ -54,6 +56,7 @@ const IndexPage = ({ userInfo, addToastAlert }) => {
         </DropdownItem>
     ];
 
+    // typeahead is implementing the "Show calendar of" functionality
     const onTypeaheadSelect = (_, selection) => {
         const index = selectedUsers.indexOf(selection);
 
@@ -83,7 +86,7 @@ const IndexPage = ({ userInfo, addToastAlert }) => {
         ));
     }
 
-    const createCallback = (event, id) => {
+    const onEventCreate = (event, id) => {
         if (selectedEvent) {
             editEvent(id, event, () => {
                 setRefreshCounter(refreshCounter + 1)
@@ -102,7 +105,7 @@ const IndexPage = ({ userInfo, addToastAlert }) => {
         setEventModalOpen(true);
         setSelectedEvent(event);
     }
-    
+
     const openCreateEventModal = () => {
         setSelectedEvent(null);
         setEventModalOpen(true);
@@ -114,110 +117,122 @@ const IndexPage = ({ userInfo, addToastAlert }) => {
                 userInfo={userInfo}
                 isOpen={isEventModalOpen}
                 setOpen={setEventModalOpen}
-                createCallback={createCallback}
+                createCallback={onEventCreate}
                 initialEventData={selectedEvent}
             />
-            <CardBody style={{ paddingTop: 0 }}>
-                <Toolbar isSticky style={{ paddingLeft: 16, paddingRight: 16 }}>
-                    <Flex>
-                        <FlexItem>
-                            <Select
-                                chipGroupProps={{ numChips: 1, expandedText: 'Hide', collapsedText: 'Show ${remaining}' }}
-                                variant={SelectVariant.typeaheadMulti}
-                                onToggle={newState => setTypeaheadOpen(newState)}
-                                onSelect={onTypeaheadSelect}
-                                onClear={clearTypeaheadSelection}
-                                selections={selectedUsers}
-                                isOpen={isTypeaheadOpen}
-                                onFilter={typeaheadFilter}
-                                placeholderText="Show calendar of"
-                            >
-                                {allUsers.map((option, index) => (
-                                    <SelectOption
-                                        key={index}
-                                        value={option.email}
-                                        description={option.fullname}
-                                    />
-                                ))}
-                            </Select>
-                        </FlexItem>
-                        <FlexItem>
-                            <Dropdown
-                                onSelect={onDropdownSelect}
-                                toggle={
-                                    <DropdownToggle id="view-dropdown-toggle" onToggle={onDropdownToggle}>
-                                        Toggle view
-                                    </DropdownToggle>
-                                }
-                                isOpen={isDropdownOpen}
-                                dropdownItems={dropdownItems}
-                            />
-                        </FlexItem>
-                        <FlexItem>
-                            <Button className="toolbar-create-event" variant={ButtonVariant.primary} onClick={openCreateEventModal}>Create event</Button>
-                        </FlexItem>
-                        <FlexItem>
-                            <Button className="toolbar-navigate-double-left" variant="secondary" onClick={() => setDoubleLeftButtonClickCount(doubleLeftButtonClickCount + 1)}>
-                                <AngleDoubleLeftIcon />
-                            </Button>
-                        </FlexItem>
-                        <FlexItem>
-                            <Button className="toolbar-navigate-left" variant="secondary" onClick={() => setLeftButtonClickCount(leftButtonClickCount + 1)}>
-                                <AngleLeftIcon />
-                            </Button>
-                        </FlexItem>
-                        <FlexItem>
-                            <Button className="toolbar-navigate-right" variant="secondary" onClick={() => setRightButtonClickCount(rightButtonClickCount + 1)}>
-                                <AngleRightIcon />
-                            </Button>
-                        </FlexItem>
-                        <FlexItem>
-                            <Button className="toolbar-navigate-double-right" variant="secondary" onClick={() => setDoubleRightButtonClickCount(doubleRightButtonClickCount + 1)}>
-                                <AngleDoubleRightIcon />
-                            </Button>
-                        </FlexItem>
-                        <FlexItem>
-                            <Button className="toolbar-navigate-today" variant="primary" onClick={() => setNavigateTodayCounter(navigateTodayCounter + 1)}>
-                                Today
-                            </Button>
-                        </FlexItem>
-                        <FlexItem style={{ marginLeft: "auto" }}>
-                            <Switch
-                                id="my-calendar-switch"
-                                label="Show my own calendar"
-                                labelOff="Don't show my own calendar"
-                                isChecked={showMyOwnCalendar}
-                                onChange={newValue => setShowMyOwnCalendar(newValue)}
-                                isReversed
-                            />
-                        </FlexItem>
-                    </Flex>
-                </Toolbar>
-                {selectedView === WEEK_VIEW
-                    ? <Week
-                        userInfo={userInfo}
-                        addToastAlert={addToastAlert}
-                        doubleLeftButtonClickCount={doubleLeftButtonClickCount}
-                        leftButtonClickCount={leftButtonClickCount}
-                        rightButtonClickCount={rightButtonClickCount}
-                        doubleRightButtonClickCount={doubleRightButtonClickCount}
-                        refreshCounter={refreshCounter}
-                        navigateTodayCounter={navigateTodayCounter}
-                        editEvent={openEditEventModal}
-                    />
-                    : <Month
-                        userInfo={userInfo}
-                        addToastAlert={addToastAlert}
-                        doubleLeftButtonClickCount={doubleLeftButtonClickCount}
-                        leftButtonClickCount={leftButtonClickCount}
-                        rightButtonClickCount={rightButtonClickCount}
-                        doubleRightButtonClickCount={doubleRightButtonClickCount}
-                        refreshCounter={refreshCounter}
-                        navigateTodayCounter={navigateTodayCounter}
-                        editEvent={openEditEventModal}
-                    />
-                }
-            </CardBody>
+            {userInfo.upn ? (
+                <CardBody style={{ paddingTop: 0 }}>
+                    <Toolbar isSticky style={{ paddingLeft: 16, paddingRight: 16 }}>
+                        <Flex>
+                            <FlexItem>
+                                <Select
+                                    chipGroupProps={{ numChips: 1, expandedText: 'Hide', collapsedText: 'Show ${remaining}' }}
+                                    variant={SelectVariant.typeaheadMulti}
+                                    onToggle={newState => setTypeaheadOpen(newState)}
+                                    onSelect={onTypeaheadSelect}
+                                    onClear={clearTypeaheadSelection}
+                                    selections={selectedUsers}
+                                    isOpen={isTypeaheadOpen}
+                                    onFilter={typeaheadFilter}
+                                    placeholderText="Show calendar of"
+                                >
+                                    {allUsers.map((option, index) => (
+                                        <SelectOption
+                                            key={index}
+                                            value={option.email}
+                                            description={option.fullname}
+                                        />
+                                    ))}
+                                </Select>
+                            </FlexItem>
+                            <FlexItem>
+                                <Dropdown
+                                    onSelect={onDropdownSelect}
+                                    toggle={
+                                        <DropdownToggle id="view-dropdown-toggle" onToggle={onDropdownToggle}>
+                                            Toggle view
+                                        </DropdownToggle>
+                                    }
+                                    isOpen={isDropdownOpen}
+                                    dropdownItems={viewDropdownItems}
+                                />
+                            </FlexItem>
+                            <FlexItem>
+                                <Button className="toolbar-create-event" variant={ButtonVariant.primary} onClick={openCreateEventModal}>Create event</Button>
+                            </FlexItem>
+                            <FlexItem>
+                                <Button className="toolbar-navigate-double-left" variant="secondary" onClick={() => setDoubleLeftButtonClickCount(doubleLeftButtonClickCount + 1)}>
+                                    <AngleDoubleLeftIcon />
+                                </Button>
+                            </FlexItem>
+                            <FlexItem>
+                                <Button className="toolbar-navigate-left" variant="secondary" onClick={() => setLeftButtonClickCount(leftButtonClickCount + 1)}>
+                                    <AngleLeftIcon />
+                                </Button>
+                            </FlexItem>
+                            <FlexItem>
+                                <Button className="toolbar-navigate-right" variant="secondary" onClick={() => setRightButtonClickCount(rightButtonClickCount + 1)}>
+                                    <AngleRightIcon />
+                                </Button>
+                            </FlexItem>
+                            <FlexItem>
+                                <Button className="toolbar-navigate-double-right" variant="secondary" onClick={() => setDoubleRightButtonClickCount(doubleRightButtonClickCount + 1)}>
+                                    <AngleDoubleRightIcon />
+                                </Button>
+                            </FlexItem>
+                            <FlexItem>
+                                <Button className="toolbar-navigate-today" variant="primary" onClick={() => setNavigateTodayCounter(navigateTodayCounter + 1)}>
+                                    Today
+                                </Button>
+                            </FlexItem>
+                            <FlexItem style={{ marginLeft: "auto" }}>
+                                <Switch
+                                    id="my-calendar-switch"
+                                    label="Show my own calendar"
+                                    labelOff="Don't show my own calendar"
+                                    isChecked={showMyOwnCalendar}
+                                    onChange={newValue => setShowMyOwnCalendar(newValue)}
+                                    isReversed
+                                />
+                            </FlexItem>
+                        </Flex>
+                    </Toolbar>
+                    {selectedView === WEEK_VIEW
+                        ? <Week
+                            userInfo={userInfo}
+                            addToastAlert={addToastAlert}
+                            doubleLeftButtonClickCount={doubleLeftButtonClickCount}
+                            leftButtonClickCount={leftButtonClickCount}
+                            rightButtonClickCount={rightButtonClickCount}
+                            doubleRightButtonClickCount={doubleRightButtonClickCount}
+                            refreshCounter={refreshCounter}
+                            navigateTodayCounter={navigateTodayCounter}
+                            editEvent={openEditEventModal}
+                        />
+                        : <Month
+                            userInfo={userInfo}
+                            addToastAlert={addToastAlert}
+                            doubleLeftButtonClickCount={doubleLeftButtonClickCount}
+                            leftButtonClickCount={leftButtonClickCount}
+                            rightButtonClickCount={rightButtonClickCount}
+                            doubleRightButtonClickCount={doubleRightButtonClickCount}
+                            refreshCounter={refreshCounter}
+                            navigateTodayCounter={navigateTodayCounter}
+                            editEvent={openEditEventModal}
+                        />
+                    }
+                </CardBody>
+            ) : (
+                <CardBody style={{ height: "100%" }}>
+                    <Bullseye>
+                        <TextContent>
+                            <Text component="h2">
+                                You are currently not logged in, proceed by clicking the &ldquo;Log in&rdquo; button in the top right corner
+                            </Text>
+                        </TextContent>
+                    </Bullseye>
+                </CardBody>
+            )}
         </Card>
     );
 };

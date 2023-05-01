@@ -19,6 +19,7 @@ export const validatePassword = password => {
     return re.test(password);
 }
 
+// validates date string in YYYY-MM-DD format
 export const validateDate = dateString => {
     const dateRegex = /^(\d{4})-(0[1-9]|1[0-2])-([0-2][1-9]|3[01])$/;
     const match = dateString.match(dateRegex);
@@ -26,7 +27,7 @@ export const validateDate = dateString => {
     if (!match) {
         return false;
     }
-    
+
     const year = parseInt(match[1]);
     const month = parseInt(match[2]);
     const day = parseInt(match[3]);
@@ -39,6 +40,7 @@ export const validateDate = dateString => {
     );
 }
 
+// validates time string in HH:MM format
 export const validateTime = timeString => {
     const timeRegex = /^([0-9]?\d|1\d|2[0-3]):([0-5]\d)$/
     return timeRegex.test(timeString);

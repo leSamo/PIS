@@ -2,16 +2,16 @@ import React, { useEffect, useState } from 'react';
 import { Form, Button, Modal, ModalVariant, DualListSelector } from '@patternfly/react-core';
 import { useAction, useFetch } from './../helpers/Hooks';
 
-const EditAssignedManagersModal = ({ userInfo, isOpen, setOpen, callback, selectedUser }) => {
+// modal used to assign and unassign managers to/from an assistant
+// this functionality is available in the user management page
+const EditAssignedManagersModal = ({ userInfo, isOpen, setOpen, selectedUser }) => {
     const [availableOptions, setAvailableOptions] = useState([]);
     const [chosenOptions, setChosenOptions] = useState([]);
 
-    const [allUsers, areAllUsersLoading, refreshUsers] = useFetch('/users', userInfo);
-    const [managedUsers, areManagedUsersLoading, refreshManagedUsers] = useFetch(`/users/${selectedUser.username ?? userInfo.upn}/managed_users`, userInfo);
+    const [allUsers, , refreshUsers] = useFetch('/users', userInfo);
+    const [managedUsers, , refreshManagedUsers] = useFetch(`/users/${selectedUser.username ?? userInfo.upn}/managed_users`, userInfo);
 
     const selectManagedUsers = useAction('POST', `/users/${selectedUser.username}/managed_users`, userInfo);
-
-    console.log("ccc", managedUsers);
 
     useEffect(() => {
         if (isOpen) {
@@ -20,6 +20,7 @@ const EditAssignedManagersModal = ({ userInfo, isOpen, setOpen, callback, select
         }
     }, [isOpen]);
 
+    // available options consist of all managers and directors which are already not assigned
     useEffect(() => {
         setAvailableOptions(allUsers
             .filter(user => user.userRole === "MANAGER" || user.userRole === "DIRECTOR")
@@ -27,6 +28,7 @@ const EditAssignedManagersModal = ({ userInfo, isOpen, setOpen, callback, select
             .map(user => user.username));
     }, [allUsers, managedUsers]);
 
+    // if assistant has some users assigned already, show them as selected
     useEffect(() => {
         setChosenOptions(managedUsers.map(user => user.username));
     }, [managedUsers]);    

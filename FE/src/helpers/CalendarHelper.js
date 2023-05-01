@@ -21,10 +21,10 @@ export const prettyTime = date => {
     return `${hours}:${minutes}`;
 }
 
-// used to display date in notifications
+// used to display date in notifications and event popovers
 // if from date and to date are the same, only a single date and time range is displayed
 // if the dates are not at the same day, both dates and times are shown
-export const formatDateTimeRange = (dateFrom, dateTo) => {
+export const formatDateTimeRange = (dateFrom, dateTo, isShort = false) => {
     const date1 = new Date(dateFrom.split("[")[0]);
     const date2 = new Date(dateTo.split("[")[0]);
 
@@ -35,7 +35,9 @@ export const formatDateTimeRange = (dateFrom, dateTo) => {
     const timeString2 = date2.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', hour12: false });
 
     if (dateString1 === dateString2) {
-        return `${dateString1} ${timeString1} – ${timeString2}`;
+        return isShort
+            ? `${timeString1} – ${timeString2}`
+            : `${dateString1} ${timeString1} – ${timeString2}`;
     } else {
         return `${dateString1} ${timeString1} – ${dateString2} ${timeString2}`;
     }

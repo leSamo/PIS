@@ -8,6 +8,8 @@ import { ROLES } from '../helpers/Constants';
 import { capitalize } from './../helpers/Utils';
 import { useAction } from '../helpers/Hooks';
 
+// used to edit the user from user management page
+// is opened and supplied with existing user's info after clicking "Edit" button in a user row
 const EditUserModal = ({ userInfo, isOpen, setOpen, callback, selectedUser }) => {
     const [emailValue, setEmailValue] = useState('');
     const [fullnameValue, setFullnameValue] = useState('');
@@ -20,6 +22,7 @@ const EditUserModal = ({ userInfo, isOpen, setOpen, callback, selectedUser }) =>
 
     const submitEditedUser = useAction('PATCH', '/users', userInfo);
 
+    // after modal is opened, fill in the fields with current user metadata
     useEffect(() => {
         if (isOpen) {
             setFullnameValue(selectedUser.fullname);

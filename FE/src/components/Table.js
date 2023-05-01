@@ -5,6 +5,9 @@ import TableEmptyState from './TableEmptyState';
 import CheckIcon from '@patternfly/react-icons/dist/esm/icons/check-icon';
 import TimesIcon from '@patternfly/react-icons/dist/esm/icons/times-icon';
 
+// component used to render the registered users in user management page
+// this component has been adapted from our previous IIS project and includes sorting and paginating functionality
+// which was not necessary for this project
 const Table = ({ title, columns, isLoading, rows, actions, sortBy, onSort, page, perPage, itemCount, onSetPage, onPerPageSelect, emptyText }) => {
   const sortEnabled = sortBy != undefined && onSort != undefined;
   const paginationEnabled = page != undefined && perPage != undefined && itemCount != undefined;
