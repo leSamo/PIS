@@ -30,18 +30,21 @@
 
 	<dl>
 		<dt>Autoři</dt>
-		<dd>Samuel Olekšák
+		<dd>Bc. Samuel Olekšák
 			<a href="mailto:xoleks00@stud.fit.vutbr.cz">xoleks00@stud.fit.vutbr.cz</a> -
-			objektový návrh, návrh API, E2E testovanie
+			objektový návrh, návrh API, E2E testovanie, implementácia, dokumentácia
 		</dd>
-		<dd>Michal Findra
+		<dd>Bc. Michal Findra
 			<a href="mailto:xfindr00@stud.fit.vutbr.cz">xfindr00@stud.fit.vutbr.cz</a> -
-			objektový návrh, autentifikácia na backende, E2E testovanie
+			objektový návrh, autentifikácia na backende, E2E testovanie, implementácia, dokumentácia
 		</dd>
 	</dl>
 
 	<h2>Uživatelé systému pro testování</h2>
-	<p>Uveďte prosím existující zástupce <strong>všech rolí uživatelů</strong>.</p>
+
+	<p>V nasledujúcej tabuľke sú uvedení všetci užívetalia systému. Riaditeľ má jediný možnosť vyrtvárať a upravovať užívateľov (admin). </p> 
+	<p>Podrobnejšie informácie o funkcionalite sú dostupné vo <b>frontend.pdf</b> dokumentácií.</p>
+
 	<table>
 		<tbody>
 			<tr>
@@ -50,20 +53,58 @@
 				<th>Role</th>
 			</tr>
 			<tr>
-				<td>admin</td>
-				<td>admin</td>
-				<td>Administrátor</td>
+				<td>director</td>
+				<td>secretpswd</td>
+				<td>Riaditel (admin)</td>
 			</tr>
 			<tr>
-				<td>prodavac</td>
-				<td>prodavac</td>
-				<td>Prodavač</td>
+				<td>assistant1</td>
+				<td>secretpswd</td>
+				<td>Sekretárka pre Riaditela</td>
 			</tr>
 			<tr>
-				<td>franta</td>
-				<td>franta</td>
-				<td>Zákazník</td>
+				<td>assistant2</td>
+				<td>secretpswd</td>
+				<td>Sekretárka pre Manažéra 1</td>
 			</tr>
+			<tr>
+				<td>assistant3</td>
+				<td>secretpswd</td>
+				<td>Sekretárka pre Manažéra 2</td>
+			</tr>
+			<tr>
+				<td>assistant4</td>
+				<td>secretpswd</td>
+				<td>Sekretárka pre Manažéra 3</td>
+			</tr>
+			<tr>
+				<td>assistant5</td>
+				<td>secretpswd</td>
+				<td>Sekretárka pre Manažéra 4</td>
+			</tr>
+			<tr>
+				<td>manager1</td>
+				<td>secretpswd</td>
+				<td>Manažér 1</td>
+			</tr>
+
+			<tr>
+				<td>manager2</td>
+				<td>secretpswd</td>
+				<td>Manažér 2</td>
+			</tr>
+			<tr>
+				<td>manager3</td>
+				<td>secretpswd</td>
+				<td>Manažér 3</td>
+			</tr>
+			<tr>
+				<td>manager4</td>
+				<td>secretpswd</td>
+				<td>Manažér 4</td>
+			</tr>
+
+
 		</tbody>
 	</table>
 
@@ -72,13 +113,13 @@
 	<ul>
 		<li>Node verzia 14</li>
 	</ul>
-	Spustenie servera: v priečinku BE/rest-api pomocou príkazu rm -rf target/; nvm liberty:dev
-	Sputenie klienta: v priečinku FE pomocou príkazu npm install; npm run start
+	<b>Spustenie servera + základné seedovanie:</b> v priečinku <code>BE/rest-api</code> pomocou príkazu <code>rm -rf target/ && nvm liberty:dev</code><br>
+	<b>Sputenie klienta:</b> v priečinku <code>FE</code> pomocou príkazu <code>npm install; npm run start</code> <br>
+	<b>Sputenie cypress testov:</b> v priečinku <code>FE</code> pomocou príkazu <code>npm install; npm run test</code> (testy vyžadujú nezmenenú pôvodnú datábazu)
 
-	Inicializácia databázy prebieha automaticky pri spustení Liberty servera.
+	<p>Inicializácia databázy prebieha automaticky pri spustení Liberty servera.</p>
 
-	<p>Např. vyžadované prostředky na serveru, datové zdroje, inicializace databáze, apod. Stačí v několika stručných
-		bodech.</p>
+	<p>Po spustení je možné okrem aplikácie pozorovať aj jednotlivé endpointy pomocu Swagger openAPI rozhrania na adrese <a href="http://localhost:9080/openapi/ui/">localhost:9080/openapi/ui/</a></p>
 
 </body>
 
