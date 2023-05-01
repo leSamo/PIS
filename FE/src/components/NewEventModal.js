@@ -108,12 +108,14 @@ const NewEventModal = ({ userInfo, isOpen, setOpen, createCallback, initialEvent
 
     return (
         <Modal
+            className="event-modal"
             variant={ModalVariant.small}
             title={initialEventData ? "Edit event" : "Create a new event"}
             isOpen={isOpen}
             onClose={closeModal}
             actions={[
                 <Button
+                    className="event-modal-confirm"
                     key="confirm"
                     variant="primary"
                     onClick={() => {
@@ -131,7 +133,7 @@ const NewEventModal = ({ userInfo, isOpen, setOpen, createCallback, initialEvent
                 >
                     {initialEventData ? "Edit" : "Create"}
                 </Button>,
-                <Button key="cancel" variant="link" onClick={closeModal}>Cancel</Button>
+                <Button className="event-modal-cancel" key="cancel" variant="link" onClick={closeModal}>Cancel</Button>
             ]}>
             <Form>
                 <FormGroup label="Event title" isRequired>

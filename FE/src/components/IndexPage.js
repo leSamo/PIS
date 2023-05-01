@@ -142,25 +142,25 @@ const IndexPage = ({ userInfo, addToastAlert }) => {
                             />
                         </FlexItem>
                         <FlexItem>
-                            <Button variant={ButtonVariant.primary} onClick={openCreateEventModal}>Create event</Button>
+                            <Button className="toolbar-create-event" variant={ButtonVariant.primary} onClick={openCreateEventModal}>Create event</Button>
                         </FlexItem>
                         <FlexItem>
-                            <Button variant="secondary" onClick={() => setDoubleLeftButtonClickCount(doubleLeftButtonClickCount + 1)}>
+                            <Button className="toolbar-navigate-double-left" variant="secondary" onClick={() => setDoubleLeftButtonClickCount(doubleLeftButtonClickCount + 1)}>
                                 <AngleDoubleLeftIcon />
                             </Button>
                         </FlexItem>
                         <FlexItem>
-                            <Button variant="secondary" onClick={() => setLeftButtonClickCount(leftButtonClickCount + 1)}>
+                            <Button className="toolbar-navigate-left" variant="secondary" onClick={() => setLeftButtonClickCount(leftButtonClickCount + 1)}>
                                 <AngleLeftIcon />
                             </Button>
                         </FlexItem>
                         <FlexItem>
-                            <Button variant="secondary" onClick={() => setRightButtonClickCount(rightButtonClickCount + 1)}>
+                            <Button className="toolbar-navigate-right" variant="secondary" onClick={() => setRightButtonClickCount(rightButtonClickCount + 1)}>
                                 <AngleRightIcon />
                             </Button>
                         </FlexItem>
                         <FlexItem>
-                            <Button variant="secondary" onClick={() => setDoubleRightButtonClickCount(doubleRightButtonClickCount + 1)}>
+                            <Button className="toolbar-navigate-double-right" variant="secondary" onClick={() => setDoubleRightButtonClickCount(doubleRightButtonClickCount + 1)}>
                                 <AngleDoubleRightIcon />
                             </Button>
                         </FlexItem>

@@ -166,12 +166,12 @@ const Week = ({ userInfo, addToastAlert, doubleLeftButtonClickCount, leftButtonC
                                     footerContent={event.creator.username === userInfo.upn &&
                                         <Stack hasGutter>
                                             <StackItem>
-                                                <Button variant="primary" style={{ width: "100%" }} onClick={() => editEvent(event)}>
+                                                <Button variant="primary" style={{ width: "100%" }} onClick={() => editEvent(event)} className="edit-event">
                                                     Edit
                                                 </Button>
                                             </StackItem>
                                             <StackItem>
-                                                <Button variant="danger" style={{ width: "100%" }} onClick={() => deleteEventAction(event.id)}>
+                                                <Button variant="danger" style={{ width: "100%" }} onClick={() => deleteEventAction(event.id)} className="delete-event">
                                                     Delete
                                                 </Button>
                                             </StackItem>

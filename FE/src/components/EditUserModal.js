@@ -50,12 +50,14 @@ const EditUserModal = ({ userInfo, isOpen, setOpen, callback, selectedUser }) =>
 
     return (
         <Modal
+            className="edit-user-modal"
             variant={ModalVariant.small}
             title={`Editing user ${selectedUser.username}`}
             isOpen={isOpen}
             onClose={closeModal}
             actions={[
                 <Button
+                    className="edit-user-modal-confirm"
                     key="confirm"
                     variant="primary"
                     onClick={onSubmit}
@@ -69,7 +71,14 @@ const EditUserModal = ({ userInfo, isOpen, setOpen, callback, selectedUser }) =>
                 >
                     Save
                 </Button>,
-                <Button key="cancel" variant="link" onClick={closeModal}>Cancel</Button>
+                <Button
+                    className="edit-user-modal-cancel"
+                    key="cancel"
+                    variant="link"
+                    onClick={closeModal}
+                >
+                    Cancel
+                </Button>
             ]}>
             <Form>
                 <FormGroup
@@ -137,6 +146,7 @@ const EditUserModal = ({ userInfo, isOpen, setOpen, callback, selectedUser }) =>
                                     onChange={value => setPasswordValue(value)}
                                 />
                                 <Button
+                                    id="edit-show-password"
                                     variant="control"
                                     onClick={() => setPasswordHidden(!isPasswordHidden)}
                                     aria-label={isPasswordHidden ? 'Show password' : 'Hide password'}

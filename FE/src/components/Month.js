@@ -146,12 +146,12 @@ const Month = ({ userInfo, addToastAlert, doubleLeftButtonClickCount, leftButton
                                                         footerContent={event.creator.username === userInfo.upn &&
                                                             <Stack hasGutter>
                                                                 <StackItem>
-                                                                    <Button variant="primary" style={{ width: "100%" }}>
+                                                                    <Button className="edit-event" variant="primary" style={{ width: "100%" }}>
                                                                         Edit
                                                                     </Button>
                                                                 </StackItem>
                                                                 <StackItem>
-                                                                    <Button variant="danger" style={{ width: "100%" }} onClick={() => deleteEventAction(event.id)}>
+                                                                    <Button className="delete-event" variant="danger" style={{ width: "100%" }} onClick={() => deleteEventAction(event.id)}>
                                                                         Delete
                                                                     </Button>
                                                                 </StackItem>

@@ -87,7 +87,7 @@ const UserManagementPage = ({ addToastAlert, userInfo }) => {
                 <Split>
                     <SplitItem>
                         <Link to="/">
-                            <Button variant={ButtonVariant.secondary}>
+                            <Button variant={ButtonVariant.secondary} className="navigate-to-index-page">
                                 <AngleLeftIcon style={{ marginRight: 8, verticalAlign: -2 }} />
                                 Go back
                             </Button>
@@ -95,7 +95,7 @@ const UserManagementPage = ({ addToastAlert, userInfo }) => {
                     </SplitItem>
                     <SplitItem isFilled />
                     <SplitItem>
-                        <Button variant={ButtonVariant.primary} onClick={() => setNewUserModalOpen(true)}>Add new user</Button>
+                        <Button variant={ButtonVariant.primary} onClick={() => setNewUserModalOpen(true)} className="create-user">Add new user</Button>
                     </SplitItem>
                 </Split>
                 <br />
@@ -116,20 +116,23 @@ const UserManagementPage = ({ addToastAlert, userInfo }) => {
                             label: 'Edit',
                             onClick: ([username, fullname, email, role, isAdmin]) => openEditUserModal({ username, fullname, email, role, isAdmin }),
                             buttonProps: {
-                                variant: ButtonVariant.primary
+                                variant: ButtonVariant.primary,
+                                className: 'table-edit-user'
                             }
                         }, {
                             label: 'Edit assigned managers',
                             onClick: ([username, fullname, email, role, isAdmin]) => openEditAssignedManagersModal({ username, fullname, email, role, isAdmin }),
                             buttonProps: {
-                                variant: ButtonVariant.secondary
+                                variant: ButtonVariant.secondary,
+                                className: 'table-edit-managers-user'
                             },
                             resolver: row => row[3] === 'Assistant'
                         }, {
                             label: 'Remove',
                             onClick: ([username]) => deleteUserAction(username),
                             buttonProps: {
-                                variant: ButtonVariant.danger
+                                variant: ButtonVariant.danger,
+                                className: 'table-delete-user'
                             },
                             resolver: ([username]) => username !== userInfo.upn
                         }]}
