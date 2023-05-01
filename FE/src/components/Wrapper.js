@@ -13,7 +13,6 @@ import jwt_decode from 'jwt-decode';
 import { useFetch } from './../helpers/Hooks';
 import { formatDateTimeRange } from '../helpers/CalendarHelper';
 
-// TODO: Handle JWT expiration
 const Wrapper = ({ children, userInfo, setUserInfo }) => {
 	const [isDropdownOpen, setDropdownOpen] = useState(false);
 	const [isLoginModalOpen, setLoginModalOpen] = useState(false);
@@ -33,7 +32,15 @@ const Wrapper = ({ children, userInfo, setUserInfo }) => {
 		if (savedInfo != null) {
 			try {
 				const parsedInfo = JSON.parse(savedInfo);
-				setUserInfo({ ...parsedInfo, loaded: true });
+
+				// check if JWT is expired
+				if (parsedInfo.exp < Date.now() / 1000) {
+					setUserInfo({ loaded: true });
+				}
+				else {
+					setUserInfo({ ...parsedInfo, loaded: true });
+				}
+				
 			}
 			catch (e) {
 				console.log("No info");
