@@ -7,6 +7,7 @@ import { ROLES } from '../helpers/Constants';
 import { capitalize } from './../helpers/Utils';
 import { useAction } from '../helpers/Hooks';
 
+// modal used to create new users from the user management page
 const NewUserModal = ({ isOpen, setOpen, successCallback, failureCallback, userInfo }) => {
 	const [emailValue, setEmailValue] = useState('');
 	const [usernameValue, setUsernameValue] = useState('');
@@ -36,17 +37,24 @@ const NewUserModal = ({ isOpen, setOpen, successCallback, failureCallback, userI
 	};
 
 	const registerUserCallback = () => {
-		registerUser(null, {
-			name: fullnameValue,
-			password: passwordValue,
-			username: usernameValue,
-			email: emailValue,
-			userRole: selectedRole.toUpperCase(),
-			admin: shouldUserBeAdmin
-		}, () => {
+		const onSuccess = () => {
 			setOpen(false);
 			successCallback();
-		}, failureCallback);
+		}
+
+		registerUser(
+			null,
+			{
+				name: fullnameValue,
+				password: passwordValue,
+				username: usernameValue,
+				email: emailValue,
+				userRole: selectedRole.toUpperCase(),
+				admin: shouldUserBeAdmin
+			},
+			onSuccess,
+			failureCallback
+		);
 	}
 
 	return (

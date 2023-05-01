@@ -13,6 +13,8 @@ import jwt_decode from 'jwt-decode';
 import { useFetch } from './../helpers/Hooks';
 import { formatDateTimeRange } from '../helpers/CalendarHelper';
 
+// component which wraps every route and renders the top navigation including login/logout functionality,
+// notifications and link to user management page
 const Wrapper = ({ children, userInfo, setUserInfo }) => {
 	const [isDropdownOpen, setDropdownOpen] = useState(false);
 	const [isLoginModalOpen, setLoginModalOpen] = useState(false);
@@ -26,6 +28,7 @@ const Wrapper = ({ children, userInfo, setUserInfo }) => {
 
 	const sendLoginRequest = useAction('POST', '/login');
 
+	// handle recovery of JWT from local storage
 	useEffect(() => {
 		const savedInfo = localStorage.getItem('login');
 
@@ -40,7 +43,7 @@ const Wrapper = ({ children, userInfo, setUserInfo }) => {
 				else {
 					setUserInfo({ ...parsedInfo, loaded: true });
 				}
-				
+
 			}
 			catch (e) {
 				console.log("No info");

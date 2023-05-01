@@ -5,11 +5,12 @@ import { getMostRecentMonday, getWeekCalendarTitle, getWeekNumber, goBackMonth, 
 import { COLORS } from './../helpers/Constants';
 import { playFadeInAnimation } from './../helpers/Utils';
 import { useAction, useFetch } from './../helpers/Hooks';
-import {  doDateRangesOverlap } from './../helpers/CalendarHelper';
+import { doDateRangesOverlap } from './../helpers/CalendarHelper';
 import EventPopover from './EventPopover';
 
 // TODO: Handle multiday events
 // TODO: Fix timezones
+// component which renders the calendar when week view is selected
 const Week = ({ userInfo, addToastAlert, doubleLeftButtonClickCount, leftButtonClickCount, rightButtonClickCount, doubleRightButtonClickCount, refreshCounter, navigateTodayCounter, editEvent }) => {
     const [splitWidth, setSplitWidth] = useState(0);
     const [currentMonday, setCurrentMonday] = useState(getMostRecentMonday(new Date()));
@@ -32,6 +33,7 @@ const Week = ({ userInfo, addToastAlert, doubleLeftButtonClickCount, leftButtonC
     }
 
     const refreshDays = () => {
+        // calculate a day number for each day in a week
         const weekDays = [];
 
         for (let i = 0; i < 7; i++) {
@@ -44,6 +46,7 @@ const Week = ({ userInfo, addToastAlert, doubleLeftButtonClickCount, leftButtonC
         refreshEvents();
     }
 
+    // make the week view responsive
     useEffect(() => {
         setSplitWidth(document.querySelector("#week-split").clientWidth);
 
@@ -56,6 +59,7 @@ const Week = ({ userInfo, addToastAlert, doubleLeftButtonClickCount, leftButtonC
         return () => window.removeEventListener("resize", handleResize);
     }, []);
 
+    // handle button click in the navigation above the calendar
     useEffect(() => {
         if (doubleLeftButtonClickCount > 0) {
             setCurrentMonday(getMostRecentMonday(goBackMonth(currentMonday)));
@@ -92,6 +96,7 @@ const Week = ({ userInfo, addToastAlert, doubleLeftButtonClickCount, leftButtonC
         playFadeInAnimation("#week-split");
     }, [currentMonday, refreshCounter])
 
+    // convert each event into divs, which will be displayed in the calendar
     const eventsToElements = events => {
         events = events.map(event => ({ ...event, start: event.start.split("[")[0], end: event.end.split("[")[0] }))
 
@@ -100,6 +105,7 @@ const Week = ({ userInfo, addToastAlert, doubleLeftButtonClickCount, leftButtonC
 
         const singleDayEvents = events.filter(event => isoLongToShort(event.start) === isoLongToShort(event.end));
 
+        // calculate layout parameters for the events
         singleDayEvents.forEach(event => {
             const index = daysApart(currentMonday, isoLongToShort(event.start));
             event.marginTop = ((new Date(event.start)).getHours() + (new Date(event.start)).getMinutes() / 60.0) * 48
@@ -149,8 +155,8 @@ const Week = ({ userInfo, addToastAlert, doubleLeftButtonClickCount, leftButtonC
                         </Fragment>
                     )
                 }
-
             </SplitItem>
+
             {WEEKDAYS.map((weekday, index) => (
                 <SplitItem key={weekday} className="weekday-split" style={{
                     flex: 1,
@@ -162,30 +168,29 @@ const Week = ({ userInfo, addToastAlert, doubleLeftButtonClickCount, leftButtonC
                         <div style={{ textAlign: "center", height: 24 }}>{weekday}</div>
                         <div style={{ textAlign: "center", height: 24 }}>{weekDays?.[index]?.getDate()}</div>
                     </b>
-                    {/* get day (index), convert start time to margin top, convert end time to height */
-                        eventsToElements(fetchedEvents)[index].map(event => (
-                            <div key={event.id} style={{ position: "relative" }}>
-                                <EventPopover userInfo={userInfo} event={event} editEvent={editEvent} deleteEventAction={deleteEventAction}>
-                                    <div
-                                        className="event"
-                                        style={{
-                                            backgroundColor: COLORS[event.color.toLowerCase()],
-                                            height: event.height,
-                                            width: document.querySelectorAll(".weekday-split")[index].offsetWidth - 2 - event.offset,
-                                            padding: 2,
-                                            marginTop: event.marginTop,
-                                            cursor: "pointer",
-                                            border: "1px solid black",
-                                            borderRadius: 4,
-                                            position: "absolute",
-                                            marginLeft: event.offset
-                                        }}
-                                    >
-                                        <b>{event.name}</b>
-                                    </div>
-                                    </EventPopover>
-                            </div>
-                        ))
+                    {eventsToElements(fetchedEvents)[index].map(event => (
+                        <div key={event.id} style={{ position: "relative" }}>
+                            <EventPopover userInfo={userInfo} event={event} editEvent={editEvent} deleteEventAction={deleteEventAction}>
+                                <div
+                                    className="event"
+                                    style={{
+                                        backgroundColor: COLORS[event.color.toLowerCase()],
+                                        height: event.height,
+                                        width: document.querySelectorAll(".weekday-split")[index].offsetWidth - 2 - event.offset,
+                                        padding: 2,
+                                        marginTop: event.marginTop,
+                                        cursor: "pointer",
+                                        border: "1px solid black",
+                                        borderRadius: 4,
+                                        position: "absolute",
+                                        marginLeft: event.offset
+                                    }}
+                                >
+                                    <b>{event.name}</b>
+                                </div>
+                            </EventPopover>
+                        </div>
+                    ))
                     }
                 </SplitItem>
             ))}
