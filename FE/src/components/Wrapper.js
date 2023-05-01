@@ -97,7 +97,7 @@ const Wrapper = ({ children, userInfo, setUserInfo }) => {
 				{userInfo.upn && userInfo.groups.includes("admin") &&
 					<SplitItem>
 						<Link to="/userManagement">
-							<Button className="navigate-to-user-management-page" variant="tertiary">
+							<Button className="navigate-to-user-management-page" variant="tertiary" onClick={() => { }}>
 								User management
 								<KeyIcon style={{ marginLeft: 4, verticalAlign: -2 }} />
 							</Button>

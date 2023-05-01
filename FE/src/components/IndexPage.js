@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { Card, CardBody, Dropdown, DropdownToggle, DropdownItem, Flex, FlexItem, Button, ButtonVariant, Select, SelectVariant, SelectOption, Toolbar, Switch } from '@patternfly/react-core';
-import NewEventModal from './NewEventModal';
+import EventModal from './EventModal';
 import Week from './Week';
 import { AngleDoubleLeftIcon, AngleDoubleRightIcon, AngleLeftIcon, AngleRightIcon } from '@patternfly/react-icons';
 import { MONTH_VIEW, WEEK_VIEW } from '../helpers/Constants';
@@ -9,7 +9,7 @@ import { isSubstring } from '../helpers/Utils';
 import { useAction } from '../helpers/Hooks';
 
 const IndexPage = ({ userInfo, addToastAlert }) => {
-    const [isNewEventModalOpen, setNewEventModalOpen] = useState(false);
+    const [isEventModalOpen, setEventModalOpen] = useState(false);
     const [allUsers, setAllUsers] = React.useState([]);
     const [isDropdownOpen, setIsDropdownOpen] = React.useState(false);
     const [isTypeaheadOpen, setTypeaheadOpen] = useState(false);
@@ -24,6 +24,7 @@ const IndexPage = ({ userInfo, addToastAlert }) => {
     const [selectedEvent, setSelectedEvent] = useState(null);
 
     const createEvent = useAction('POST', '/events', userInfo);
+    const editEvent = useAction('PATCH', '/events', userInfo);
 
     useEffect(() => {
         // TODO: Remove own self
@@ -81,27 +82,31 @@ const IndexPage = ({ userInfo, addToastAlert }) => {
         ));
     }
 
-    const createCallback = event => {
-        // TODO: patch if editing
-        createEvent(null, event, () => setRefreshCounter(refreshCounter + 1));
+    const createCallback = (event, id) => {
+        if (selectedEvent) {
+            editEvent(id, event, () => setRefreshCounter(refreshCounter + 1));
+        }
+        else {
+            createEvent(null, event, () => setRefreshCounter(refreshCounter + 1));
+        }
     };
 
-    const editEvent = event => {
-        setNewEventModalOpen(true);
+    const openEditEventModal = event => {
+        setEventModalOpen(true);
         setSelectedEvent(event);
     }
     
     const openCreateEventModal = () => {
         setSelectedEvent(null);
-        setNewEventModalOpen(true);
+        setEventModalOpen(true);
     }
 
     return (
         <Card>
-            <NewEventModal
+            <EventModal
                 userInfo={userInfo}
-                isOpen={isNewEventModalOpen}
-                setOpen={setNewEventModalOpen}
+                isOpen={isEventModalOpen}
+                setOpen={setEventModalOpen}
                 createCallback={createCallback}
                 initialEventData={selectedEvent}
             />
@@ -185,7 +190,7 @@ const IndexPage = ({ userInfo, addToastAlert }) => {
                         rightButtonClickCount={rightButtonClickCount}
                         doubleRightButtonClickCount={doubleRightButtonClickCount}
                         refreshCounter={refreshCounter}
-                        editEvent={editEvent}
+                        editEvent={openEditEventModal}
                     />
                     : <Month
                         userInfo={userInfo}
@@ -195,7 +200,7 @@ const IndexPage = ({ userInfo, addToastAlert }) => {
                         rightButtonClickCount={rightButtonClickCount}
                         doubleRightButtonClickCount={doubleRightButtonClickCount}
                         refreshCounter={refreshCounter}
-                        editEvent={editEvent}
+                        editEvent={openEditEventModal}
                     />
                 }
             </CardBody>

@@ -20,7 +20,7 @@ import { playFadeInAnimation } from './../helpers/Utils';
 import { useAction, useFetch } from './../helpers/Hooks';
 
 // TODO: Handle overflowing events
-const Month = ({ userInfo, addToastAlert, doubleLeftButtonClickCount, leftButtonClickCount, rightButtonClickCount, doubleRightButtonClickCount, refreshCounter }) => {
+const Month = ({ userInfo, addToastAlert, doubleLeftButtonClickCount, leftButtonClickCount, rightButtonClickCount, doubleRightButtonClickCount, refreshCounter, editEvent }) => {
     const [firstDayOfMonth, setFirstDayOfMonth] = useState(getFirstDayOfMonth(new Date()));
     const [fetchedEvents, areEventsLoading, refreshEvents] = useFetch('/events', userInfo, { users: userInfo.upn, start_date: (new Date(getMostRecentMonday(firstDayOfMonth))).toISOString().replace(/\.[0-9]{3}/, ''), end_date: (new Date(getFirstFollowingSunday(goForwardMonth(firstDayOfMonth)))).toISOString().replace(/\.[0-9]{3}/, '') });
 
@@ -128,6 +128,7 @@ const Month = ({ userInfo, addToastAlert, doubleLeftButtonClickCount, leftButton
                                             {
                                                 eventsToElements(fetchedEvents)[week * 7 + day].map(event => (
                                                     <Popover
+                                                        zIndex={100}
                                                         key={event.id}
                                                         headerContent={<div>{event.description}</div>}
                                                         bodyContent={
@@ -146,7 +147,7 @@ const Month = ({ userInfo, addToastAlert, doubleLeftButtonClickCount, leftButton
                                                         footerContent={event.creator.username === userInfo.upn &&
                                                             <Stack hasGutter>
                                                                 <StackItem>
-                                                                    <Button className="edit-event" variant="primary" style={{ width: "100%" }}>
+                                                                    <Button className="edit-event" variant="primary" style={{ width: "100%" }} onClick={() => editEvent(event)}>
                                                                         Edit
                                                                     </Button>
                                                                 </StackItem>
