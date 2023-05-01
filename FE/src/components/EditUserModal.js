@@ -6,21 +6,24 @@ import EyeSlashIcon from '@patternfly/react-icons/dist/esm/icons/eye-slash-icon'
 import { decapitalize } from '../helpers/Utils';
 import { ROLES } from '../helpers/Constants';
 import { capitalize } from './../helpers/Utils';
+import { useAction } from '../helpers/Hooks';
 
-const EditUserModal = ({ isOpen, setOpen, callback, selectedUser }) => {
+const EditUserModal = ({ userInfo, isOpen, setOpen, callback, selectedUser }) => {
     const [emailValue, setEmailValue] = useState('');
     const [fullnameValue, setFullnameValue] = useState('');
     const [passwordValue, setPasswordValue] = useState('');
     const [isPasswordUnchanged, setPasswordUnchanged] = useState(true);
     const [isPasswordHidden, setPasswordHidden] = useState(true);
     const [shouldUserBeAdmin, setShouldUserBeAdmin] = useState(false);
-	const [isRoleSelectOpen, setRoleSelectOpen] = useState(false);
-	const [selectedRole, setSelectedRole] = useState('manager');
+    const [isRoleSelectOpen, setRoleSelectOpen] = useState(false);
+    const [selectedRole, setSelectedRole] = useState('manager');
+
+    const submitEditedUser = useAction('PATCH', '/users', userInfo);
 
     useEffect(() => {
         if (isOpen) {
-            setFullnameValue(selectedUser.initialFullname);
-            setEmailValue(selectedUser.initialEmail);
+            setFullnameValue(selectedUser.fullname);
+            setEmailValue(selectedUser.email);
             setPasswordUnchanged(true);
             setPasswordHidden(true);
             setPasswordValue('');
@@ -34,10 +37,16 @@ const EditUserModal = ({ isOpen, setOpen, callback, selectedUser }) => {
     }
 
     const onRoleSelect = (event, selection) => {
-		setSelectedRole(selection);
-		setRoleSelectOpen(false);
-		document.getElementById('reg-role').focus();
-	};
+        setSelectedRole(selection);
+        setRoleSelectOpen(false);
+        document.getElementById('reg-role').focus();
+    };
+
+    const onSubmit = () => {
+        isPasswordUnchanged
+            ? submitEditedUser(selectedUser.username, { name: fullnameValue, email: emailValue, userRole: selectedRole.toUpperCase(), admin: shouldUserBeAdmin }, callback)
+            : submitEditedUser(selectedUser.username, { name: fullnameValue, email: emailValue, userRole: selectedRole.toUpperCase(), admin: shouldUserBeAdmin, password: passwordValue }, callback)
+    }
 
     return (
         <Modal
@@ -49,9 +58,14 @@ const EditUserModal = ({ isOpen, setOpen, callback, selectedUser }) => {
                 <Button
                     key="confirm"
                     variant="primary"
-                    onClick={callback}
-                    /* TODO */
-                    isDisabled={false}
+                    onClick={onSubmit}
+                    isDisabled={
+                        !validateEmail(emailValue) ||
+                        !validatePassword(passwordValue) ||
+                        !emailValue ||
+                        (!isPasswordUnchanged && !passwordValue) ||
+                        !fullnameValue
+                    }
                 >
                     Save
                 </Button>,
@@ -134,38 +148,38 @@ const EditUserModal = ({ isOpen, setOpen, callback, selectedUser }) => {
                     }
                 </FormGroup>
                 <FormGroup
-					label="Role"
-					isRequired
-				>
-					<Select
-						variant={SelectVariant.single}
-						placeholderText="Select role"
-						onToggle={newState => setRoleSelectOpen(newState)}
-						onSelect={onRoleSelect}
-						selections={selectedRole}
-						isOpen={isRoleSelectOpen}
-						menuAppendTo={document.body}
-						id="reg-role"
-					>
-						{ROLES.map(option => (
-							<SelectOption
-								key={option}
-								value={option}
-							>
-								{capitalize(option)}
-							</SelectOption>
-						))}
-					</Select>
-				</FormGroup>
-				<FormGroup>
-					<Checkbox
-						label="User can manage other users"
-						isChecked={shouldUserBeAdmin}
-						onChange={newValue => setShouldUserBeAdmin(newValue)}
-						id="reg-admin"
-						name="reg-admin"
-					/>
-				</FormGroup>
+                    label="Role"
+                    isRequired
+                >
+                    <Select
+                        variant={SelectVariant.single}
+                        placeholderText="Select role"
+                        onToggle={newState => setRoleSelectOpen(newState)}
+                        onSelect={onRoleSelect}
+                        selections={selectedRole}
+                        isOpen={isRoleSelectOpen}
+                        menuAppendTo={document.body}
+                        id="reg-role"
+                    >
+                        {ROLES.map(option => (
+                            <SelectOption
+                                key={option}
+                                value={option}
+                            >
+                                {capitalize(option)}
+                            </SelectOption>
+                        ))}
+                    </Select>
+                </FormGroup>
+                <FormGroup>
+                    <Checkbox
+                        label="User can manage other users"
+                        isChecked={shouldUserBeAdmin}
+                        onChange={newValue => setShouldUserBeAdmin(newValue)}
+                        id="reg-admin"
+                        name="reg-admin"
+                    />
+                </FormGroup>
             </Form>
         </Modal>
     )

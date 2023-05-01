@@ -66,23 +66,31 @@ const UserManagementPage = ({ addToastAlert, userInfo }) => {
                 }}
             />
             <EditUserModal
+                userInfo={userInfo}
                 isOpen={isEditUserModalOpen}
                 setOpen={setEditUserModalOpen}
-                callback={() => {}}
+                callback={() => {
+                    addToastAlert(AlertVariant.success, `User was successfully edited`)
+                    setEditUserModalOpen(false);
+                    refreshUsers();
+                }}
                 selectedUser={userSelectedForEdit}
             />
             <EditAssignedManagersModal
                 userInfo={userInfo}
                 isOpen={isEditAssignedManagersModalOpen}
                 setOpen={setEditAssignedManagersModalOpen}
-                callback={() => {}}
+                callback={() => { }}
                 selectedUser={userSelectedForEdit}
             />
             <CardBody>
                 <Split>
                     <SplitItem>
                         <Link to="/">
-                            <Button variant={ButtonVariant.secondary}><AngleLeftIcon style={{ marginRight: 8, verticalAlign: -2 }}/>Go back</Button>
+                            <Button variant={ButtonVariant.secondary}>
+                                <AngleLeftIcon style={{ marginRight: 8, verticalAlign: -2 }} />
+                                Go back
+                            </Button>
                         </Link>
                     </SplitItem>
                     <SplitItem isFilled />
@@ -110,14 +118,14 @@ const UserManagementPage = ({ addToastAlert, userInfo }) => {
                             buttonProps: {
                                 variant: ButtonVariant.primary
                             }
-                        },  {
+                        }, {
                             label: 'Edit assigned managers',
                             onClick: ([username, fullname, email, role, isAdmin]) => openEditAssignedManagersModal({ username, fullname, email, role, isAdmin }),
                             buttonProps: {
                                 variant: ButtonVariant.secondary
                             },
                             resolver: row => row[3] === 'Assistant'
-                        },  {
+                        }, {
                             label: 'Remove',
                             onClick: ([username]) => deleteUserAction(username),
                             buttonProps: {
