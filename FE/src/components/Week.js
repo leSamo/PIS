@@ -141,6 +141,10 @@ const Week = ({ userInfo, addToastAlert, doubleLeftButtonClickCount, leftButtonC
                         eventCopy.height = 48 * 24;
                     }
 
+                    if (eventCopy.height < 16) {
+                        eventCopy.height = 16;
+                    }
+
                     elements[index].push(eventCopy);
                 }
             });
@@ -230,7 +234,12 @@ const Week = ({ userInfo, addToastAlert, doubleLeftButtonClickCount, leftButtonC
                                         border: "1px solid black",
                                         borderRadius: 4,
                                         position: "absolute",
-                                        marginLeft: event.offset
+                                        marginLeft: event.offset,
+                                        ...event.height < 24 ? {
+                                            fontSize: 10,
+                                            padding: 0,
+                                            paddingLeft: 2
+                                        } : {}
                                     }}
                                 >
                                     <b>{event.name}</b>
