@@ -103,28 +103,47 @@ const Week = ({ userInfo, addToastAlert, doubleLeftButtonClickCount, leftButtonC
         // handle single day events
         let elements = [[], [], [], [], [], [], []];
 
-        const singleDayEvents = events.filter(event => isoLongToShort(event.start) === isoLongToShort(event.end));
-
         // calculate layout parameters for the events
-        singleDayEvents.forEach(event => {
-            const index = daysApart(currentMonday, isoLongToShort(event.start));
-            event.marginTop = ((new Date(event.start)).getHours() + (new Date(event.start)).getMinutes() / 60.0) * 48
-            event.height = ((new Date(event.end)).getHours() + (new Date(event.end)).getMinutes() / 60.0) * 48 - event.marginTop
+        events.forEach(event => {
+            const startIndex = daysApart(getMostRecentMonday(currentMonday), isoLongToShort(event.start));
+            const endIndex = daysApart(getMostRecentMonday(currentMonday), isoLongToShort(event.end));
 
-            if (index >= 0 && index <= 6) {
-                let offset = 0;
-                
-                // overlapping events are shortened so each one can be clicked
-                elements[index].forEach(element => {
-                    if (doDateRangesOverlap(event.start, event.end, element.start, element.end)) {
-                        offset += 12;
-                    }
-                })
+            // this has to be array to account for multi-day events
+            const indices = [];
 
-                event.offset = offset;
-
-                elements[index].push(event);
+            for (let i = startIndex; i <= endIndex; i++) {
+                indices.push(i);
             }
+            
+            // handle multi-day events
+            indices.forEach(index => {
+                let eventCopy = { ...event };
+
+                if (index >= 0 && index < 7) {
+                    // single-day event
+                    if (startIndex === endIndex) {
+                        eventCopy.marginTop = ((new Date(event.start)).getHours() + (new Date(event.start)).getMinutes() / 60.0) * 48
+                        eventCopy.height = ((new Date(event.end)).getHours() + (new Date(event.end)).getMinutes() / 60.0) * 48 - eventCopy.marginTop
+                    }
+                    // first day of multi-day event
+                    else if (index === startIndex) {
+                        eventCopy.marginTop = ((new Date(event.start)).getHours() + (new Date(event.start)).getMinutes() / 60.0) * 48
+                        eventCopy.height = 24 * 48 - eventCopy.marginTop
+                    }
+                    // last day of multi-day event
+                    else if (index === endIndex) {
+                        eventCopy.marginTop = 0
+                        eventCopy.height = ((new Date(event.end)).getHours() + (new Date(event.end)).getMinutes() / 60.0) * 48
+                    }
+                    // day during multi-day event
+                    else {
+                        eventCopy.marginTop = 0;
+                        eventCopy.height = 48 * 24;
+                    }
+
+                    elements[index].push(eventCopy);
+                }
+            });
         });
 
         // sort events, so the shorter will be rendered on top of longer
@@ -132,8 +151,30 @@ const Week = ({ userInfo, addToastAlert, doubleLeftButtonClickCount, leftButtonC
             element.sort((a, b) => b.height - a.height)    
         );
 
+        // calculate offsets so overlapping events can be displayed side-by-side
+        let elementsOffset = elements.map(notOffset => {
+            const alreadyOffset = [];
+
+            notOffset.forEach(element => {
+                let maxOffset = 0;
+
+                alreadyOffset.forEach(otherElement => {
+                    if (doDateRangesOverlap(element.start, element.end, otherElement.start, otherElement.end)) {
+                        if (otherElement.offset >= maxOffset) {
+                            maxOffset = otherElement.offset + splitWidth / 60;
+                        }
+                    }
+                })
+
+                alreadyOffset.push({...element, offset: maxOffset})
+            })
+
+            return alreadyOffset;
+        });
+
+
         // return array of 7 elements
-        return elements;
+        return elementsOffset;
     }
 
     return (

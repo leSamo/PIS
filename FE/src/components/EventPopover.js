@@ -15,6 +15,7 @@ const EventPopover = ({ children, userInfo, event, editEvent, deleteEventAction 
                 <div>🕒 {formatDateTimeRange(event.start, event.end, true)}</div>
                 <div>📝 {event.description}</div>
                 <div>✏️ Author: {event.creator.name} ({event.creator.email})</div>
+                <div>🌍 Place: {event.place}</div>
                 <div>🙋‍♀️ Attendees:</div>
                 {
                     event.attendees.map(attendee => (
