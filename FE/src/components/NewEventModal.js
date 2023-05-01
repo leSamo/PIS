@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Form, FormGroup, TextInput, TextArea, Modal, ModalVariant, Button, TimePicker, DatePicker, Split, SplitItem, Select, SelectVariant, SelectOption, Tile } from '@patternfly/react-core';
+import { Form, FormGroup, TextInput, TextArea, Modal, ModalVariant, Button, TimePicker, DatePicker, Split, SplitItem, Select, SelectVariant, SelectOption, Tile, Alert } from '@patternfly/react-core';
 import { COLORS } from './../helpers/Constants';
 import { capitalize, isSubstring } from './../helpers/Utils';
 import { useFetch } from './../helpers/Hooks';
@@ -88,7 +88,23 @@ const NewEventModal = ({ userInfo, isOpen, setOpen, createCallback, initialEvent
         setTimeTo('');
     }
 
-    console.log(dateFrom, timeFrom);
+    const getTimeAlertTitle = () => {
+        const from = new Date(dateFrom + "T" + timeFrom)
+        const to = new Date(dateTo + "T" + timeTo);
+
+        if (from > to) {
+            return "Event cannot start after it has ended"
+        }
+
+        let diffInMilliseconds = to.getTime() - from.getTime();
+        let diffInMinutes = diffInMilliseconds / 60000;
+
+        if (diffInMinutes < 10) {
+            return "Events have to take at least 10 minutes" 
+        }
+
+        return null;
+    }
 
     return (
         <Modal
@@ -111,7 +127,7 @@ const NewEventModal = ({ userInfo, isOpen, setOpen, createCallback, initialEvent
                         });
                         closeModal();
                     }}
-                    isDisabled={!eventTitle || !eventDescription || !validateDate(dateFrom) || !validateDate(dateTo) || !validateTime(timeFrom) || !validateTime(timeTo)}
+                    isDisabled={!eventTitle || !eventDescription || !validateDate(dateFrom) || !validateDate(dateTo) || !validateTime(timeFrom) || !validateTime(timeTo) || getTimeAlertTitle()}
                 >
                     {initialEventData ? "Edit" : "Create"}
                 </Button>,
@@ -173,6 +189,7 @@ const NewEventModal = ({ userInfo, isOpen, setOpen, createCallback, initialEvent
                         </SplitItem>
                     </Split>
                 </FormGroup>
+                {getTimeAlertTitle() && <Alert variant="danger" title={getTimeAlertTitle()} isInline/>}
                 <FormGroup label="Attendees">
                     <Select
                         chipGroupProps={{ numChips: 1, expandedText: 'Hide', collapsedText: 'Show ${remaining}' }}
