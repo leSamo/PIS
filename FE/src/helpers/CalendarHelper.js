@@ -236,7 +236,7 @@ export const doDateRangesOverlap = (start1, end1, start2, end2) => {
     let startDate2 = new Date(start2);
     let endDate2 = new Date(end2);
 
-    if (startDate1 <= endDate2 && endDate1 >= startDate2) {
+    if (startDate1 < endDate2 && endDate1 > startDate2) {
         return true;
     } else {
         return false;
