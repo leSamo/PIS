@@ -1,15 +1,13 @@
 import React, { useEffect, useState } from 'react';
 import { Form, FormGroup, TextInput, TextArea, Modal, ModalVariant, Button, TimePicker, DatePicker, Split, SplitItem, Select, SelectVariant, SelectOption, Tile, Alert } from '@patternfly/react-core';
-import { COLORS } from './../helpers/Constants';
-import { capitalize, isSubstring } from './../helpers/Utils';
-import { useFetch } from './../helpers/Hooks';
+import { COLORS } from '../helpers/Constants';
+import { capitalize, isSubstring } from '../helpers/Utils';
+import { useFetch } from '../helpers/Hooks';
 import { validateDate } from '../helpers/Validators';
-import { validateTime } from './../helpers/Validators';
+import { validateTime } from '../helpers/Validators';
 
 // TODO: Automatically select event organizer in typeahead
-// TODO: Start day must be before end day
-// TODO: Event has to last at least 10 minutes
-const NewEventModal = ({ userInfo, isOpen, setOpen, createCallback, initialEventData }) => {
+const EventModal = ({ userInfo, isOpen, setOpen, createCallback, initialEventData }) => {
     const [eventTitle, setEventTitle] = useState('');
     const [eventDescription, setEventDescription] = useState('');
     const [isTypeaheadOpen, setTypeaheadOpen] = useState(false);
@@ -108,12 +106,14 @@ const NewEventModal = ({ userInfo, isOpen, setOpen, createCallback, initialEvent
 
     return (
         <Modal
+            className="event-modal"
             variant={ModalVariant.small}
             title={initialEventData ? "Edit event" : "Create a new event"}
             isOpen={isOpen}
             onClose={closeModal}
             actions={[
                 <Button
+                    className="event-modal-confirm"
                     key="confirm"
                     variant="primary"
                     onClick={() => {
@@ -124,14 +124,14 @@ const NewEventModal = ({ userInfo, isOpen, setOpen, createCallback, initialEvent
                             attendees: selectedUsers,
                             start: (new Date(dateFrom + "T" + timeFrom)).toISOString(),
                             end: (new Date(dateTo + "T" + timeTo)).toISOString()
-                        });
+                        }, initialEventData?.id);
                         closeModal();
                     }}
                     isDisabled={!eventTitle || !eventDescription || !validateDate(dateFrom) || !validateDate(dateTo) || !validateTime(timeFrom) || !validateTime(timeTo) || getTimeAlertTitle()}
                 >
                     {initialEventData ? "Edit" : "Create"}
                 </Button>,
-                <Button key="cancel" variant="link" onClick={closeModal}>Cancel</Button>
+                <Button className="event-modal-cancel" key="cancel" variant="link" onClick={closeModal}>Cancel</Button>
             ]}>
             <Form>
                 <FormGroup label="Event title" isRequired>
@@ -232,4 +232,4 @@ const NewEventModal = ({ userInfo, isOpen, setOpen, createCallback, initialEvent
     );
 };
 
-export default NewEventModal;
+export default EventModal;

@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
-import { Card, CardBody, Dropdown, DropdownToggle, DropdownItem, Flex, FlexItem, Button, ButtonVariant, Select, SelectVariant, SelectOption, Toolbar, Switch } from '@patternfly/react-core';
-import NewEventModal from './NewEventModal';
+import { Card, CardBody, Dropdown, DropdownToggle, DropdownItem, Flex, FlexItem, Button, ButtonVariant, Select, SelectVariant, SelectOption, Toolbar, Switch, AlertVariant } from '@patternfly/react-core';
+import EventModal from './EventModal';
 import Week from './Week';
 import { AngleDoubleLeftIcon, AngleDoubleRightIcon, AngleLeftIcon, AngleRightIcon } from '@patternfly/react-icons';
 import { MONTH_VIEW, WEEK_VIEW } from '../helpers/Constants';
@@ -9,7 +9,7 @@ import { isSubstring } from '../helpers/Utils';
 import { useAction } from '../helpers/Hooks';
 
 const IndexPage = ({ userInfo, addToastAlert }) => {
-    const [isNewEventModalOpen, setNewEventModalOpen] = useState(false);
+    const [isEventModalOpen, setEventModalOpen] = useState(false);
     const [allUsers, setAllUsers] = React.useState([]);
     const [isDropdownOpen, setIsDropdownOpen] = React.useState(false);
     const [isTypeaheadOpen, setTypeaheadOpen] = useState(false);
@@ -18,12 +18,14 @@ const IndexPage = ({ userInfo, addToastAlert }) => {
     const [rightButtonClickCount, setRightButtonClickCount] = useState(0);
     const [doubleRightButtonClickCount, setDoubleRightButtonClickCount] = useState(0);
     const [refreshCounter, setRefreshCounter] = useState(0);
+    const [navigateTodayCounter, setNavigateTodayCounter] = useState(0);
     const [selectedUsers, setSelectedUsers] = useState([]);
     const [selectedView, setSelectedView] = useState(WEEK_VIEW);
     const [showMyOwnCalendar, setShowMyOwnCalendar] = useState(true);
     const [selectedEvent, setSelectedEvent] = useState(null);
 
     const createEvent = useAction('POST', '/events', userInfo);
+    const editEvent = useAction('PATCH', '/events', userInfo);
 
     useEffect(() => {
         // TODO: Remove own self
@@ -81,27 +83,37 @@ const IndexPage = ({ userInfo, addToastAlert }) => {
         ));
     }
 
-    const createCallback = event => {
-        // TODO: patch if editing
-        createEvent(null, event, () => setRefreshCounter(refreshCounter + 1));
+    const createCallback = (event, id) => {
+        if (selectedEvent) {
+            editEvent(id, event, () => {
+                setRefreshCounter(refreshCounter + 1)
+                addToastAlert(AlertVariant.success, "Event was successfully edited")
+            });
+        }
+        else {
+            createEvent(null, event, () => {
+                setRefreshCounter(refreshCounter + 1)
+                addToastAlert(AlertVariant.success, "Event was successfully created")
+            });
+        }
     };
 
-    const editEvent = event => {
-        setNewEventModalOpen(true);
+    const openEditEventModal = event => {
+        setEventModalOpen(true);
         setSelectedEvent(event);
     }
     
     const openCreateEventModal = () => {
         setSelectedEvent(null);
-        setNewEventModalOpen(true);
+        setEventModalOpen(true);
     }
 
     return (
         <Card>
-            <NewEventModal
+            <EventModal
                 userInfo={userInfo}
-                isOpen={isNewEventModalOpen}
-                setOpen={setNewEventModalOpen}
+                isOpen={isEventModalOpen}
+                setOpen={setEventModalOpen}
                 createCallback={createCallback}
                 initialEventData={selectedEvent}
             />
@@ -142,26 +154,31 @@ const IndexPage = ({ userInfo, addToastAlert }) => {
                             />
                         </FlexItem>
                         <FlexItem>
-                            <Button variant={ButtonVariant.primary} onClick={openCreateEventModal}>Create event</Button>
+                            <Button className="toolbar-create-event" variant={ButtonVariant.primary} onClick={openCreateEventModal}>Create event</Button>
                         </FlexItem>
                         <FlexItem>
-                            <Button variant="secondary" onClick={() => setDoubleLeftButtonClickCount(doubleLeftButtonClickCount + 1)}>
+                            <Button className="toolbar-navigate-double-left" variant="secondary" onClick={() => setDoubleLeftButtonClickCount(doubleLeftButtonClickCount + 1)}>
                                 <AngleDoubleLeftIcon />
                             </Button>
                         </FlexItem>
                         <FlexItem>
-                            <Button variant="secondary" onClick={() => setLeftButtonClickCount(leftButtonClickCount + 1)}>
+                            <Button className="toolbar-navigate-left" variant="secondary" onClick={() => setLeftButtonClickCount(leftButtonClickCount + 1)}>
                                 <AngleLeftIcon />
                             </Button>
                         </FlexItem>
                         <FlexItem>
-                            <Button variant="secondary" onClick={() => setRightButtonClickCount(rightButtonClickCount + 1)}>
+                            <Button className="toolbar-navigate-right" variant="secondary" onClick={() => setRightButtonClickCount(rightButtonClickCount + 1)}>
                                 <AngleRightIcon />
                             </Button>
                         </FlexItem>
                         <FlexItem>
-                            <Button variant="secondary" onClick={() => setDoubleRightButtonClickCount(doubleRightButtonClickCount + 1)}>
+                            <Button className="toolbar-navigate-double-right" variant="secondary" onClick={() => setDoubleRightButtonClickCount(doubleRightButtonClickCount + 1)}>
                                 <AngleDoubleRightIcon />
+                            </Button>
+                        </FlexItem>
+                        <FlexItem>
+                            <Button className="toolbar-navigate-today" variant="primary" onClick={() => setNavigateTodayCounter(navigateTodayCounter + 1)}>
+                                Today
                             </Button>
                         </FlexItem>
                         <FlexItem style={{ marginLeft: "auto" }}>
@@ -185,7 +202,8 @@ const IndexPage = ({ userInfo, addToastAlert }) => {
                         rightButtonClickCount={rightButtonClickCount}
                         doubleRightButtonClickCount={doubleRightButtonClickCount}
                         refreshCounter={refreshCounter}
-                        editEvent={editEvent}
+                        navigateTodayCounter={navigateTodayCounter}
+                        editEvent={openEditEventModal}
                     />
                     : <Month
                         userInfo={userInfo}
@@ -195,7 +213,8 @@ const IndexPage = ({ userInfo, addToastAlert }) => {
                         rightButtonClickCount={rightButtonClickCount}
                         doubleRightButtonClickCount={doubleRightButtonClickCount}
                         refreshCounter={refreshCounter}
-                        editEvent={editEvent}
+                        navigateTodayCounter={navigateTodayCounter}
+                        editEvent={openEditEventModal}
                     />
                 }
             </CardBody>

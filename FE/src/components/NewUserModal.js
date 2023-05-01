@@ -51,12 +51,14 @@ const NewUserModal = ({ isOpen, setOpen, successCallback, failureCallback, userI
 
 	return (
 		<Modal
+			className="new-user-modal"
 			variant={ModalVariant.small}
 			title="Add new user"
 			isOpen={isOpen}
 			onClose={closeModal}
 			actions={[
 				<Button
+					className="new-user-modal-confirm"
 					key="confirm"
 					variant="primary"
 					onClick={registerUserCallback}
@@ -72,7 +74,7 @@ const NewUserModal = ({ isOpen, setOpen, successCallback, failureCallback, userI
 				>
 					Add new user
 				</Button>,
-				<Button key="cancel" variant="link" onClick={closeModal}>Cancel</Button>
+				<Button className="new-user-modal-cancel" key="cancel" variant="link" onClick={closeModal}>Cancel</Button>
 			]}>
 			<Form>
 				<FormGroup
@@ -134,6 +136,7 @@ const NewUserModal = ({ isOpen, setOpen, successCallback, failureCallback, userI
 							onChange={value => setPasswordValue(value)}
 						/>
 						<Button
+							className="new-user-modal-show-password"
 							variant="control"
 							onClick={() => setPasswordHidden(!isPasswordHidden)}
 							aria-label={isPasswordHidden ? 'Show password' : 'Hide password'}

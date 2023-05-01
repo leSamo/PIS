@@ -19,8 +19,7 @@ import { COLORS } from './../helpers/Constants';
 import { playFadeInAnimation } from './../helpers/Utils';
 import { useAction, useFetch } from './../helpers/Hooks';
 
-// TODO: Handle overflowing events
-const Month = ({ userInfo, addToastAlert, doubleLeftButtonClickCount, leftButtonClickCount, rightButtonClickCount, doubleRightButtonClickCount, refreshCounter }) => {
+const Month = ({ userInfo, addToastAlert, doubleLeftButtonClickCount, leftButtonClickCount, rightButtonClickCount, doubleRightButtonClickCount, refreshCounter, navigateTodayCounter, editEvent }) => {
     const [firstDayOfMonth, setFirstDayOfMonth] = useState(getFirstDayOfMonth(new Date()));
     const [fetchedEvents, areEventsLoading, refreshEvents] = useFetch('/events', userInfo, { users: userInfo.upn, start_date: (new Date(getMostRecentMonday(firstDayOfMonth))).toISOString().replace(/\.[0-9]{3}/, ''), end_date: (new Date(getFirstFollowingSunday(goForwardMonth(firstDayOfMonth)))).toISOString().replace(/\.[0-9]{3}/, '') });
 
@@ -68,6 +67,12 @@ const Month = ({ userInfo, addToastAlert, doubleLeftButtonClickCount, leftButton
     }, [doubleRightButtonClickCount])
 
     useEffect(() => {
+        if (navigateTodayCounter > 0) {
+            setFirstDayOfMonth(getFirstDayOfMonth(new Date()));
+        }
+    }, [navigateTodayCounter])
+
+    useEffect(() => {
         refreshDays();
 
         playFadeInAnimation("#month-container");
@@ -94,7 +99,7 @@ const Month = ({ userInfo, addToastAlert, doubleLeftButtonClickCount, leftButton
     }
 
     return (
-        <div id="month-container" style={{ height: "calc(100vh - 170px)" }}>
+        <div id="month-container">
             <div style={{ padding: 16 }}>
                 <TextContent>
                     <Text component="h2" style={{ textAlign: "center" }}>
@@ -128,6 +133,7 @@ const Month = ({ userInfo, addToastAlert, doubleLeftButtonClickCount, leftButton
                                             {
                                                 eventsToElements(fetchedEvents)[week * 7 + day].map(event => (
                                                     <Popover
+                                                        zIndex={100}
                                                         key={event.id}
                                                         headerContent={<div>{event.description}</div>}
                                                         bodyContent={
@@ -146,12 +152,12 @@ const Month = ({ userInfo, addToastAlert, doubleLeftButtonClickCount, leftButton
                                                         footerContent={event.creator.username === userInfo.upn &&
                                                             <Stack hasGutter>
                                                                 <StackItem>
-                                                                    <Button variant="primary" style={{ width: "100%" }}>
+                                                                    <Button className="edit-event" variant="primary" style={{ width: "100%" }} onClick={() => editEvent(event)}>
                                                                         Edit
                                                                     </Button>
                                                                 </StackItem>
                                                                 <StackItem>
-                                                                    <Button variant="danger" style={{ width: "100%" }} onClick={() => deleteEventAction(event.id)}>
+                                                                    <Button className="delete-event" variant="danger" style={{ width: "100%" }} onClick={() => deleteEventAction(event.id)}>
                                                                         Delete
                                                                     </Button>
                                                                 </StackItem>
@@ -159,18 +165,21 @@ const Month = ({ userInfo, addToastAlert, doubleLeftButtonClickCount, leftButton
                                                         }
                                                         minWidth="400px"
                                                     >
-                                                        <div style={{
-                                                            width: "calc(100% - 16px)",
-                                                            backgroundColor: COLORS[event.color.toLowerCase()],
-                                                            marginLeft: 8,
-                                                            marginRight: 8,
-                                                            cursor: "pointer",
-                                                            border: "1px solid black",
-                                                            borderRadius: 4,
-                                                            textAlign: "left",
-                                                            paddingLeft: 8,
-                                                            paddingRight: 8
-                                                        }}>
+                                                        <div
+                                                            className="event"
+                                                            style={{
+                                                                width: "calc(100% - 16px)",
+                                                                backgroundColor: COLORS[event.color.toLowerCase()],
+                                                                marginLeft: 8,
+                                                                marginRight: 8,
+                                                                cursor: "pointer",
+                                                                border: "1px solid black",
+                                                                borderRadius: 4,
+                                                                textAlign: "left",
+                                                                paddingLeft: 8,
+                                                                paddingRight: 8
+                                                            }}
+                                                        >
                                                             <b>{event.name}</b>
                                                         </div>
                                                     </Popover>

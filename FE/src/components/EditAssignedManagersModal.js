@@ -47,22 +47,32 @@ const EditAssignedManagersModal = ({ userInfo, isOpen, setOpen, callback, select
 
     return (
         <Modal
+            className="edit-assigned-managers-modal"
             variant={ModalVariant.small}
             title={`Editing managers assigned to ${selectedUser.username}`}
             isOpen={isOpen}
             onClose={closeModal}
             actions={[
                 <Button
+                    className="edit-assigned-managers-modal-confirm"
                     key="confirm"
                     variant="primary"
                     onClick={onSubmit}
                 >
                     Save
                 </Button>,
-                <Button key="cancel" variant="link" onClick={closeModal}>Cancel</Button>
+                <Button
+                    className="edit-assigned-managers-modal-cancel"
+                    key="cancel"
+                    variant="link"
+                    onClick={closeModal}
+                >
+                    Cancel
+                </Button>
             ]}>
             <Form>
                 <DualListSelector
+                    className="edit-assigned-managers-modal-selector"
                     availableOptions={availableOptions}
                     availableOptionsTitle="Managers not assigned"
                     chosenOptions={chosenOptions}
