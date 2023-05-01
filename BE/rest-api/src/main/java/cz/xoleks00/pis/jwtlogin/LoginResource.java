@@ -36,10 +36,10 @@ public class LoginResource {
                     return Response.status(Status.INTERNAL_SERVER_ERROR).entity(e).type(MediaType.APPLICATION_JSON).build();
                 }
             } else {
-                return Response.status(Status.UNAUTHORIZED).entity("Invalid login").type(MediaType.APPLICATION_JSON).build();
+                return Response.status(Status.UNAUTHORIZED).entity("Invalid login credentials").type(MediaType.APPLICATION_JSON).build();
             }
         } else {
-            return Response.status(Status.UNAUTHORIZED).entity("Invalid login").type(MediaType.APPLICATION_JSON).build();
+            return Response.status(Status.UNAUTHORIZED).entity("Invalid login credentials").type(MediaType.APPLICATION_JSON).build();
         }
     }
 }

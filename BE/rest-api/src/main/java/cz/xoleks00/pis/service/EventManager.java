@@ -134,6 +134,4 @@ public class EventManager {
     public void update(Event event) {
         em.merge(event);
     }
-    // http://localhost:9080/rest-api/rest/events?start_date=2023-04-28T00:00:00Z&end_date=2023-04-30T23:59:59Z&users=michall
-    // http://localhost:9080/rest-api/rest/events?start_date=2023-04-28T00:00:00Z&end_date=2023-04-30T23:59:59Z&users=michall&users=user4
 }
