@@ -130,9 +130,6 @@ public class SeedDataLoader implements ServletContextListener {
                         if (iteratorDate.getDayOfWeek() == DayOfWeek.SATURDAY) {
                             spaDays.add(iteratorDate);
                         }
-                        if (iteratorDate.getDayOfWeek() == DayOfWeek.SUNDAY) {
-                            spaDays.add(iteratorDate);
-                        }
                     }
                     iteratorDate = iteratorDate.plusDays(1);
                 }
