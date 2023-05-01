@@ -29,7 +29,7 @@ public class JwtTokenGenerator {
     public static String generateJWTString(String jsonResource, PISUser PISUser) throws Exception {
 
         long currentTimeMillis = System.currentTimeMillis();
-        long expirationTimeMillis = currentTimeMillis + (1000 * 1000); // + 1000 seconds
+        long expirationTimeMillis = currentTimeMillis + (24 * 60 * 60 * 1000);
         
     // Set the user role based on the isAdmin field
     String role = PISUser.isAdmin() ? "admin" : "employee";
