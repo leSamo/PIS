@@ -3,14 +3,14 @@ import { Form, FormGroup, TextInput, TextArea, Modal, ModalVariant, Button, Time
 import { COLORS } from '../helpers/Constants';
 import { capitalize, isSubstring } from '../helpers/Utils';
 import { useFetch } from '../helpers/Hooks';
-import { validateDate } from '../helpers/Validators';
-import { validateTime } from '../helpers/Validators';
+import { validateDate, validateTime } from '../helpers/Validators';
+import { isoLongToShort, prettyTime } from './../helpers/CalendarHelper';
 
 // modal used for creating new events and editing existing events
-// TODO: Add place
 const EventModal = ({ userInfo, isOpen, setOpen, createCallback, initialEventData }) => {
     const [eventTitle, setEventTitle] = useState('');
     const [eventDescription, setEventDescription] = useState('');
+    const [eventPlace, setEventPlace] = useState('');
     const [isTypeaheadOpen, setTypeaheadOpen] = useState(false);
     const [selectedUsers, setSelectedUsers] = useState([]);
     const [selectedColor, setSelectedColor] = useState("blue");
@@ -28,11 +28,15 @@ const EventModal = ({ userInfo, isOpen, setOpen, createCallback, initialEventDat
             if (initialEventData) {
                 setEventTitle(initialEventData.name);
                 setEventDescription(initialEventData.description);
+                setEventPlace(initialEventData.place);
                 setSelectedUsers(initialEventData.attendees.map(attendee => attendee.username));
                 setSelectedColor(initialEventData.color.toLowerCase());
-    
-                const [startDate, startTime] = initialEventData.start.split(/[TZ]/);
-                const [endDate, endTime] = initialEventData.end.split(/[TZ]/);
+
+                const startDate = isoLongToShort(initialEventData.start);
+                const endDate = isoLongToShort(initialEventData.end);
+
+                const startTime = prettyTime(initialEventData.start);
+                const endTime = prettyTime(initialEventData.end);
     
                 setDateFrom(startDate);
                 setTimeFrom(startTime.substring(0, 5));
@@ -84,6 +88,7 @@ const EventModal = ({ userInfo, isOpen, setOpen, createCallback, initialEventDat
         setOpen(false);
         setEventTitle('');
         setEventDescription('');
+        setEventPlace('');
         clearTypeaheadSelection();
         setSelectedColor("blue");
 
@@ -128,6 +133,7 @@ const EventModal = ({ userInfo, isOpen, setOpen, createCallback, initialEventDat
                         createCallback({
                             name: eventTitle,
                             description: eventDescription,
+                            place: eventPlace,
                             color: selectedColor.toUpperCase(),
                             attendees: selectedUsers,
                             start: (new Date(dateFrom + "T" + timeFrom)).toISOString(),
@@ -159,6 +165,15 @@ const EventModal = ({ userInfo, isOpen, setOpen, createCallback, initialEventDat
                         resizeOrientation='vertical'
                         value={eventDescription}
                         onChange={value => setEventDescription(value)}
+                    />
+                </FormGroup>
+                <FormGroup label="Event place">
+                <TextInput
+                        isRequired
+                        id="event-place"
+                        name="event-place"
+                        value={eventPlace}
+                        onChange={value => setEventPlace(value)}
                     />
                 </FormGroup>
                 <FormGroup label="From" isRequired>
