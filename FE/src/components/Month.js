@@ -19,8 +19,7 @@ import { COLORS } from './../helpers/Constants';
 import { playFadeInAnimation } from './../helpers/Utils';
 import { useAction, useFetch } from './../helpers/Hooks';
 
-// TODO: Handle overflowing events
-const Month = ({ userInfo, addToastAlert, doubleLeftButtonClickCount, leftButtonClickCount, rightButtonClickCount, doubleRightButtonClickCount, refreshCounter, editEvent }) => {
+const Month = ({ userInfo, addToastAlert, doubleLeftButtonClickCount, leftButtonClickCount, rightButtonClickCount, doubleRightButtonClickCount, refreshCounter, navigateTodayCounter, editEvent }) => {
     const [firstDayOfMonth, setFirstDayOfMonth] = useState(getFirstDayOfMonth(new Date()));
     const [fetchedEvents, areEventsLoading, refreshEvents] = useFetch('/events', userInfo, { users: userInfo.upn, start_date: (new Date(getMostRecentMonday(firstDayOfMonth))).toISOString().replace(/\.[0-9]{3}/, ''), end_date: (new Date(getFirstFollowingSunday(goForwardMonth(firstDayOfMonth)))).toISOString().replace(/\.[0-9]{3}/, '') });
 
@@ -66,6 +65,12 @@ const Month = ({ userInfo, addToastAlert, doubleLeftButtonClickCount, leftButton
             setFirstDayOfMonth(goForwardYear(firstDayOfMonth));
         }
     }, [doubleRightButtonClickCount])
+
+    useEffect(() => {
+        if (navigateTodayCounter > 0) {
+            setFirstDayOfMonth(getFirstDayOfMonth(new Date()));
+        }
+    }, [navigateTodayCounter])
 
     useEffect(() => {
         refreshDays();

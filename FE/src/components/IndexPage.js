@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Card, CardBody, Dropdown, DropdownToggle, DropdownItem, Flex, FlexItem, Button, ButtonVariant, Select, SelectVariant, SelectOption, Toolbar, Switch } from '@patternfly/react-core';
+import { Card, CardBody, Dropdown, DropdownToggle, DropdownItem, Flex, FlexItem, Button, ButtonVariant, Select, SelectVariant, SelectOption, Toolbar, Switch, AlertVariant } from '@patternfly/react-core';
 import EventModal from './EventModal';
 import Week from './Week';
 import { AngleDoubleLeftIcon, AngleDoubleRightIcon, AngleLeftIcon, AngleRightIcon } from '@patternfly/react-icons';
@@ -18,6 +18,7 @@ const IndexPage = ({ userInfo, addToastAlert }) => {
     const [rightButtonClickCount, setRightButtonClickCount] = useState(0);
     const [doubleRightButtonClickCount, setDoubleRightButtonClickCount] = useState(0);
     const [refreshCounter, setRefreshCounter] = useState(0);
+    const [navigateTodayCounter, setNavigateTodayCounter] = useState(0);
     const [selectedUsers, setSelectedUsers] = useState([]);
     const [selectedView, setSelectedView] = useState(WEEK_VIEW);
     const [showMyOwnCalendar, setShowMyOwnCalendar] = useState(true);
@@ -84,10 +85,16 @@ const IndexPage = ({ userInfo, addToastAlert }) => {
 
     const createCallback = (event, id) => {
         if (selectedEvent) {
-            editEvent(id, event, () => setRefreshCounter(refreshCounter + 1));
+            editEvent(id, event, () => {
+                setRefreshCounter(refreshCounter + 1)
+                addToastAlert(AlertVariant.success, "Event was successfully edited")
+            });
         }
         else {
-            createEvent(null, event, () => setRefreshCounter(refreshCounter + 1));
+            createEvent(null, event, () => {
+                setRefreshCounter(refreshCounter + 1)
+                addToastAlert(AlertVariant.success, "Event was successfully created")
+            });
         }
     };
 
@@ -169,6 +176,11 @@ const IndexPage = ({ userInfo, addToastAlert }) => {
                                 <AngleDoubleRightIcon />
                             </Button>
                         </FlexItem>
+                        <FlexItem>
+                            <Button className="toolbar-navigate-today" variant="primary" onClick={() => setNavigateTodayCounter(navigateTodayCounter + 1)}>
+                                Today
+                            </Button>
+                        </FlexItem>
                         <FlexItem style={{ marginLeft: "auto" }}>
                             <Switch
                                 id="my-calendar-switch"
@@ -190,6 +202,7 @@ const IndexPage = ({ userInfo, addToastAlert }) => {
                         rightButtonClickCount={rightButtonClickCount}
                         doubleRightButtonClickCount={doubleRightButtonClickCount}
                         refreshCounter={refreshCounter}
+                        navigateTodayCounter={navigateTodayCounter}
                         editEvent={openEditEventModal}
                     />
                     : <Month
@@ -200,6 +213,7 @@ const IndexPage = ({ userInfo, addToastAlert }) => {
                         rightButtonClickCount={rightButtonClickCount}
                         doubleRightButtonClickCount={doubleRightButtonClickCount}
                         refreshCounter={refreshCounter}
+                        navigateTodayCounter={navigateTodayCounter}
                         editEvent={openEditEventModal}
                     />
                 }

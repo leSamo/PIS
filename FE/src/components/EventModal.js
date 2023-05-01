@@ -124,7 +124,7 @@ const EventModal = ({ userInfo, isOpen, setOpen, createCallback, initialEventDat
                             attendees: selectedUsers,
                             start: (new Date(dateFrom + "T" + timeFrom)).toISOString(),
                             end: (new Date(dateTo + "T" + timeTo)).toISOString()
-                        }, initialEventData.id);
+                        }, initialEventData?.id);
                         closeModal();
                     }}
                     isDisabled={!eventTitle || !eventDescription || !validateDate(dateFrom) || !validateDate(dateTo) || !validateTime(timeFrom) || !validateTime(timeTo) || getTimeAlertTitle()}

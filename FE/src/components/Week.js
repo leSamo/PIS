@@ -9,7 +9,7 @@ import { prettyTime } from './../helpers/CalendarHelper';
 
 // TODO: Handle overlapping events
 // TODO: Handle multiday events
-const Week = ({ userInfo, addToastAlert, doubleLeftButtonClickCount, leftButtonClickCount, rightButtonClickCount, doubleRightButtonClickCount, refreshCounter, editEvent }) => {
+const Week = ({ userInfo, addToastAlert, doubleLeftButtonClickCount, leftButtonClickCount, rightButtonClickCount, doubleRightButtonClickCount, refreshCounter, navigateTodayCounter, editEvent }) => {
     const [splitWidth, setSplitWidth] = useState(0);
     const [currentMonday, setCurrentMonday] = useState(getMostRecentMonday(new Date()));
     const [weekDays, setWeekDays] = useState([]);
@@ -78,6 +78,12 @@ const Week = ({ userInfo, addToastAlert, doubleLeftButtonClickCount, leftButtonC
             setCurrentMonday(getMostRecentMonday(goForwardMonth(currentMonday)));
         }
     }, [doubleRightButtonClickCount])
+
+    useEffect(() => {
+        if (navigateTodayCounter > 0) {
+            setCurrentMonday(getMostRecentMonday(new Date()));
+        }
+    }, [navigateTodayCounter])
 
     useEffect(() => {
         refreshDays();
