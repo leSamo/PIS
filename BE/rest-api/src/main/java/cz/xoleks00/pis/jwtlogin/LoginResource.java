@@ -1,5 +1,6 @@
 package cz.xoleks00.pis.jwtlogin;
 
+import org.eclipse.microprofile.openapi.annotations.tags.Tag;
 import org.mindrot.jbcrypt.BCrypt;
 
 import cz.xoleks00.pis.data.PISUser;
@@ -13,6 +14,7 @@ import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
 import jakarta.ws.rs.core.Response.Status;
 
+@Tag(name = "Login", description = "Login and JWT management")
 @Path("login")
 public class LoginResource {
 

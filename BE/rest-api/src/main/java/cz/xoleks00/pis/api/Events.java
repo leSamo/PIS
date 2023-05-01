@@ -7,6 +7,12 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import org.eclipse.microprofile.jwt.JsonWebToken;
+import org.eclipse.microprofile.openapi.annotations.Operation;
+import org.eclipse.microprofile.openapi.annotations.media.Content;
+import org.eclipse.microprofile.openapi.annotations.media.Schema;
+import org.eclipse.microprofile.openapi.annotations.parameters.Parameter;
+import org.eclipse.microprofile.openapi.annotations.responses.APIResponse;
+import org.eclipse.microprofile.openapi.annotations.tags.Tag;
 
 import jakarta.annotation.PostConstruct;
 import jakarta.annotation.security.RolesAllowed;
@@ -37,6 +43,7 @@ import cz.xoleks00.pis.service.NotificationManager;
 import cz.xoleks00.pis.service.UserManager;
 import jakarta.ws.rs.DELETE;
 
+@Tag(name = "Events", description = "Event management operations")
 @Path("/events")
 public class Events {
     @Inject
@@ -60,7 +67,12 @@ public class Events {
     @GET
     @Produces(MediaType.APPLICATION_JSON)
     @RolesAllowed({"admin", "employee"})
-    public Response getEvents(@QueryParam("start_date") String startDate, @QueryParam("end_date") String endDate, @QueryParam("users") List<String> users) {
+    @Operation(summary = "Get events")
+    @APIResponse(responseCode = "200", description = "List of events", content = @Content(schema = @Schema(implementation = EventDTO.class)))
+    @APIResponse(responseCode = "400", description = "Invalid request")
+    public Response getEvents(@Parameter(description = "Start date of the events") @QueryParam("start_date") String startDate,
+                              @Parameter(description = "End date of the events") @QueryParam("end_date") String endDate,
+                              @Parameter(description = "List of usernames") @QueryParam("users") List<String> users) {
         // Check if all usernames exist in the database
         if (users != null && !users.isEmpty()) {
             for (String username : users) {
@@ -104,7 +116,10 @@ public class Events {
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
     @RolesAllowed({"admin", "employee"})
-    public Response addEvent(CreateEventRequest createEventRequest) {
+    @Operation(summary = "Add an event")
+    @APIResponse(responseCode = "201", description = "Event created successfully")
+    @APIResponse(responseCode = "400", description = "Invalid request")
+    public Response addEvent(@Parameter(description = "Event creation request") CreateEventRequest createEventRequest) {
         JsonWebToken token = (JsonWebToken) securityContext.getUserPrincipal();
         String loggedInUsername = token.getClaim("sub");
         PISUser loggedInUser = userMgr.findByUsername(loggedInUsername);
@@ -164,7 +179,11 @@ public class Events {
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
     @RolesAllowed({ "admin", "employee" })
-    public Response updateEvent(@PathParam("eventId") long eventId, CreateEventRequest createEventRequest) {
+    @Operation(summary = "Update an event")
+    @APIResponse(responseCode = "200", description = "Event updated successfully", content = @Content(schema = @Schema(implementation = Event.class)))
+    @APIResponse(responseCode = "404", description = "Event not found")
+    public Response updateEvent(@Parameter(description = "Event ID") @PathParam("eventId") long eventId,
+                                @Parameter(description = "Event update request") CreateEventRequest createEventRequest) {
         Event event = evntMgr.findById(eventId);
         if (event == null) {
             return Response.status(Response.Status.NOT_FOUND).entity("Event not found for ID: " + eventId).type(MediaType.APPLICATION_JSON).build();
@@ -203,7 +222,9 @@ public class Events {
     @Path("/{userId}")
     @Produces(MediaType.APPLICATION_JSON)
     @RolesAllowed({ "admin", "employee" })
-    public List<Event> getEventsForUser(@PathParam("userId") long userId) {
+    @Operation(summary = "Get events for a user")
+    @APIResponse(responseCode = "200", description = "List of events for the user", content = @Content(schema = @Schema(implementation = Event.class)))
+    public List<Event> getEventsForUser(@Parameter(description = "User ID") @PathParam("userId") long userId) {
         return evntMgr.findEventsByUserId(userId);
     }
 
@@ -211,7 +232,11 @@ public class Events {
     @DELETE
     @Path("/{id}")
     @RolesAllowed({ "admin", "employee" })
-    public Response deleteEvent(@PathParam("id") long id) {
+    @Operation(summary = "Delete an event")
+    @APIResponse(responseCode = "204", description = "Event deleted successfully")
+    @APIResponse(responseCode = "404", description = "Event not found")
+    @APIResponse(responseCode = "401", description = "Unauthorized")
+    public Response deleteEvent(@Parameter(description = "Event ID") @PathParam("id") long id) {
         Event event = evntMgr.findById(id);
 
         JsonWebToken token = (JsonWebToken) securityContext.getUserPrincipal();

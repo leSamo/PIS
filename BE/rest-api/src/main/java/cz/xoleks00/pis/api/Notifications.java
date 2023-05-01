@@ -5,6 +5,13 @@ package cz.xoleks00.pis.api;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import org.eclipse.microprofile.openapi.annotations.Operation;
+import org.eclipse.microprofile.openapi.annotations.media.Content;
+import org.eclipse.microprofile.openapi.annotations.media.Schema;
+import org.eclipse.microprofile.openapi.annotations.parameters.Parameter;
+import org.eclipse.microprofile.openapi.annotations.responses.APIResponse;
+import org.eclipse.microprofile.openapi.annotations.tags.Tag;
+
 import cz.xoleks00.pis.data.Notification;
 import cz.xoleks00.pis.data.NotificationDTO;
 import cz.xoleks00.pis.data.PISUser;
@@ -21,6 +28,7 @@ import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
 import jakarta.ws.rs.core.Response.Status;
 
+@Tag(name = "Notifications", description = "Notification management operations")
 @Path("/notifications")
 public class Notifications {
 
@@ -35,7 +43,11 @@ public class Notifications {
     @GET
     @Path("/{username}")
     @Produces(MediaType.APPLICATION_JSON)
-    public Response getNotificationsByUsername(@PathParam("username") String username) {
+    @Operation(summary = "Get notifications by username")
+    @APIResponse(responseCode = "200", description = "List of notifications", content = @Content(schema = @Schema(implementation = NotificationDTO.class)))
+    @APIResponse(responseCode = "400", description = "User not found")
+    public Response getNotificationsByUsername(@Parameter(description = "The username of the user") @PathParam("username") String username) {
+        // ...
         PISUser user = userMgr.findByUsername(username);
         if (user == null) {
             return Response.status(Status.BAD_REQUEST)
@@ -57,7 +69,10 @@ public class Notifications {
     @PUT
     @Path("{username}/ack")
     @Produces(MediaType.APPLICATION_JSON)
-    public Response ackAllNotificationsByUsername(@PathParam("username") String username) {
+    @Operation(summary = "Acknowledge all notifications by username")
+    @APIResponse(responseCode = "200", description = "The result message")
+    @APIResponse(responseCode = "400", description = "User not found")
+    public Response ackAllNotificationsByUsername(@Parameter(description = "The username of the user") @PathParam("username") String username) {
         if (userMgr.findByUsername(username) == null) {
             return Response.status(Status.BAD_REQUEST)
                     .entity("User not found: " + username)

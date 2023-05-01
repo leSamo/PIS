@@ -9,7 +9,13 @@ import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 import org.eclipse.microprofile.jwt.JsonWebToken;
-
+import org.eclipse.microprofile.openapi.annotations.Operation;
+import org.eclipse.microprofile.openapi.annotations.enums.SchemaType;
+import org.eclipse.microprofile.openapi.annotations.media.Content;
+import org.eclipse.microprofile.openapi.annotations.media.Schema;
+import org.eclipse.microprofile.openapi.annotations.parameters.Parameter;
+import org.eclipse.microprofile.openapi.annotations.responses.APIResponse;
+import org.eclipse.microprofile.openapi.annotations.tags.Tag;
 
 import jakarta.annotation.PostConstruct;
 import jakarta.annotation.security.RolesAllowed;
@@ -43,6 +49,7 @@ import cz.xoleks00.pis.service.UserManager;
  * TEST URL:
  * http://localhost:8080/jsf-basic/rest/users/list
  */
+@Tag(name = "Users", description = "User management operations")
 @Path("/users")
 public class Users
 {
@@ -77,10 +84,13 @@ public class Users
     }
     
 
+    @Operation(summary = "Get all users or filter by a substring")
+    @APIResponse(responseCode = "200", description = "A list of users", content = @Content(mediaType = MediaType.APPLICATION_JSON, schema = @Schema(implementation = UserDTO.class, type = SchemaType.ARRAY)))
+    @APIResponse(responseCode = "401", description = "Unauthorized")
     @GET
     @RolesAllowed({ "admin", "employee" })
     @Produces(MediaType.APPLICATION_JSON)
-    public List<UserDTO> getUsers(@QueryParam("filter") String filter) {
+    public List<UserDTO> getUsers(@Parameter(description = "Username substring") @QueryParam("filter") String filter) {
         List<PISUser> users;
         if (filter != null && !filter.isEmpty()) {
             users = userMgr.findBySubstring(filter);
@@ -96,11 +106,18 @@ public class Users
     }
 
     
+    @Operation(summary = "Get a single user by their username")
+    @APIResponse(responseCode = "200", description = "The user information",
+        content = @Content(mediaType = MediaType.APPLICATION_JSON,
+            schema = @Schema(implementation = PISUser.class)))
+    @APIResponse(responseCode = "404", description = "User not found")
+    @APIResponse(responseCode = "401", description = "Unauthorized")
     @Path("/{username}")
     @GET
     @Produces(MediaType.APPLICATION_JSON)
     @RolesAllowed({ "admin", "employee" })
-    public Response getUserSingle(@PathParam("username") String username) {
+    public Response getUserSingle(@Parameter(description = "Username of the user") @PathParam("username") String username) {
+        // ...
         PISUser p = userMgr.findByUsername(username);
         if (p != null) {
             return Response.ok(p).build();
@@ -115,12 +132,18 @@ public class Users
      * @param src
      * @return
      */
+    @Operation(summary = "Updates a PISUser")
+    @APIResponse(responseCode = "200", description = "The updated user information",
+        content = @Content(mediaType = MediaType.APPLICATION_JSON,
+            schema = @Schema(implementation = PISUser.class)))
+    @APIResponse(responseCode = "404", description = "User not found")
+    @APIResponse(responseCode = "401", description = "Unauthorized")
     @Path("/{id}")
     @PUT
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
     @RolesAllowed({ "admin", "employee" })
-    public Response updateUserSingle(@PathParam("id") Long id, PISUser src) 
+    public Response updateUserSingle(@Parameter(description = "ID of the user to update") @PathParam("id") Long id, PISUser src) 
     {
     	PISUser p = userMgr.find(id);
     	if (p != null)
@@ -140,12 +163,19 @@ public class Users
      * @param src The PISUser object containing the updated fields.
      * @return A response indicating success or failure.
      */
+    @Operation(summary = "Update a PISUser")
+    @APIResponse(responseCode = "200", description = "The updated user information",
+        content = @Content(mediaType = MediaType.APPLICATION_JSON,
+            schema = @Schema(implementation = PISUser.class)))
+    @APIResponse(responseCode = "400", description = "No valid updates provided")
+    @APIResponse(responseCode = "404", description = "User not found")
+    @APIResponse(responseCode = "401", description = "Unauthorized")
     @Path("/{username}")
     @PATCH
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
     @RolesAllowed({ "admin" })
-    public Response patchUser(@PathParam("username") String username, PISUser src) {
+    public Response patchUser(@Parameter(description = "Username of the user to update") @PathParam("username") String username, PISUser src) {
         PISUser p = userMgr.findByUsername(username);
         if (p != null) {
             boolean isUpdated = false;
@@ -187,6 +217,11 @@ public class Users
      * @param PISUser The PISUser to add.
      * @return
      */
+    @Operation(summary = "Add a new PISUser")
+    @APIResponse(responseCode = "201", description = "User added successfully")
+    @APIResponse(responseCode = "400", description = "Invalid username, password, or email")
+    @APIResponse(responseCode = "409", description = "User already exists")
+    @APIResponse(responseCode = "401", description = "Unauthorized")
     @POST
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
@@ -227,11 +262,14 @@ public class Users
      * @param username
      * @return
      */
+    @Operation(summary = "Delete a PISUser by their username")
+    @APIResponse(responseCode = "204", description = "User deleted successfully")
+    @APIResponse(responseCode = "404", description = "User not found")
+    @APIResponse(responseCode = "401", description = "Unauthorized")
     @Path("/{username}")
     @DELETE
-    @Produces(MediaType.APPLICATION_JSON)
-    @RolesAllowed("admin")
-    public Response deleteUser(@PathParam("username") String username) {
+    @RolesAllowed({ "admin" })
+    public Response deleteUser(@Parameter(description = "Username of the user to delete") @PathParam("username") String username) {
         PISUser p = userMgr.findByUsername(username);
     
         // Get the logged-in user's ID
@@ -273,11 +311,15 @@ public class Users
      * @param username Username of the user whose managed users to retrieve.
      * @return A list of users managed by the given user.
      */
+    @Operation(summary = "Get all users managed by a given user")
+    @APIResponse(responseCode = "200", description = "A list of managed users", content = @Content(mediaType = MediaType.APPLICATION_JSON, schema = @Schema(implementation = UserDTO.class, type = SchemaType.ARRAY)))
+    @APIResponse(responseCode = "404", description = "User not found")
+    @APIResponse(responseCode = "401", description = "Unauthorized")
     @GET
     @Path("/{username}/managed_users")
     @Produces(MediaType.APPLICATION_JSON)
     @RolesAllowed({"admin", "employee"})
-    public Response getManagedUsers(@PathParam("username") String username) {
+    public Response getManagedUsers(@Parameter(description = "Username of the user whose managed users to retrieve") @PathParam("username") String username) {
         PISUser user = userMgr.findByUsername(username);
         if (user == null) {
             return Response.status(Status.NOT_FOUND).entity("User not found").type(MediaType.APPLICATION_JSON).build();
@@ -306,12 +348,17 @@ public class Users
      * @param managedUsernames Array of usernames of the users to be managed.
      * @return A response indicating success or failure.
      */
+    @Operation(summary = "Add multiple managed users to a user")
+    @APIResponse(responseCode = "200", description = "Managed users added successfully")
+    @APIResponse(responseCode = "400", description = "Managed user not found")
+    @APIResponse(responseCode = "404", description = "User not found")
+    @APIResponse(responseCode = "401", description = "Unauthorized")
     @POST
     @Path("/{username}/managed_users")
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
     @RolesAllowed({"admin"})
-    public Response addManagedUsers(@PathParam("username") String username, AddManagedUsersRequest requestBody) {
+    public Response addManagedUsers(@Parameter(description = "Username of the user to add managed users to") @PathParam("username") String username, AddManagedUsersRequest requestBody) {
         PISUser user = userMgr.findByUsername(username);
         if (user == null) {
             return Response.status(Status.NOT_FOUND).entity("User not found").type(MediaType.APPLICATION_JSON).build();
