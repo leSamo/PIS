@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useId, useState } from 'react';
 import { Form, FormGroup, TextInput, TextArea, Modal, ModalVariant, Button, TimePicker, DatePicker, Split, SplitItem, Select, SelectVariant, SelectOption, Tile, Alert } from '@patternfly/react-core';
 import { COLORS } from '../helpers/Constants';
 import { capitalize, isSubstring } from '../helpers/Utils';
@@ -6,7 +6,6 @@ import { useFetch } from '../helpers/Hooks';
 import { validateDate } from '../helpers/Validators';
 import { validateTime } from '../helpers/Validators';
 
-// TODO: Automatically select event organizer in typeahead
 const EventModal = ({ userInfo, isOpen, setOpen, createCallback, initialEventData }) => {
     const [eventTitle, setEventTitle] = useState('');
     const [eventDescription, setEventDescription] = useState('');
@@ -22,20 +21,24 @@ const EventModal = ({ userInfo, isOpen, setOpen, createCallback, initialEventDat
     const [allUsers, areUsersLoading, refreshUsers] = useFetch('/users', userInfo);
 
     useEffect(() => {
-        if (isOpen && initialEventData) {
-            console.log("hhh", initialEventData);
-            setEventTitle(initialEventData.name);
-            setEventDescription(initialEventData.description);
-            setSelectedUsers(initialEventData.attendees.map(attendee => attendee.username));
-            setSelectedColor(initialEventData.color.toLowerCase());
-
-            const [startDate, startTime] = initialEventData.start.split(/[TZ]/);
-            const [endDate, endTime] = initialEventData.end.split(/[TZ]/);
-
-            setDateFrom(startDate);
-            setTimeFrom(startTime.substring(0, 5));
-            setDateTo(endDate);
-            setTimeTo(endTime.substring(0, 5));
+        if (isOpen) {
+            if (initialEventData) {
+                setEventTitle(initialEventData.name);
+                setEventDescription(initialEventData.description);
+                setSelectedUsers(initialEventData.attendees.map(attendee => attendee.username));
+                setSelectedColor(initialEventData.color.toLowerCase());
+    
+                const [startDate, startTime] = initialEventData.start.split(/[TZ]/);
+                const [endDate, endTime] = initialEventData.end.split(/[TZ]/);
+    
+                setDateFrom(startDate);
+                setTimeFrom(startTime.substring(0, 5));
+                setDateTo(endDate);
+                setTimeTo(endTime.substring(0, 5));
+            }
+            else {
+                setSelectedUsers([userInfo.upn]);
+            }
         }
     }, [isOpen]);
 
