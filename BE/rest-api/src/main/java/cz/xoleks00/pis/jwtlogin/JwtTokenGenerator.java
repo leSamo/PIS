@@ -23,6 +23,7 @@ import cz.xoleks00.pis.data.PISUser;
 /**
  * Partially based on the original implementation at
  * https://github.com/javaee-samples/microprofile1.4-samples 
+ * JWT token Generator.
  */
 public class JwtTokenGenerator {
 

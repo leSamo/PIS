@@ -14,6 +14,9 @@ import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
 import jakarta.ws.rs.core.Response.Status;
 
+/**
+ * Login endpoint.
+ */
 @Tag(name = "Login", description = "Login and JWT management")
 @Path("login")
 public class LoginResource {
@@ -21,6 +24,11 @@ public class LoginResource {
     @Inject
     private UserManager userManager;
 
+    /**
+     * Login endpoint.
+     * @param credentials
+     * @return JWT token for logged user.
+     */
     @POST
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)

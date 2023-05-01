@@ -24,6 +24,9 @@ import java.util.Date;
 import java.util.List;
 
 
+/**
+ * Data seeding on initial startup.
+ */
 @WebListener
 public class SeedDataLoader implements ServletContextListener {
 

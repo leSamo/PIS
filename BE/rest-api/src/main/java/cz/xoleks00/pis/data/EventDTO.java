@@ -3,6 +3,9 @@ package cz.xoleks00.pis.data;
 import java.util.Date;
 import java.util.List;
 
+/**
+ * Event DTO.
+ */
 public class EventDTO {
     private long id;
     private String name;

@@ -3,10 +3,7 @@
  */
 package cz.xoleks00.pis.jwtlogin;
 
-/**
- * @author burgetr
- *
- */
+
 public class Credentials
 {
     public String login;

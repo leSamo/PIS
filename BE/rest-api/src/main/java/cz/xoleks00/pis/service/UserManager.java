@@ -19,8 +19,7 @@ import cz.xoleks00.pis.data.PISUser;
 
 
 /**
- * PISUser manager EJB
- * @author burgetr
+ * User manager class.
  */
 @RequestScoped
 public class UserManager 
@@ -32,19 +31,32 @@ public class UserManager
     {
     }
     
+    /**
+     * Save User.
+     * @param p
+     * @return Saved user.
+     */
     @Transactional
     public PISUser save(PISUser p)
     {
     	return em.merge(p);
     }
 	
+    /**
+     * Remove user.
+     * @param p
+     */
     @Transactional
     public void remove(PISUser p)
     {
     	em.remove(em.merge(p));
     }
     
-    
+    /**
+     * Find user by username.
+     * @param username
+     * @return User.
+     */
     public PISUser findByUsername(String username) {
         try {
             TypedQuery<PISUser> query = em.createQuery("SELECT p FROM PISUser p WHERE p.username = :username", PISUser.class);
@@ -55,6 +67,11 @@ public class UserManager
         }
     }
 
+    /**
+     * Find user by email.
+     * @param email
+     * @return User.
+     */
     public PISUser findByEmail(String email) {
         try {
             TypedQuery<PISUser> query = em.createQuery("SELECT p FROM PISUser p WHERE p.email = :email", PISUser.class);
@@ -65,6 +82,11 @@ public class UserManager
         }
     }
 
+    /**
+     * Find user by Substring.
+     * @param filter
+     * @return User.
+     */
     public List<PISUser> findBySubstring(String filter) {
         CriteriaBuilder cb = em.getCriteriaBuilder();
         CriteriaQuery<PISUser> cq = cb.createQuery(PISUser.class);
@@ -80,15 +102,20 @@ public class UserManager
         return query.getResultList();
     }
     
-    public PISUser find(long id)
-    {
-    	return em.find(PISUser.class, id);
-    }
 
+    /**
+     * 
+     * @param id
+     * @return
+     */
     public PISUser findById(long id) {
-    return em.find(PISUser.class, id);
+        return em.find(PISUser.class, id);
     }
     
+    /**
+     * Find all users.
+     * @return List of users.
+     */
     public List<PISUser> findAll()
     {
     	return em.createNamedQuery("PISUser.findAll", PISUser.class).getResultList();

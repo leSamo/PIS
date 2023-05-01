@@ -44,6 +44,9 @@ import cz.xoleks00.pis.service.NotificationManager;
 import cz.xoleks00.pis.service.UserManager;
 import jakarta.ws.rs.DELETE;
 
+/**
+ * Events endpoints.
+ */
 @Tag(name = "Events", description = "Event management operations")
 @Path("/events")
 public class Events {
@@ -65,6 +68,14 @@ public class Events {
     public void init() {
     }
 
+    /**
+     * Get events.
+     * @param sc
+     * @param startDate
+     * @param endDate
+     * @param users
+     * @return List of events.
+     */
     @GET
     @Produces(MediaType.APPLICATION_JSON)
     @RolesAllowed({"admin", "employee"})
@@ -151,6 +162,11 @@ public class Events {
     }
     
 
+    /**
+     * Add an event
+     * @param createEventRequest
+     * @return Nothing on success.
+     */
     @POST
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
@@ -215,6 +231,12 @@ public class Events {
         return Response.created(uri).build();
     }
 
+    /**
+     * Update an event.
+     * @param eventId
+     * @param createEventRequest
+     * @return Nothing on success.
+     */
     @PATCH
     @Path("/{eventId}")
     @Consumes(MediaType.APPLICATION_JSON)
@@ -259,6 +281,11 @@ public class Events {
         return Response.ok().entity(updatedEvent).build();
     }
     
+    /**
+     * Get events for a user.
+     * @param userId
+     * @return List of events.
+     */
     @GET
     @Path("/{userId}")
     @Produces(MediaType.APPLICATION_JSON)
@@ -270,6 +297,11 @@ public class Events {
     }
 
 
+    /**
+     * Delete an event.
+     * @param id
+     * @return Nothing on success.
+     */
     @DELETE
     @Path("/{id}")
     @RolesAllowed({ "admin", "employee" })

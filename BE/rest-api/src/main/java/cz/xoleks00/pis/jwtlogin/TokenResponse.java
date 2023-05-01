@@ -1,12 +1,7 @@
-/**
- * 
- */
 package cz.xoleks00.pis.jwtlogin;
 
 /**
- * A token resonse to be returned via JAX-RS.
- * 
- * @author burgetr
+ * Token response class.
  */
 public class TokenResponse
 {

@@ -3,6 +3,9 @@ package cz.xoleks00.pis.data;
 import java.util.Date;
 import java.util.List;
 
+/**
+ * Create event request class.
+ */
 public class CreateEventRequest {
     private Date start;
     private Date end;

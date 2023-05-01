@@ -26,7 +26,9 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 
 
-
+/**
+ * User class. 
+ */
 @Entity
 @Table(name = "PISUser")
 @NamedQueries({

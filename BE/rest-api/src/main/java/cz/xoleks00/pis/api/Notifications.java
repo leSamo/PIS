@@ -28,6 +28,9 @@ import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
 import jakarta.ws.rs.core.Response.Status;
 
+/**
+ * Notifications endpoints.
+ */
 @Tag(name = "Notifications", description = "Notification management operations")
 @Path("/notifications")
 public class Notifications {
@@ -39,7 +42,11 @@ public class Notifications {
     private UserManager userMgr;
 
 
-
+    /**
+     * Get notifications by username.
+     * @param username
+     * @return List of notifications.
+     */
     @GET
     @Path("/{username}")
     @Produces(MediaType.APPLICATION_JSON)
@@ -66,6 +73,11 @@ public class Notifications {
         return Response.ok(notificationDTOs).build();
     }
 
+    /**
+     * Acknowledge all notifications by username.
+     * @param username
+     * @return The result message.
+     */
     @PUT
     @Path("{username}/ack")
     @Produces(MediaType.APPLICATION_JSON)

@@ -9,12 +9,20 @@ import jakarta.persistence.PersistenceContext;
 import jakarta.persistence.TypedQuery;
 import jakarta.transaction.Transactional;
 
+/**
+ * Notification manager class.
+ */
 @RequestScoped
 public class NotificationManager {
 
     @PersistenceContext
     private EntityManager em;
 
+    /**
+     * Save notification.
+     * @param notification
+     * @return Notification.
+     */
     @Transactional
     public Notification save(Notification notification) {
         if (notification.getId() == null) {
@@ -27,6 +35,11 @@ public class NotificationManager {
         }
     }
 
+    /**
+     * Find notification by username.
+     * @param username
+     * @return List of notifications.
+     */
     @Transactional
     public List<Notification> findByUsername(String username) {
         TypedQuery<Notification> query = em.createQuery(
@@ -35,6 +48,11 @@ public class NotificationManager {
         return query.getResultList();
     }
 
+    /**
+     * Ack notifications by username.
+     * @param username
+     * @return List of notifications.
+     */
     @Transactional
     public int ackAllByUsername(String username) {
         TypedQuery<Notification> query = em.createQuery(
@@ -43,6 +61,10 @@ public class NotificationManager {
         return query.executeUpdate();
     }
 
+    /**
+     * Remove notification.
+     * @param notification
+     */
     @Transactional
     public void remove(Notification notification) {
         Notification managedNotification = em.find(Notification.class, notification.getId());
@@ -51,6 +73,11 @@ public class NotificationManager {
         }
     }
 
+    /**
+     * Find notification by event id. 
+     * @param eventId
+     * @return List of notifications.
+     */
     @Transactional
     public List<Notification> findByEventId(long eventId) {
         TypedQuery<Notification> query = em.createQuery(

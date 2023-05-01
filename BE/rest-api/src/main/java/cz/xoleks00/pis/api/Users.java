@@ -47,9 +47,8 @@ import cz.xoleks00.pis.service.NotificationManager;
 import cz.xoleks00.pis.service.UserManager;
 
 
-/*
- * TEST URL:
- * http://localhost:8080/jsf-basic/rest/users/list
+/**
+ * Users endpoint.
  */
 @Tag(name = "Users", description = "User management operations")
 @Path("/users")
@@ -88,7 +87,11 @@ public class Users
     {
     }
     
-
+    /**
+     * Get all users or filter by a substring.
+     * @param filter
+     * @return List of users.
+     */
     @Operation(summary = "Get all users or filter by a substring")
     @APIResponse(responseCode = "200", description = "A list of users", content = @Content(mediaType = MediaType.APPLICATION_JSON, schema = @Schema(implementation = UserDTO.class, type = SchemaType.ARRAY)))
     @APIResponse(responseCode = "401", description = "Unauthorized")
@@ -109,8 +112,12 @@ public class Users
     
         return userDTOs;
     }
-
     
+    /**
+     * Get a single user by their username.
+     * @param username
+     * @return User.
+     */
     @Operation(summary = "Get a single user by their username")
     @APIResponse(responseCode = "200", description = "The user information",
         content = @Content(mediaType = MediaType.APPLICATION_JSON,
@@ -122,7 +129,6 @@ public class Users
     @Produces(MediaType.APPLICATION_JSON)
     @RolesAllowed({ "admin", "employee" })
     public Response getUserSingle(@Parameter(description = "Username of the user") @PathParam("username") String username) {
-        // ...
         PISUser p = userMgr.findByUsername(username);
         if (p != null) {
             return Response.ok(p).build();
@@ -135,7 +141,7 @@ public class Users
      * Updates a PISUser.
      * @param id
      * @param src
-     * @return
+     * @return Nothing on success.
      */
     @Operation(summary = "Updates a PISUser")
     @APIResponse(responseCode = "200", description = "The updated user information",
@@ -150,7 +156,7 @@ public class Users
     @RolesAllowed({ "admin", "employee" })
     public Response updateUserSingle(@Parameter(description = "ID of the user to update") @PathParam("id") Long id, PISUser src) 
     {
-    	PISUser p = userMgr.find(id);
+    	PISUser p = userMgr.findById(id);
     	if (p != null)
     	{
     		p.setName(src.getName());
@@ -218,9 +224,9 @@ public class Users
     }
 
     /**
-     * Adds a new PISUser.
+     * Adds a new User.
      * @param PISUser The PISUser to add.
-     * @return
+     * @return Nothing on success.
      */
     @Operation(summary = "Add a new PISUser")
     @APIResponse(responseCode = "201", description = "User added successfully")
@@ -265,7 +271,7 @@ public class Users
     /**
      * Deletes a PISUser.
      * @param username
-     * @return
+     * @return Nothing on success.
      */
     @Operation(summary = "Delete a PISUser by their username")
     @APIResponse(responseCode = "204", description = "User deleted successfully")
@@ -352,8 +358,7 @@ public class Users
 
 
     /**
-     * Add multiple managed users to a user.
-     *
+     * Add multiple managed users to a user.    
      * @param username         Username of the user to add managed users to.
      * @param managedUsernames Array of usernames of the users to be managed.
      * @return A response indicating success or failure.
@@ -389,9 +394,4 @@ public class Users
 
         return Response.ok().build();
     }
-
-    //{
-    //"usernames": ["user1", "user2", "user3"]
-    //}
-
 }
