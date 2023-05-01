@@ -83,16 +83,28 @@ const Month = ({ userInfo, addToastAlert, doubleLeftButtonClickCount, leftButton
     // convert each event into divs, which will be displayed in the calendar
     const eventsToElements = events => {
         events = events.map(event => ({ ...event, start: event.start.split("[")[0], end: event.end.split("[")[0] }))
-        // handle single day events
+        
+        // array where one element represents one day
         const elements = [...Array(getWeekCountInMonth(firstDayOfMonth) * 7).keys()].map(() => []);
 
-        const singleDayEvents = events.filter(event => isoLongToShort(event.start) === isoLongToShort(event.end));
+        events.forEach(event => {
+            // get the index of start and end dates of an event
+            // if the event is single-day it only occupies one slot
+            const startIndex = daysApart(getMostRecentMonday(firstDayOfMonth), isoLongToShort(event.start));
+            const endIndex = daysApart(getMostRecentMonday(firstDayOfMonth), isoLongToShort(event.end));
 
-        singleDayEvents.forEach(event => {
-            const index = daysApart(getMostRecentMonday(firstDayOfMonth), isoLongToShort(event.start));
+            // this has to be array to account for multi-day events
+            const indices = [];
 
-            if (index >= 0 && index < getWeekCountInMonth(firstDayOfMonth) * 7)
-                elements[index].push(event);
+            for (let i = startIndex; i <= endIndex; i++) {
+                indices.push(i);
+            }
+
+            indices.forEach(index => {
+                if (index >= 0 && index < getWeekCountInMonth(firstDayOfMonth) * 7) {
+                    elements[index].push(event);
+                }
+            });
         });
 
         // return array of 7 elements

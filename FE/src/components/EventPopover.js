@@ -1,6 +1,6 @@
 import { Popover, Stack, StackItem, Button } from '@patternfly/react-core';
 import React, { Fragment } from 'react';
-import { prettyTime } from './../helpers/CalendarHelper';
+import { formatDateTimeRange } from './../helpers/CalendarHelper';
 
 // shown after clicking an event in month or week view
 // containing information about the event
@@ -12,7 +12,7 @@ const EventPopover = ({ children, userInfo, event, editEvent, deleteEventAction 
         headerContent={<div>{event.name}</div>}
         bodyContent={
             <Fragment>
-                <div>🕒 {prettyTime(event.start)} – {prettyTime(event.end)}</div>
+                <div>🕒 {formatDateTimeRange(event.start, event.end, true)}</div>
                 <div>📝 {event.description}</div>
                 <div>✏️ Author: {event.creator.name} ({event.creator.email})</div>
                 <div>🙋‍♀️ Attendees:</div>
