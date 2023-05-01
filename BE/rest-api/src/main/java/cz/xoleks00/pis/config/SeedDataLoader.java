@@ -13,6 +13,12 @@ import jakarta.transaction.UserTransaction;
 
 import jakarta.annotation.Resource;
 
+import java.time.DayOfWeek;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
+import java.time.temporal.TemporalAdjusters;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Date;
@@ -47,144 +53,136 @@ public class SeedDataLoader implements ServletContextListener {
             List<PISUser> users = em.createQuery("SELECT p FROM PISUser p", PISUser.class).getResultList();
             if (users.isEmpty()) {
                 // Seeding users
-                PISUser user1 = new PISUser();
-                user1.setName("John Doe");                
-                user1.setUsername("johnko");
-                user1.setEmail("john.doe@example.com");
-                user1.setPassword("pswd");
-                user1.setUserCreated(new Date());
-                user1.setAdmin(true);
-                user1.setUserRole(UserRole.DIRECTOR);
-                em.persist(user1);
-
-                PISUser user2 = new PISUser();
-                user2.setName("Samo Jarovic");                
-                user2.setUsername("samoo");
-                user2.setEmail("samo.samovic@example.com");
-                user2.setPassword("pswd");
-                user2.setUserCreated(new Date());
-                user2.setUserRole(UserRole.ASSISTANT);
-                user2.setManagedUsers(Arrays.asList("user2", "user3"));
-                user2.setAdmin(false);
-                em.persist(user2);
-
-                PISUser user3 = new PISUser();
-                user3.setName("Michal Michalovic");                
-                user3.setUsername("michall");
-                user3.setEmail("michal.michalovic@example.com");
-                user3.setPassword("pswd");
-                user3.setUserCreated(new Date());
-                user3.setUserRole(UserRole.MANAGER);
-                user3.setAdmin(false);
-                em.persist(user3);
+                String[] names = {"Director Miro", "Manager Ondro", "Manager Juro", "Manager Samo", "Manager Michal",
+                                  "Assistant Jozefina", "Assistant Nadezda", "Assistant Julia", "Assistant Petronela", "Assistant Rozalia"};
 
                 PISUser[] people = new PISUser[10];
                 for (int i = 0; i < 10; i++) {
                     PISUser PISUser = new PISUser();
-                    PISUser.setName("Name" + (i + 1) + " Surname");                    
-                    PISUser.setUsername("user" + (i + 1));
+                    PISUser.setName(names[i]);
                     PISUser.setEmail("email" + (i + 1) + "@example.com");
                     PISUser.setPassword("pswd" + (i + 1));
                     PISUser.setUserCreated(new Date());
                     PISUser.setAdmin(false);
-                    PISUser.setUserRole(UserRole.MANAGER);
+                    
+                    if (i == 0) {
+                        PISUser.setUserRole(UserRole.DIRECTOR);
+                        PISUser.setUsername("director");
+                    } else if (i >= 1 && i <= 4) {
+                        PISUser.setUserRole(UserRole.MANAGER);
+                        PISUser.setUsername("manager" + i);
+                    } else {
+                        PISUser.setUserRole(UserRole.ASSISTANT);
+                        PISUser.setUsername("assistant" + (i - 4));
+                    }
+
                     em.persist(PISUser);
                     people[i] = PISUser;
                 }
 
-                // Seeding events
-                Calendar calendar1 = Calendar.getInstance();
-
-
-                Event event1 = new Event();
-                event1.setCreator(user1);
-                event1.setDescription("Event 1");
-                event1.setName("name1");
-                calendar1.setTime(new Date());
-                event1.setStart(calendar1.getTime());
-                calendar1.add(Calendar.HOUR_OF_DAY, 1);
-                event1.setEnd(calendar1.getTime());
-                event1.setAttendees(Arrays.asList(user2, user3));
-                event1.setColor(EventColor.BLUE);
-                em.persist(event1);
-
-                Event event2 = new Event();
-                event2.setCreator(user2);
-                event2.setDescription("Event 2");
-                event2.setName("name2");
-                calendar1.setTime(new Date());
-                event2.setStart(calendar1.getTime());
-                calendar1.add(Calendar.HOUR_OF_DAY, 1);
-                event2.setEnd(calendar1.getTime());
-                event2.setAttendees(Arrays.asList(user1, user3));
-                event2.setColor(EventColor.GREEN);
-                em.persist(event2);
-
-                Event event3 = new Event();
-                event3.setCreator(user2);
-                event3.setDescription("Event 3");
-                event3.setName("name3");
-                calendar1.setTime(new Date());
-                event3.setStart(calendar1.getTime());
-                calendar1.add(Calendar.HOUR_OF_DAY, 1);
-                event3.setEnd(calendar1.getTime());
-                event3.setAttendees(Arrays.asList(user1, user3));
-                event3.setColor(EventColor.YELLOW);
-                em.persist(event3);
-
-                Event event4 = new Event();
-                event4.setCreator(user2);
-                event4.setDescription("Event 4");
-                event4.setName("name4");
-                calendar1.setTime(new Date());
-                event4.setStart(calendar1.getTime());
-                calendar1.add(Calendar.HOUR_OF_DAY, 1);
-                event4.setEnd(calendar1.getTime());
-                event4.setAttendees(Arrays.asList(user1, user3));
-                event4.setColor(EventColor.RED);
-                em.persist(event4);
-
-                
-
-                // Associate events with users
-                user1.getEvents().add(event1);
-                user2.getEvents().add(event2);
-                user2.getEvents().add(event3);
-                user2.getEvents().add(event4);
-
-                Calendar calendar = Calendar.getInstance();
-                calendar.set(Calendar.DAY_OF_WEEK, Calendar.MONDAY);
-
-                for (int i = 0; i < 5; i++) {
-                    Event event = new Event();
-                    event.setCreator(people[i]);
-                    event.setDescription("Event " + (i + 1));
-                    event.setStart(calendar.getTime());
-                    event.setName("name" + i);
-                    calendar.add(Calendar.HOUR_OF_DAY, 2);
-                    event.setEnd(calendar.getTime());
-                    event.setAttendees(Arrays.asList(people[i], people[i + 1], people[i + 2]));
-                    event.setColor(EventColor.BLUE);
-                    em.persist(event);
-
-                    // Add event to attendees
-                    for (int j = 0; j < 3; j++) {
-                        people[i + j].getEvents().add(event);
-                    }
-
-                    // Move to the next day
-                    calendar.add(Calendar.DAY_OF_WEEK, 1);
+                // Assign secretaries to managers and director
+                people[5].setManagedUsers(Arrays.asList(people[0].getUsername()));
+                for (int i = 1; i <= 4; i++) {
+                    people[i + 5].setManagedUsers(Arrays.asList(people[i].getUsername()));
                 }
+
+
+                // Generate events for a whole month
+                LocalDate currentDate = LocalDate.now();
+                LocalDate firstDayOfMonth = currentDate.withDayOfMonth(1);
+                LocalDate lastDayOfMonth = firstDayOfMonth.with(TemporalAdjusters.lastDayOfMonth());
+
+                List<LocalDate> managerStandupDays = new ArrayList<>();
+                List<LocalDate> assistantStandupDays = new ArrayList<>();
+                List<LocalDate> companyMeetingDays = new ArrayList<>();
+                List<LocalDate> sprintPlanningDays = new ArrayList<>();
+                List<LocalDate> oneOnOneDays = new ArrayList<>();
+
+                LocalDate iteratorDate = firstDayOfMonth;
+                while (!iteratorDate.isAfter(lastDayOfMonth)) {
+                    if (iteratorDate.getDayOfWeek() != DayOfWeek.SATURDAY && iteratorDate.getDayOfWeek() != DayOfWeek.SUNDAY) {
+                        managerStandupDays.add(iteratorDate);
+                        assistantStandupDays.add(iteratorDate);
+
+                        if (iteratorDate.getDayOfWeek() == DayOfWeek.FRIDAY) {
+                            companyMeetingDays.add(iteratorDate);
+                        }
+
+                        if (iteratorDate.getDayOfWeek() == DayOfWeek.MONDAY && iteratorDate.getDayOfMonth() % 14 == 1) {
+                            sprintPlanningDays.add(iteratorDate);
+                        }
+
+                        if (iteratorDate.getDayOfWeek() != DayOfWeek.FRIDAY) {
+                            oneOnOneDays.add(iteratorDate);
+                        }
+                    }
+                    iteratorDate = iteratorDate.plusDays(1);
+                }
+
+
+                // Create manager standup events
+                for (LocalDate day : managerStandupDays) {
+                    LocalDateTime startTime = LocalDateTime.of(day, LocalTime.of(10, 0));
+                    LocalDateTime endTime = LocalDateTime.of(day, LocalTime.of(10, 30));
+                    createEvent("Manager Standup", startTime, endTime, people[0], Arrays.asList(people[1], people[2], people[3], people[4]), EventColor.BLUE);
+                }
+
+                // Create assistant standup events
+                for (LocalDate day : assistantStandupDays) {
+                    LocalDateTime startTime = LocalDateTime.of(day, LocalTime.of(10, 30));
+                    LocalDateTime endTime = LocalDateTime.of(day, LocalTime.of(11, 0));
+                    createEvent("Assistant Standup", startTime, endTime, people[5], Arrays.asList(people[6], people[7], people[8], people[9]), EventColor.GREEN);
+                }
+
+                // Create company meeting events
+                for (LocalDate day : companyMeetingDays) {
+                    LocalDateTime startTime = LocalDateTime.of(day, LocalTime.of(14, 0));
+                    LocalDateTime endTime = LocalDateTime.of(day, LocalTime.of(15, 0));
+                    createEvent("Company Meeting", startTime, endTime, people[0], Arrays.asList(people), EventColor.YELLOW);
+                }
+
+                // Create sprint planning events
+                for (LocalDate day : sprintPlanningDays) {
+                    LocalDateTime startTime = LocalDateTime.of(day, LocalTime.of(13, 0));
+                    LocalDateTime endTime = LocalDateTime.of(day, LocalTime.of(14, 0));
+                    createEvent("Sprint Planning", startTime, endTime, people[0], Arrays.asList(people[1], people[2], people[3], people[4], people[5], people[6], people[7], people[8], people[9]), EventColor.RED);
+                }
+
+                // Create 1 on 1 events
+                for (int i = 0; i < oneOnOneDays.size(); i++) {
+                    LocalDate day = oneOnOneDays.get(i);
+                    PISUser manager = people[(i % 4) + 1]; // Cycle through managers only
+                    LocalDateTime startTime = LocalDateTime.of(day, LocalTime.of(9, 0));
+                    LocalDateTime endTime = LocalDateTime.of(day, LocalTime.of(10, 0));
+                    createEvent("1 on 1 with " + manager.getName(), startTime, endTime, people[0], Arrays.asList(manager), EventColor.RED);
+                }
+
             }
 
             utx.commit();
-        } catch (Exception e) {
+        }catch (Exception e) {
             e.printStackTrace();
             try {
                 utx.rollback();
             } catch (Exception rollbackException) {
                 rollbackException.printStackTrace();
             }
+        }
+    }
+
+    private void createEvent(String eventName, LocalDateTime start, LocalDateTime end, PISUser creator, List<PISUser> attendees, EventColor color) {
+        Event event = new Event();
+        event.setName(eventName);
+        event.setStart(java.sql.Timestamp.valueOf(start));
+        event.setEnd(java.sql.Timestamp.valueOf(end));
+        event.setCreator(creator);
+        event.setAttendees(attendees);
+        event.setColor(color);
+        em.persist(event);
+    
+        // Add event to attendees
+        for (PISUser attendee : attendees) {
+            attendee.getEvents().add(event);
         }
     }
 }
