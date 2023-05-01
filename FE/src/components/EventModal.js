@@ -3,11 +3,10 @@ import { Form, FormGroup, TextInput, TextArea, Modal, ModalVariant, Button, Time
 import { COLORS } from '../helpers/Constants';
 import { capitalize, isSubstring } from '../helpers/Utils';
 import { useFetch } from '../helpers/Hooks';
-import { validateDate } from '../helpers/Validators';
-import { validateTime } from '../helpers/Validators';
+import { validateDate, validateTime } from '../helpers/Validators';
+import { isoLongToShort, prettyTime } from './../helpers/CalendarHelper';
 
 // modal used for creating new events and editing existing events
-// TODO: Add place
 const EventModal = ({ userInfo, isOpen, setOpen, createCallback, initialEventData }) => {
     const [eventTitle, setEventTitle] = useState('');
     const [eventDescription, setEventDescription] = useState('');
@@ -32,9 +31,12 @@ const EventModal = ({ userInfo, isOpen, setOpen, createCallback, initialEventDat
                 setEventPlace(initialEventData.place);
                 setSelectedUsers(initialEventData.attendees.map(attendee => attendee.username));
                 setSelectedColor(initialEventData.color.toLowerCase());
-    
-                const [startDate, startTime] = initialEventData.start.split(/[TZ]/);
-                const [endDate, endTime] = initialEventData.end.split(/[TZ]/);
+
+                const startDate = isoLongToShort(initialEventData.start);
+                const endDate = isoLongToShort(initialEventData.end);
+
+                const startTime = prettyTime(initialEventData.start);
+                const endTime = prettyTime(initialEventData.end);
     
                 setDateFrom(startDate);
                 setTimeFrom(startTime.substring(0, 5));
