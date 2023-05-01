@@ -17,7 +17,8 @@ export const useFetch = (endpoint, userInfo, params) => {
 		if (userInfo?.loaded) {
 			axios.get(`/rest-api/rest${endpoint}`, {
 				params: { ...params },
-				headers: { 'Authorization': `Bearer ${userInfo.raw}` }
+				headers: { 'Authorization': `Bearer ${userInfo.raw}` },
+				paramsSerializer: { indexes: null }
 			}).then(response => {
 				setData(response.data);
 				setLoading(false);
@@ -51,7 +52,7 @@ export const useAction = (verb, endpoint, userInfo = {}) => {
 				userInfo.raw && { headers: { 'Authorization': `Bearer ${userInfo.raw}` } }
 			)
 				.then(response => successCallback?.(response))
-				.catch(error => errorCallback?.(error?.response?.data?.message));
+				.catch(error => errorCallback?.(error?.response?.data));
 		}
 		else if (verb === "PUT") {
 			axios.put(
@@ -60,7 +61,7 @@ export const useAction = (verb, endpoint, userInfo = {}) => {
 				userInfo.raw && { headers: { 'Authorization': `Bearer ${userInfo.raw}` } }
 			)
 				.then(response => successCallback?.(response))
-				.catch(error => errorCallback?.(error?.response?.data?.message));
+				.catch(error => errorCallback?.(error?.response?.data));
 		}
 		else if (verb === "PATCH") {
 			axios.patch(
@@ -69,7 +70,7 @@ export const useAction = (verb, endpoint, userInfo = {}) => {
 				userInfo.raw && { headers: { 'Authorization': `Bearer ${userInfo.raw}` } }
 			)
 				.then(response => successCallback?.(response))
-				.catch(error => errorCallback?.(error?.response?.data?.message));
+				.catch(error => errorCallback?.(error?.response?.data));
 		}
 		else if (verb === "DELETE") {
 			axios.delete(
@@ -77,7 +78,7 @@ export const useAction = (verb, endpoint, userInfo = {}) => {
 				userInfo.raw && { headers: { 'Authorization': `Bearer ${userInfo.raw}` } }
 			)
 				.then(response => successCallback?.(response))
-				.catch(error => errorCallback?.(error?.response?.data?.message));
+				.catch(error => errorCallback?.(error?.response?.data));
 		}
 	}
 
