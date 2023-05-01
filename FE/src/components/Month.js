@@ -18,6 +18,7 @@ import { COLORS } from './../helpers/Constants';
 import { playFadeInAnimation } from './../helpers/Utils';
 import { useAction, useFetch } from './../helpers/Hooks';
 import EventPopover from './EventPopover';
+import { addDays } from './../helpers/CalendarHelper';
 
 // component which renders the calendar when month view is selected
 const Month = ({ userInfo, addToastAlert, doubleLeftButtonClickCount, leftButtonClickCount, rightButtonClickCount, doubleRightButtonClickCount, refreshCounter, navigateTodayCounter, editEvent, selectedUsers }) => {
@@ -34,12 +35,16 @@ const Month = ({ userInfo, addToastAlert, doubleLeftButtonClickCount, leftButton
 
     const deleteEventAction = eventId => {
         if (confirm(`Are you sure you want to remove this event?`)) {
-            const callback = () => {
+            const successCallback = () => {
                 addToastAlert(AlertVariant.success, `Event was successfully deleted`);
                 refreshEvents();
             }
 
-            deleteEvent(eventId, {}, callback);
+            const errorCallback = reason => {
+                addToastAlert(AlertVariant.danger, `Event deletion failed`, reason);
+            }
+
+            deleteEvent(eventId, {}, successCallback, errorCallback);
         }
     }
 
@@ -150,7 +155,12 @@ const Month = ({ userInfo, addToastAlert, doubleLeftButtonClickCount, leftButton
                                     const dayNumber = dateAsString.split("-")[2];
 
                                     return (
-                                        <td key={day} style={{ textAlign: "center", verticalAlign: "top" }}>
+                                        <td key={day} style={{
+                                            textAlign: "center",
+                                            verticalAlign: "top",
+                                            // color today's date column light blue
+                                            backgroundColor: addDays(firstDayOfMonth, week * 7 + day) === getMostRecentMonday(new Date()) ? "#b0fff7" : "white"
+                                        }}>
                                             <b>{dayNumber}</b>
                                             {
                                                 eventsToElements(fetchedEvents)[week * 7 + day].map(event => (

@@ -5,7 +5,7 @@ import { getMostRecentMonday, getWeekCalendarTitle, getWeekNumber, goBackMonth, 
 import { COLORS } from './../helpers/Constants';
 import { playFadeInAnimation } from './../helpers/Utils';
 import { useAction, useFetch } from './../helpers/Hooks';
-import { doDateRangesOverlap } from './../helpers/CalendarHelper';
+import { doDateRangesOverlap, addDays } from './../helpers/CalendarHelper';
 import EventPopover from './EventPopover';
 
 // component which implements calendar when week view is selected
@@ -25,12 +25,16 @@ const Week = ({ userInfo, addToastAlert, doubleLeftButtonClickCount, leftButtonC
 
     const deleteEventAction = eventId => {
         if (confirm(`Are you sure you want to remove this event?`)) {
-            const callback = () => {
+            const successCallback = () => {
                 addToastAlert(AlertVariant.success, `Event was successfully deleted`);
                 refreshEvents();
             }
 
-            deleteEvent(eventId, {}, callback);
+            const errorCallback = reason => {
+                addToastAlert(AlertVariant.danger, `Event deletion failed`, reason);
+            }
+
+            deleteEvent(eventId, {}, successCallback, errorCallback);
         }
     }
 
@@ -185,7 +189,7 @@ const Week = ({ userInfo, addToastAlert, doubleLeftButtonClickCount, leftButtonC
 
     return (
         <Split id="week-split" style={{ width: "100%", display: "flex", marginTop: "32px" }}>
-            <SplitItem style={{ flex: 1, height: 1200 }}>
+            <SplitItem style={{ flex: 1, height: 1200}}>
                 <b>
                     <div style={{ textAlign: "center", height: 24 }}>Week {getWeekNumber(currentMonday)}</div>
                     <div style={{ textAlign: "center", height: 24 }}>{getWeekCalendarTitle(currentMonday)}</div>
@@ -215,7 +219,9 @@ const Week = ({ userInfo, addToastAlert, doubleLeftButtonClickCount, leftButtonC
                     flex: 1,
                     height: 1200,
                     border: "1px solid black",
-                    borderLeft: index === 0 ? "1px solid black" : 0
+                    borderLeft: index === 0 ? "1px solid black" : 0,
+                    // color today's date column light blue
+                    backgroundColor: addDays(currentMonday, index) === getMostRecentMonday(new Date()) ? "#b0fff7" : "white"
                 }}>
                     <b>
                         <div style={{ textAlign: "center", height: 24 }}>{weekday}</div>
