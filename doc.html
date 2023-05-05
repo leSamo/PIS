@@ -32,17 +32,17 @@
 		<dt>Autoři</dt>
 		<dd>Bc. Samuel Olekšák
 			<a href="mailto:xoleks00@stud.fit.vutbr.cz">xoleks00@stud.fit.vutbr.cz</a> -
-			objektový návrh, návrh API, E2E testovanie, implementácia, dokumentácia
+			objektový návrh, návrh API, E2E testovanie, implementácia FE/BE, dokumentácia
 		</dd>
 		<dd>Bc. Michal Findra
 			<a href="mailto:xfindr00@stud.fit.vutbr.cz">xfindr00@stud.fit.vutbr.cz</a> -
-			objektový návrh, autentifikácia na backende, E2E testovanie, implementácia, dokumentácia
+			objektový návrh, autentifikácia na backende, E2E testovanie, implementácia FE/BE, dokumentácia
 		</dd>
 	</dl>
 
 	<h2>Uživatelé systému pro testování</h2>
 
-	<p>V nasledujúcej tabuľke sú uvedení všetci užívetalia systému. Riaditeľ má jediný možnosť vyrtvárať a upravovať užívateľov (admin). </p> 
+	<p>V nasledujúcej tabuľke sú uvedení všetci užívetalia systému. Riaditeľ má jediný možnosť vytvárať a upravovať užívateľov (admin). Avšak rola admin nie je podmienená rolou riaditeľ.</p> 
 	<p>Podrobnejšie informácie o funkcionalite sú dostupné vo <b>frontend.pdf</b> dokumentácií.</p>
 
 	<table>
@@ -115,11 +115,11 @@
 	</ul>
 	<b>Spustenie servera + základné seedovanie:</b> v priečinku <code>BE/rest-api</code> pomocou príkazu <code>rm -rf target/ && nvm liberty:dev</code><br>
 	<b>Sputenie klienta:</b> v priečinku <code>FE</code> pomocou príkazu <code>npm install; npm run start</code> <br>
-	<b>Sputenie cypress testov:</b> v priečinku <code>FE</code> pomocou príkazu <code>npm install; npm run test</code> (testy vyžadujú nezmenenú pôvodnú datábazu)
+	<b>Sputenie cypress testov:</b> v priečinku <code>FE</code> pomocou príkazu <code>npm run test</code> (BE aj FE musia byť spustené, testy vyžadujú nezmenenú pôvodnú datábazu)
 
 	<p>Inicializácia databázy prebieha automaticky pri spustení Liberty servera.</p>
 
-	<p>Po spustení je možné okrem aplikácie pozorovať aj jednotlivé endpointy pomocu Swagger openAPI rozhrania na adrese <a href="http://localhost:9080/openapi/ui/">localhost:9080/openapi/ui/</a></p>
+	<p>Po spustení je možné okrem aplikácie pozorovať aj jednotlivé endpointy pomocu Swagger OpenAPI rozhrania na adrese <a href="http://localhost:9080/openapi/ui/">localhost:9080/openapi/ui/</a></p>
 
 </body>
 

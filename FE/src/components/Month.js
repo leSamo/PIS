@@ -159,7 +159,7 @@ const Month = ({ userInfo, addToastAlert, doubleLeftButtonClickCount, leftButton
                                             textAlign: "center",
                                             verticalAlign: "top",
                                             // color today's date column light blue
-                                            backgroundColor: addDays(firstDayOfMonth, week * 7 + day) === getMostRecentMonday(new Date()) ? "#b0fff7" : "white"
+                                            backgroundColor: addDays(firstDayOfMonth, week * 7 + day) === isoLongToShort(new Date()) ? "#b0fff7" : "white"
                                         }}>
                                             <b>{dayNumber}</b>
                                             {

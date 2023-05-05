@@ -221,7 +221,7 @@ const Week = ({ userInfo, addToastAlert, doubleLeftButtonClickCount, leftButtonC
                     border: "1px solid black",
                     borderLeft: index === 0 ? "1px solid black" : 0,
                     // color today's date column light blue
-                    backgroundColor: addDays(currentMonday, index) === getMostRecentMonday(new Date()) ? "#b0fff7" : "white"
+                    backgroundColor: addDays(currentMonday, index) === isoLongToShort(new Date()) ? "#b0fff7" : "white"
                 }}>
                     <b>
                         <div style={{ textAlign: "center", height: 24 }}>{weekday}</div>
